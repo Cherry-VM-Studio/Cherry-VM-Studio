@@ -1,0 +1,4 @@
+from .subscribed_machine.websocket_manager import SubscribedMachineWebsocketsManager
+
+
+subscribed_machines_websocket_manager = SubscribedMachineWebsocketsManager()

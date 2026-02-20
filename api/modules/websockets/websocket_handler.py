@@ -59,12 +59,3 @@ class WebSocketHandler(BaseModel):
 
     def is_connected(self) -> bool:
         return self.websocket.application_state == WebSocketState.CONNECTED and self.websocket.client_state == WebSocketState.CONNECTED
-
-    async def acknowledge(self, command: dict = {}) -> None:
-        acknowledge = AcknowledgeResponse(command = CommandData.model_validate(command))
-        await self.websocket.send_json(jsonable_encoder(acknowledge.model_dump()))
-
-    async def reject(self, command: dict = {}, reason: Exception | RaisedException | str | None = None) -> None: 
-
-        reject = RejectResponse(command = CommandData.model_validate(command), reason = str(reason))
-        await self.websocket.send_json(jsonable_encoder(reject.model_dump()))
