@@ -6,7 +6,7 @@ import { CreateMachineFormSubmitValues, CreateMachineModalStack } from "../Creat
 import { useState } from "react";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
 import { IconAlertCircle, IconDeviceDesktop } from "@tabler/icons-react";
-import { values } from "lodash";
+import { keys, values } from "lodash";
 import useFetch from "../../../hooks/useFetch";
 import { Group as GroupType } from "../../../types/api.types";
 import useApi from "../../../hooks/useApi";
@@ -72,7 +72,7 @@ const CreateMachinesInBulkModal = ({ opened, onSubmit, onClose }: CreateMachines
     };
 
     const getNumberOfMachines = (values: CreateMachinesInBulkFormValues) =>
-        values.machines.reduce((prev, curr) => prev + curr.machine_count, 0) * (values.create_for_group_mode ? (groups[values.group]?.users?.length ?? 1) : 1);
+        values.machines.reduce((prev, curr) => prev + curr.machine_count, 0) * (values.create_for_group_mode ? (keys(groups[values.group]?.users)?.length ?? 1) : 1);
 
     const groupsInSelect = values(groups).map((group: GroupType) => ({ label: group.name, value: group.uuid }));
 
