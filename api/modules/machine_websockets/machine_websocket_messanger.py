@@ -11,7 +11,7 @@ class MachineWebSocketMessanger:
     async def send_create(self, ws: WebSocket, machine_properties_payload: MachinePropertiesPayload):
         await ws.send_json(jsonable_encoder(WebSocketMessage(
             type="CREATE",
-            body=machine_properties_payload
+            body=jsonable_encoder(machine_properties_payload)
         )))
         
     async def send_delete(self, ws: WebSocket, machine_uuid: UUID):
@@ -23,25 +23,25 @@ class MachineWebSocketMessanger:
     async def send_data_static(self, ws: WebSocket, machine_properties_payloads: dict[UUID, MachinePropertiesPayload]):
         await ws.send_json(jsonable_encoder(WebSocketMessage(
             type="DATA_STATIC",
-            body=machine_properties_payloads
+            body=jsonable_encoder(machine_properties_payloads)
         )))
         
     async def send_data_dynamic(self, ws: WebSocket, machine_state_payloads: dict[UUID, MachineStatePayload]):
         await ws.send_json(jsonable_encoder(WebSocketMessage(
             type="DATA_DYNAMIC",
-            body=machine_state_payloads
+            body=jsonable_encoder(machine_state_payloads)
         )))
         
     async def send_data_dynamic_disks(self, ws: WebSocket, machine_disk_payloads: dict[UUID, MachineDisksPayload]):
         await ws.send_json(jsonable_encoder(WebSocketMessage(
             type="DATA_DYNAMIC_DISKS",
-            body=machine_disk_payloads
+            body=jsonable_encoder(machine_disk_payloads)
         )))
         
     async def send_data_dynamic_connections(self, ws: WebSocket, machine_connections_payloads: dict[UUID, MachineConnectionsPayload]):
         await ws.send_json(jsonable_encoder(WebSocketMessage(
             type="DATA_DYNAMIC_CONNECTIONS",
-            body=machine_connections_payloads
+            body=jsonable_encoder(machine_connections_payloads)
         )))
         
     async def send_bootup_start(self, ws: WebSocket, machine_uuid: UUID):
