@@ -38,7 +38,7 @@ class AllMachinesWebsocketHandler(WebSocketHandler):
         await super().accept(access_token)
 
         if self.user is None or not has_permissions(self.user, PERMISSIONS.VIEW_ALL_VMS):
-            return self.close(4403, "You do not have the necessary permissions to access this resource.")
+            return await self.close(4403, "You do not have the necessary permissions to access this resource.")
         
         if not self.is_connected():
             return

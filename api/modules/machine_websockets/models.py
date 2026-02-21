@@ -2,7 +2,7 @@ from ast import TypeVar
 from typing import Any, Generic, Literal
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 WebSocketMessageTypes = Literal[
@@ -14,7 +14,7 @@ WebSocketMessageTypes = Literal[
 ]
     
 class WebSocketMessage(BaseModel):
-    uuid: UUID = uuid4()
+    uuid: UUID = Field(default_factory=uuid4)
     type: WebSocketMessageTypes
     body: Any
 
