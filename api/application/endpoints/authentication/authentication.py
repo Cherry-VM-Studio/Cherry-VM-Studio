@@ -20,13 +20,13 @@ router = APIRouter(
 )
 
 @router.post("/swagger-token")
-async def __login_through_swagger__(form_data: FormData):
+async def __login_through_swagger__(form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(form_data.username, form_data.password)
     
     if not user:
         raise HTTPUnauthorizedException(detail="Incorrect username or password.")
     
-    return {"access_token": f"Bearer {create_access_token(user)}", "token_type": "bearer"}
+    return {"access_token": create_access_token(user), "token_type": "bearer"}
 
 
 @router.post("/token", response_model=Tokens)
