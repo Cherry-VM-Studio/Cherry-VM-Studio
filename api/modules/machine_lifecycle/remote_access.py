@@ -1,8 +1,9 @@
 import logging
 
 from uuid import UUID
+from modules.machine_state.queries import get_machine_owner
 from modules.postgresql import pool, select_one, select_single_field
-from modules.machine_state.data_retrieval import get_machine_owner
+
 
 logger = logging.getLogger(__name__)
 
