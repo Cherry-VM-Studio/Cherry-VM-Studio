@@ -3,12 +3,16 @@ from typing import override
 from uuid import UUID
 from starlette.websockets import WebSocketDisconnect
 
+from modules.machine_state.data_payloads.dynamic_connections_payload import get_machine_connections_payload
+from modules.machine_state.queries import check_machine_access
+from modules.users.permissions import has_permissions
 from modules.machine_state.data_payloads.dynamic_disks_payload import get_machine_disks_payload
 from modules.machine_state.data_payloads.dynamic_state_payload import get_machine_state_payload
 from modules.machine_state.data_payloads.static_properties_payload import get_machine_properties_payload
 from modules.machine_websockets.machine_websocket_messanger import MachineWebSocketMessanger
 from modules.websockets.websocket_handler import WebSocketHandler
 from modules.machine_websockets.subscribed_machine.subscription_manager import SubscriptionManager
+from config.permissions_config import PERMISSIONS
 
 
 logger = logging.getLogger(__name__)
@@ -33,9 +37,14 @@ class SubscribedMachinesWebsocketHandler(WebSocketHandler):
     async def accept(self, access_token: str, machine_uuid: UUID):
         await super().accept(access_token)
         
-        if self.is_connected() and self.user is not None:
-            self.subscription_manager.subscribe(self.websocket, machine_uuid)
-            await self.__send_messages_on_connect__(machine_uuid)
+        if not self.is_connected() or self.user is None:
+            return
+        
+        if not has_permissions(self.user, PERMISSIONS.VIEW_ALL_VMS) and not check_machine_access(machine_uuid, self.user):
+            return await self.close(code=4403, reason="You do not have the necessary permissions to access this resource.")
+        
+        self.subscription_manager.subscribe(self.websocket, machine_uuid)
+        await self.__send_messages_on_connect__(machine_uuid)
             
     async def __send_messages_on_connect__(self, machine_uuid: UUID):
         try:
@@ -55,3 +64,9 @@ class SubscribedMachinesWebsocketHandler(WebSocketHandler):
             await machine_websocket_messanger.send_data_dynamic_disks(self.websocket, {machine_uuid: disks_payload})
         except Exception as e:
             logging.error("Failed to send DYNAMIC DISKS payload for machine %s over websocket: %s", machine_uuid, e,exc_info=True)
+            
+        try:
+            connections_payload = get_machine_connections_payload(machine_uuid)
+            await machine_websocket_messanger.send_data_dynamic_connections(self.websocket, {machine_uuid: connections_payload})
+        except Exception as e:
+            logging.error("Failed to send DYNAMIC CONNECTIONS payload for machine %s over websocket: %s", machine_uuid, e,exc_info=True)

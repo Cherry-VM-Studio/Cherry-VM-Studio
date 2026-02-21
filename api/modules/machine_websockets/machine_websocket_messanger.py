@@ -2,8 +2,8 @@ from uuid import UUID
 
 from fastapi import WebSocket
 from fastapi.encoders import jsonable_encoder
-from modules.machine_state.data_payloads.static_properties_payload import get_machine_properties_payload
-from modules.machine_state.models import MachineDisksPayload, MachinePropertiesPayload, MachineStatePayload, WebSocketMessage, WebSocketMessageBaseBody
+from modules.machine_state.models import MachineConnectionsPayload, MachineDisksPayload, MachinePropertiesPayload, MachineStatePayload
+from .models import WebSocketMessage, WebSocketMessageBaseBody
 
 
 class MachineWebSocketMessanger:
@@ -36,6 +36,12 @@ class MachineWebSocketMessanger:
         await ws.send_json(jsonable_encoder(WebSocketMessage(
             type="DATA_DYNAMIC_DISKS",
             body=machine_disk_payloads
+        )))
+        
+    async def send_data_dynamic_connections(self, ws: WebSocket, machine_connections_payloads: dict[UUID, MachineConnectionsPayload]):
+        await ws.send_json(jsonable_encoder(WebSocketMessage(
+            type="DATA_DYNAMIC_CONNECTIONS",
+            body=machine_connections_payloads
         )))
         
     async def send_bootup_start(self, ws: WebSocket, machine_uuid: UUID):
@@ -73,3 +79,4 @@ class MachineWebSocketMessanger:
             type="SHUTDOWN_FAIL",
             body=WebSocketMessageBaseBody(uuid=machine_uuid, error=error)
         )))
+

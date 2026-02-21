@@ -7,14 +7,16 @@ from fastapi import HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.websockets import WebSocketState
 from pydantic import BaseModel
 
+from modules.users.models import AnyUser
+from modules.users.users import UsersManager
+from modules.machine_state.queries import  get_machine_linked_account_uuids
 from config.websockets_config import WEBSOCKETS_CONFIG
-from modules.machine_state.data_payloads.dynamic_connections_payload import get_machine_connections_payload
-from modules.machine_state.data_payloads.dynamic_disks_payload import get_machine_disks_payload
-from modules.machine_state.data_payloads.dynamic_state_payload import get_machine_state_payload
+from modules.machine_state.data_payloads.dynamic_connections_payload import get_machine_connections_payload, get_user_machine_connections_payloads
+from modules.machine_state.data_payloads.dynamic_disks_payload import get_machine_disks_payload, get_machine_disks_payloads_by_uuids, get_user_machine_disks_payloads
+from modules.machine_state.data_payloads.dynamic_state_payload import get_machine_state_payload, get_user_machine_state_payloads
 from modules.machine_state.data_payloads.static_properties_payload import get_machine_properties_payload
 from modules.machine_websockets.machine_websocket_messanger import MachineWebSocketMessanger
-from modules.machine_websockets.subscribed_machine.subscription_manager import SubscriptionManager
-
+from .subscription_manager import SubscriptionManager
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -22,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 machine_websocket_messanger = MachineWebSocketMessanger()
 
-class SubscribedMachineWebsocketsManager:
+class UserMachinesWebsocketManager:
     subscription_manager = SubscriptionManager()
     _broadcast_flags: dict[Literal["states", "disks", "connections"], bool] = {}
     _broadcast_tasks: dict[Literal["states", "disks", "connections"], asyncio.Task] = {}
@@ -33,26 +35,32 @@ class SubscribedMachineWebsocketsManager:
     """ payload_sender - callback for a function sending the payload through the provided websocket."""
     async def __broadcast_machine_payload__(
         self,
-        payload_retriever: Callable[[UUID], T],
+        payload_retriever: Callable[[AnyUser], dict[UUID, T]],
         payload_sender: Callable[[WebSocket, dict[UUID, T]], Awaitable[None]],
     ):
         dead_subscriptions = []
 
         for key, subscription in self.subscription_manager.subscriptions.items():
             ws: WebSocket = subscription.websocket
-            machine_uuid = subscription.machine
+            user_uuid = subscription.user
 
             if ws.application_state != WebSocketState.CONNECTED or ws.client_state != WebSocketState.CONNECTED:
                 dead_subscriptions.append(key)
                 continue
 
             try:
-                payload = payload_retriever(machine_uuid)
-                await payload_sender(ws, {machine_uuid: payload})
-            except (WebSocketDisconnect, HTTPException, RuntimeError) as e:
+                user = UsersManager.get_user(user_uuid)
+                
+                if user is None:
+                    logger.error(f"Couldn't retrieve user with uuid={user_uuid} in the /ws/machine/account websocket. Removing subscription.")
+                    raise RuntimeError
+                
+                payload = payload_retriever(user)
+                await payload_sender(ws, payload)
+            except (WebSocketDisconnect, HTTPException,  RuntimeError) as e:
                 dead_subscriptions.append(key)
             except Exception as e:
-                logger.error("Unexpected error while broadcasting payload for machine %s: %s", machine_uuid, e, exc_info=True)
+                logger.error("Unexpected error while broadcasting payload of machines for user %s: %s", user_uuid, e, exc_info=True)
 
         if dead_subscriptions:
             self.subscription_manager.remove_subscriptions_by_keys(dead_subscriptions)
@@ -60,21 +68,21 @@ class SubscribedMachineWebsocketsManager:
     """ Sends machine states data for each websocket based on the subscriptions. """            
     async def __broadcast_machine_states__(self):
         await self.__broadcast_machine_payload__(
-            payload_retriever=get_machine_state_payload, 
+            payload_retriever=get_user_machine_state_payloads, 
             payload_sender=machine_websocket_messanger.send_data_dynamic
         )
         
     """ Sends machine disks data for each websocket based on the subscriptions. """                
     async def __broadcast_machine_disks__(self):
         await self.__broadcast_machine_payload__(
-            payload_retriever=get_machine_disks_payload, 
+            payload_retriever=get_user_machine_disks_payloads, 
             payload_sender=machine_websocket_messanger.send_data_dynamic_disks
         )
         
     """ Sends machine connections data for each websocket based on the subscriptions. """     
     async def __broadcast_machine_connections__(self):
         await self.__broadcast_machine_payload__(
-            payload_retriever=get_machine_connections_payload, 
+            payload_retriever=get_user_machine_connections_payloads, 
             payload_sender=machine_websocket_messanger.send_data_dynamic_connections
         )
         
@@ -89,7 +97,7 @@ class SubscribedMachineWebsocketsManager:
             try: 
                 await callback()
             except Exception:
-                logger.exception(f"Exception occured during '{name}' broadcast in the SubscribedMachineWebsocketsManager.")
+                logger.exception(f"Exception occured during '{name}' broadcast in the UserMachinesWebsocketManager.")
             await asyncio.sleep(intervalInSeconds)
     
     """ Starts all the broadcasts using intervals from the config. """
@@ -110,16 +118,27 @@ class SubscribedMachineWebsocketsManager:
         self._broadcast_flags["disks"] = False
         self._broadcast_flags["connections"] = False
         
-    """ Sends approperiate message for all websockets subscribed to deleted machine. """
+    """ Sends newly created machine data for all websockets subscribed to a relevant account. """
+    def on_machine_create(self, machine_uuid: UUID):
+        user_uuids = get_machine_linked_account_uuids(machine_uuid)
+        websockets = self.subscription_manager.get_websockets_for_users(user_uuids)
+        machine_properties_payload = get_machine_properties_payload(machine_uuid)
+
+        for websocket in websockets:
+            asyncio.create_task(machine_websocket_messanger.send_create(websocket, machine_properties_payload))
+        
+    """ Sends deletion message on relevant machine deletion. """
     def on_machine_delete(self, machine_uuid: UUID):
-        websockets = self.subscription_manager.get_websockets_for_machine(machine_uuid)
+        user_uuids = get_machine_linked_account_uuids(machine_uuid)
+        websockets = self.subscription_manager.get_websockets_for_users(user_uuids)
         
         for websocket in websockets:
             asyncio.create_task(machine_websocket_messanger.send_delete(websocket, machine_uuid))
        
-    """ Sends updated machine properties (static data) for all websockets subscribed to modified machine. """
+    """ Sends updated machine properties (static data) to all websockets subscribed to a relevant account. """
     def on_machine_modify(self, machine_uuid: UUID):
-        websockets = self.subscription_manager.get_websockets_for_machine(machine_uuid)
+        user_uuids = get_machine_linked_account_uuids(machine_uuid)
+        websockets = self.subscription_manager.get_websockets_for_users(user_uuids)
         machine_properties_payload = get_machine_properties_payload(machine_uuid)
         
         for websocket in websockets:
@@ -127,14 +146,16 @@ class SubscribedMachineWebsocketsManager:
         
         
     def on_machine_bootup_start(self, machine_uuid: UUID):
-        websockets = self.subscription_manager.get_websockets_for_machine(machine_uuid)
+        user_uuids = get_machine_linked_account_uuids(machine_uuid)
+        websockets = self.subscription_manager.get_websockets_for_users(user_uuids)
         
         for websocket in websockets:
             asyncio.create_task(machine_websocket_messanger.send_bootup_start(websocket, machine_uuid))
     
     
     def on_machine_bootup_success(self, machine_uuid: UUID):
-        websockets = self.subscription_manager.get_websockets_for_machine(machine_uuid)
+        user_uuids = get_machine_linked_account_uuids(machine_uuid)
+        websockets = self.subscription_manager.get_websockets_for_users(user_uuids)
 
         for websocket in websockets:
             asyncio.create_task(
@@ -143,7 +164,8 @@ class SubscribedMachineWebsocketsManager:
 
 
     def on_machine_bootup_fail(self, machine_uuid: UUID, error: str):
-        websockets = self.subscription_manager.get_websockets_for_machine(machine_uuid)
+        user_uuids = get_machine_linked_account_uuids(machine_uuid)
+        websockets = self.subscription_manager.get_websockets_for_users(user_uuids)
 
         for websocket in websockets:
             asyncio.create_task(
@@ -152,7 +174,8 @@ class SubscribedMachineWebsocketsManager:
 
 
     def on_machine_shutdown_start(self, machine_uuid: UUID):
-        websockets = self.subscription_manager.get_websockets_for_machine(machine_uuid)
+        user_uuids = get_machine_linked_account_uuids(machine_uuid)
+        websockets = self.subscription_manager.get_websockets_for_users(user_uuids)
 
         for websocket in websockets:
             asyncio.create_task(
@@ -161,7 +184,8 @@ class SubscribedMachineWebsocketsManager:
 
 
     def on_machine_shutdown_success(self, machine_uuid: UUID):
-        websockets = self.subscription_manager.get_websockets_for_machine(machine_uuid)
+        user_uuids = get_machine_linked_account_uuids(machine_uuid)
+        websockets = self.subscription_manager.get_websockets_for_users(user_uuids)
 
         for websocket in websockets:
             asyncio.create_task(
@@ -170,7 +194,8 @@ class SubscribedMachineWebsocketsManager:
 
 
     def on_machine_shutdown_fail(self, machine_uuid: UUID, error: str):
-        websockets = self.subscription_manager.get_websockets_for_machine(machine_uuid)
+        user_uuids = get_machine_linked_account_uuids(machine_uuid)
+        websockets = self.subscription_manager.get_websockets_for_users(user_uuids)
 
         for websocket in websockets:
             asyncio.create_task(

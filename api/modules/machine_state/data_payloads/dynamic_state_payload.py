@@ -6,12 +6,11 @@ from fastapi import HTTPException
 from uuid import UUID
 from devtools import pprint
 
-from modules.machine_state.queries import check_machine_existence, check_machine_membership, get_active_connections, get_all_machine_uuids, get_machine_boot_timestamp, get_user_machine_uuids
+from modules.machine_state.queries import check_machine_existence, check_machine_membership, get_all_machine_uuids, get_machine_boot_timestamp, get_user_machine_uuids
 from modules.machine_state.state_management import is_vm_loading
-from modules.machine_state.models import MachineStatePayload, DynamicDiskInfo
+from modules.machine_state.models import MachineStatePayload
 from modules.libvirt_socket import LibvirtConnection
 from modules.users.models import AnyUser
-from modules.machine_lifecycle.xml_translator import parse_machine_xml
 
 
 logger = logging.getLogger(__name__)
@@ -31,7 +30,6 @@ def get_machine_state_payload(machine_uuid: UUID, skip_membership_check: bool = 
         uuid = machine_uuid,
         active = is_active,
         loading = is_vm_loading(machine.UUID()),
-        active_connections= get_active_connections(machine_uuid),
         vcpu = (machine.info()[3]),
         ram_max = (machine.info()[1]/1024),
         ram_used = (machine.info()[2]/1024) if is_active else 0,

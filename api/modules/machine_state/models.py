@@ -35,8 +35,7 @@ class MachinePropertiesPayload(BaseModel):
 class MachineStatePayload(BaseModel):
     uuid: UUID  
     active: bool = False                            
-    loading: bool = False                           
-    active_connections: list | None = None          
+    loading: bool = False                                 
     vcpu: int = 0                                    
     ram_max: int | None = None                      
     ram_used: int | None = None                     
@@ -48,13 +47,5 @@ class MachineDisksPayload(BaseModel):
     disks: list[DynamicDiskInfo] | None = None
     
 
-WebSocketMessageTypes = Literal["CREATE", "DELETE", "BOOTUP_START", "BOOTUP_SUCCESS", "BOOTUP_FAIL", "SHUTDOWN_START", "SHUTDOWN_SUCCESS", "SHUTDOWN_FAIL", "DATA_STATIC", "DATA_DYNAMIC", "DATA_DYNAMIC_DISKS"]
-    
-class WebSocketMessage(BaseModel):
-    uuid: UUID = uuid4()
-    type: WebSocketMessageTypes
-    body: BaseModel | dict 
-
-class WebSocketMessageBaseBody(BaseModel):
-    uuid: UUID
-    error: str | None = None 
+class MachineConnectionsPayload(BaseModel):
+    active_connections: list | None = None

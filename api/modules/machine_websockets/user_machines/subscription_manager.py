@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 class Subscription(BaseModel):
     websocket: WebSocket
-    machine: UUID
+    user: UUID
     
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -17,19 +17,28 @@ class SubscriptionManager(BaseModel):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
     
-    def subscribe(self, websocket: WebSocket, machine_uuid: UUID):
+    def subscribe(self, websocket: WebSocket, user_uuid: UUID):
         websocket_id = id(websocket)
-        self.subscriptions[websocket_id] = Subscription(websocket=websocket, machine=machine_uuid)  
+        self.subscriptions[websocket_id] = Subscription(websocket=websocket, user=user_uuid)  
         
     def unsubscribe(self, websocket: WebSocket):
         websocket_id = id(websocket)
         del self.subscriptions[websocket_id]
     
-    def get_websockets_for_machine(self, machine_uuid: UUID) -> list[WebSocket]:
+    def get_websockets_for_user(self, user_uuid: UUID) -> list[WebSocket]:
         return [
             sub.websocket
             for sub in self.subscriptions.values()
-            if sub.machine == machine_uuid
+            if sub.user == user_uuid
+        ]
+        
+    def get_websockets_for_users(self, user_uuids: set[UUID] | list[UUID]) -> list[WebSocket]:
+        user_uuid_set = set(user_uuids)
+
+        return [
+            sub.websocket
+            for sub in self.subscriptions.values()
+            if sub.user in user_uuid_set
         ]
         
     def remove_subscriptions_by_keys(self, keys: list[int]):

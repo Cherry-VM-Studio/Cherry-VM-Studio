@@ -1,18 +1,18 @@
 from uuid import UUID
-
 from fastapi import APIRouter, Depends, HTTPException
-from modules.machine_state.data_retrieval import check_machine_access, check_machine_ownership, get_all_machines_data, get_user_machines_data, get_machine_data_by_uuid, get_machine_connections
-from modules.machine_state.models import MachineData
+from config.permissions_config import PERMISSIONS
+from modules.machine_state.queries import check_machine_access, check_machine_ownership, get_machine_connections
+from modules.machine_state.data_payloads.static_properties_payload import get_all_machine_properties_payloads, get_machine_properties_payload, get_user_machine_properties_payloads
+from modules.machine_state.models import MachinePropertiesPayload
 from modules.machine_state.state_management import start_machine, stop_machine
 from modules.authentication.validation import DependsOnAuthentication, DependsOnAdministrativeAuthentication, get_authenticated_administrator, get_authenticated_user
 from modules.users.permissions import verify_permissions, has_permissions
-from config.permissions_config import PERMISSIONS
 from modules.machine_resources.iso_files.library import update_iso_last_used
 from modules.machine_lifecycle.xml_translator import *
 from modules.machine_lifecycle.machines import *
 from modules.machine_lifecycle.models import MachineParameters, MachineDisk, CreateMachineForm, MachineBulkSpec
 from modules.machine_lifecycle.disks import get_machine_disk_size
-from .websockets import subscribed_machines_broadcast_manager
+from modules.machine_websockets.main_manager import main_machine_websocket_manager
 
 router = APIRouter(
     prefix='/machines',
@@ -30,92 +30,147 @@ debug_router = APIRouter(
 ################################
 #         Production
 ################################
-@router.get("/global", response_model=dict[UUID, MachineData], tags=['Machine Data'])
-async def __get_all_machines__(current_user: DependsOnAuthentication) -> dict[UUID, MachineData]:
+
+@router.get("/global", response_model=dict[UUID, MachinePropertiesPayload], tags=['Machine Data'])
+async def __get_all_machines__(current_user: DependsOnAuthentication) -> dict[UUID, MachinePropertiesPayload]:
     verify_permissions(current_user, PERMISSIONS.VIEW_ALL_VMS)
-    return get_all_machines_data()
+    return get_all_machine_properties_payloads()
 
-@router.get("/account", response_model=dict[UUID, MachineData], tags=['Machine Data'])
-async def __get_user_machines__(current_user: DependsOnAuthentication) -> dict[UUID, MachineData]:
-    return get_user_machines_data(current_user)
 
-@router.get("/machine/{uuid}", response_model=MachineData | None, tags=['Machine Data'])
-async def __get_machine__(uuid: UUID, current_user: DependsOnAuthentication) -> MachineData | None:
-    machine = get_machine_data_by_uuid(uuid)
+@router.get("/account", response_model=dict[UUID, MachinePropertiesPayload], tags=['Machine Data'])
+async def __get_user_machines__(current_user: DependsOnAuthentication) -> dict[UUID, MachinePropertiesPayload]:
+    return get_user_machine_properties_payloads(current_user)
+
+
+@router.get("/machine/{uuid}", response_model=MachinePropertiesPayload | None, tags=['Machine Data'])
+async def __get_machine__(uuid: UUID, current_user: DependsOnAuthentication) -> MachinePropertiesPayload | None:
+    machine = get_machine_properties_payload(uuid)
+
     if not machine:
         raise HTTPException(404, f"Virtual machine of UUID={uuid} could not be found.")
+
     if not has_permissions(current_user, PERMISSIONS.VIEW_ALL_VMS) and not check_machine_access(uuid, current_user):
         raise HTTPException(403, "You do not have the necessary permissions to access this resource.")
+
     return machine
+
 
 @router.post("/start/{uuid}", response_model=None, tags=['Machine State'])
 async def __start_machine__(uuid: UUID, current_user: DependsOnAuthentication) -> None:
-    machine = get_machine_data_by_uuid(uuid)
+    machine = get_machine_properties_payload(uuid)
+
     if not machine:
         raise HTTPException(404, f"Virtual machine of UUID={uuid} could not be found.")
+
     if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS) and not check_machine_access(uuid, current_user):
         raise HTTPException(403, "You do not have the necessary permissions to manage this resource.")
+    
+    main_machine_websocket_manager.on_machine_bootup_start(uuid)
+    
     if not await start_machine(uuid):
+        main_machine_websocket_manager.on_machine_bootup_fail(uuid, f"Virtual machine of UUID={uuid} failed to start.")
         raise HTTPException(500, f"Virtual machine of UUID={uuid} failed to start.")
+    
+    main_machine_websocket_manager.on_machine_bootup_success(uuid)
+    
 
 @router.post("/stop/{uuid}", response_model=None, tags=['Machine State'])
 async def __stop_machine__(uuid: UUID, current_user: DependsOnAuthentication) -> None:
-    machine = get_machine_data_by_uuid(uuid)
+    machine = get_machine_properties_payload(uuid)
+
     if not machine:
         raise HTTPException(404, f"Virtual machine of UUID={uuid} could not be found.")
+
     if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS) and not check_machine_access(uuid, current_user):
         raise HTTPException(403, "You do not have the necessary permissions to manage this resource.")
+    
+    main_machine_websocket_manager.on_machine_shutdown_start(uuid)
+    
     if not await stop_machine(uuid):
+        main_machine_websocket_manager.on_machine_shutdown_fail(uuid, f"Virtual machine of UUID={uuid} failed to start.")
         raise HTTPException(500, f"Virtual machine of UUID={uuid} failed to stop.")
+    
+    main_machine_websocket_manager.on_machine_shutdown_success(uuid)
+
 
 @router.post("/create", response_model=UUID, tags=['Machine Management'])
 async def __async_create_machine__(machine_parameters: CreateMachineForm, current_user: DependsOnAdministrativeAuthentication) -> UUID:
     machine_uuid = await create_machine_async(machine_parameters, current_user.uuid)
+
     if not machine_uuid:
         raise HTTPException(500, "Machine creation failed.")
+
     if machine_parameters.source_type == 'iso':
         update_iso_last_used(machine_parameters.source_uuid)
+
+    main_machine_websocket_manager.on_machine_create(machine_uuid)
+
     return machine_uuid
+
 
 @router.post("/create/bulk", response_model=list[UUID], tags=['Machine Management'])
 async def __async_create_machine_bulk__(machines: List[MachineBulkSpec], current_user: DependsOnAdministrativeAuthentication) -> list[UUID]:
-    machines_uuid = await create_machine_async_bulk(machines, current_user.uuid)
-    if not machines_uuid:
+    machine_uuids = await create_machine_async_bulk(machines, current_user.uuid)
+    
+    if not machine_uuids:
         raise HTTPException(500, f"Failed to create machines in bulk.")
+    
     for machine_spec in machines:
         if machine_spec.machine_config.source_type == 'iso':
             update_iso_last_used(machine_spec.machine_config.source_uuid)
-    return machines_uuid
+            
+    for machine_uuid in machine_uuids:
+        main_machine_websocket_manager.on_machine_create(machine_uuid)
+            
+    return machine_uuids
+
 
 @router.post("/create/for-group", response_model=list[UUID], tags=['Machine Management'])
 async def __async_create_machine_for_group__(machines: List[MachineBulkSpec], current_user: DependsOnAdministrativeAuthentication, group_uuid: UUID) -> list[UUID]:
-    machines_uuid = await create_machine_async_bulk(machines, current_user.uuid, group_uuid)
-    if not machines_uuid:
+    machine_uuids = await create_machine_async_bulk(machines, current_user.uuid, group_uuid)
+    
+    if not machine_uuids:
         raise HTTPException(500, f"Machine creation for group {group_uuid} failed.")
+    
     for machine_spec in machines:
         if machine_spec.machine_config.source_type == 'iso':
             update_iso_last_used(machine_spec.machine_config.source_uuid)
-    return machines_uuid
+     
+    for machine_uuid in machine_uuids:
+        main_machine_websocket_manager.on_machine_create(machine_uuid)
+            
+    return machine_uuids
+
 
 @router.delete("/delete/{uuid}", response_model=None, tags=['Machine Management'])
 async def __delete_machine_async__(uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> None:
-    machine = get_machine_data_by_uuid(uuid)
+    machine = get_machine_properties_payload(uuid)
+    
     if not machine:
         raise HTTPException(404, f"Virtual machine {uuid} could not be found.")
+    
     if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS) and not check_machine_ownership(uuid, current_user):
         raise HTTPException(403, "You do not have the permissions necessary to manage this resource.")
+    
     if not await delete_machine_async(uuid):
         raise HTTPException(500, f"Failed to delete machine {uuid}.")
-    subscribed_machines_broadcast_manager.remove_subscription_from_all(uuid)
+    
+    main_machine_websocket_manager.on_machine_delete(uuid)
+    
     
 @router.patch("/modify/{uuid}", response_model=None, tags=['Machine Management'])
 async def __modify_machine__(uuid: UUID, body: ModifyMachineForm, current_user: DependsOnAdministrativeAuthentication):
-    machine = get_machine_data_by_uuid(uuid)
+    machine = get_machine_properties_payload(uuid)
+    
     if not machine:
         raise HTTPException(404, f"Virtual machine of UUID={uuid} could not be found.")
+    
     if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS) and not check_machine_access(uuid, current_user):
         raise HTTPException(403, "You do not have the necessary permissions to manage this resource.")
+    
     modify_machine(uuid, body)
+    main_machine_websocket_manager.on_machine_modify(uuid)
+    
 
 ################################
 #           Debug

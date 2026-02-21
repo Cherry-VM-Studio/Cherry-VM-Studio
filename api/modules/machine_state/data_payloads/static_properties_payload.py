@@ -4,7 +4,7 @@ from fastapi import HTTPException
 from uuid import UUID
 from devtools import pprint
 
-from modules.machine_state.queries import check_machine_existence, check_machine_membership, get_clients_assigned_to_machine, get_machine_connections, get_machine_owner, get_user_machine_uuids
+from modules.machine_state.queries import check_machine_existence, check_machine_membership, get_machine_assigned_clients, get_machine_connections, get_machine_owner, get_user_machine_uuids
 from modules.machine_state.models import MachinePropertiesPayload, StaticDiskInfo
 from modules.libvirt_socket import LibvirtConnection
 from modules.users.models import AnyUser
@@ -31,7 +31,7 @@ def get_machine_properties_payload(machine_uuid: UUID, skip_membership_check: bo
         tags = [machine_metadata.value for machine_metadata in machine.metadata] if machine.metadata is not None else None,
         description = machine.description,
         owner = get_machine_owner(machine_uuid),
-        assigned_clients = get_clients_assigned_to_machine(machine_uuid),
+        assigned_clients = get_machine_assigned_clients(machine_uuid),
         ras_port = int(machine.framebuffer.port) if machine.framebuffer.port else None,
         disks = machine_disks,
         connections = get_machine_connections(machine_uuid)

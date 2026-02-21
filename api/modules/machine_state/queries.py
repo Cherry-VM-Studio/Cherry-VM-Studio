@@ -1,9 +1,9 @@
 import logging
-from typing import Literal
+from typing import Literal, Optional
 from uuid import UUID
 from datetime import datetime
 
-from api.modules.libvirt_socket import LibvirtConnection
+from modules.libvirt_socket import LibvirtConnection
 from modules.authentication.validation import encode_guacamole_connection_string
 from modules.users.permissions import is_admin, is_client
 from modules.postgresql.simple_select import select_single_field
@@ -15,30 +15,47 @@ from config import ENV_CONFIG
 logger = logging.getLogger(__name__)
 
 
-
-def get_machine_owner(machine_uuid: UUID) -> Administrator | None:
+def get_machine_owner_uuid(machine_uuid: UUID) -> Optional[UUID]:
     owner_uuids =  select_single_field("uuid", """
         SELECT administrators.uuid FROM administrators
         RIGHT JOIN deployed_machines_owners ON administrators.uuid = deployed_machines_owners.owner_uuid
         WHERE deployed_machines_owners.machine_uuid = %s
     """, (machine_uuid,))
         
-    if owner_uuids:
-        if len(owner_uuids) > 1:
-            logger.error(f"Machine with uuid={machine_uuid} has multiple owners. This may lead to unexpected behavior!")
-            
-        return AdministratorLibrary.get_record_by_uuid(owner_uuids[0])
+    if not owner_uuids:
+        return
+    
+    if len(owner_uuids) > 1:
+        logger.error(f"Machine with uuid={machine_uuid} has multiple owners. This WILL lead to unexpected behavior!")
+        
+    return owner_uuids[0]
 
 
+def get_machine_owner(machine_uuid: UUID) -> Optional[Administrator]:
+    owner_uuid = get_machine_owner_uuid(machine_uuid)
+    
+    if owner_uuid:
+        return AdministratorLibrary.get_record_by_uuid(owner_uuid)
 
-def get_clients_assigned_to_machine(machine_uuid: UUID) -> dict[UUID, Client]:
-    assigned_client_uuids = select_single_field("uuid", """
+
+def get_machine_assigned_clients_uuids(machine_uuid: UUID) -> Optional[list[UUID]]:
+    return select_single_field("uuid", """
         SELECT clients.uuid FROM clients
         RIGHT JOIN deployed_machines_clients ON clients.uuid = deployed_machines_clients.client_uuid
         WHERE deployed_machines_clients.machine_uuid = %s
     """, (machine_uuid,))
+
+def get_machine_assigned_clients(machine_uuid: UUID) -> dict[UUID, Client]:
+    assigned_client_uuids = get_machine_assigned_clients_uuids(machine_uuid)
     
     return ClientLibrary.get_all_records_matching("uuid", assigned_client_uuids)
+
+# Get combined list of uuids of owner + assigned_clients to the machine
+def get_machine_linked_account_uuids(machine_uuid: UUID) -> list[UUID]:
+    owner_uuid = get_machine_owner_uuid(machine_uuid)
+    client_uuids = get_machine_assigned_clients_uuids(machine_uuid) or []
+
+    return [*client_uuids, *( [owner_uuid] if owner_uuid else [] )]
 
 
 def get_owner_machine_uuids(owner: Administrator) -> list[UUID]:
@@ -70,7 +87,7 @@ def check_machine_access(machine_uuid: UUID, user: AnyUser) -> bool:
     if is_admin(user):
         return check_machine_ownership(machine_uuid, user)
     if is_client(user):
-        assigned_clients = get_clients_assigned_to_machine(machine_uuid)
+        assigned_clients = get_machine_assigned_clients(machine_uuid)
         return user.uuid in assigned_clients
     return False
 

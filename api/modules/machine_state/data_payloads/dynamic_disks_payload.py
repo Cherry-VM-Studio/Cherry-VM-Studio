@@ -1,15 +1,11 @@
 import logging
-from api.modules.exceptions.models import RaisedException
-import libvirt
-
-
 from fastapi import HTTPException
 from uuid import UUID
 from devtools import pprint
 
-from modules.machine_state.queries import check_machine_existence, check_machine_membership, get_active_connections, get_all_machine_uuids, get_machine_boot_timestamp, get_user_machine_uuids
-from modules.machine_state.state_management import is_vm_loading
-from modules.machine_state.models import MachineDisksPayload, MachineStatePayload, DynamicDiskInfo
+from modules.exceptions.models import RaisedException
+from modules.machine_state.queries import check_machine_existence, check_machine_membership, get_all_machine_uuids, get_user_machine_uuids
+from modules.machine_state.models import MachineDisksPayload, DynamicDiskInfo
 from modules.libvirt_socket import LibvirtConnection
 from modules.users.models import AnyUser
 from modules.machine_lifecycle.xml_translator import parse_machine_xml
