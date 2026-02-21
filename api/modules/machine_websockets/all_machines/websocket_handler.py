@@ -44,6 +44,7 @@ class AllMachinesWebsocketHandler(WebSocketHandler):
             return
 
         self.subscription_manager.subscribe(self.websocket)
+        await self.__send_messages_on_connect__()
 
     async def __send_messages_on_connect__(self):
         if self.user is None:

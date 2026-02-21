@@ -1,3 +1,4 @@
+from urllib.parse import unquote
 from uuid import UUID
 
 from modules.machine_websockets.all_machines.websocket_handler import AllMachinesWebsocketHandler
@@ -15,34 +16,40 @@ main_machine_websocket_manager.start_all_broadcasts()
 
 @router.websocket('/subscribed')
 async def __subscribed_machines_state_websocket__(websocket: WebSocket, machine_uuid: UUID, access_token: str):
+    decoded_token = unquote(access_token)
+    
     websocket_handler = SubscribedMachinesWebsocketHandler(
         websocket=websocket, 
         subscription_manager=main_machine_websocket_manager.subscribed_machine_websocket_manager.subscription_manager
     )
     
-    await websocket_handler.accept(access_token, machine_uuid)
+    await websocket_handler.accept(decoded_token, machine_uuid)
     await websocket_handler.listen()
     
     
 @router.websocket('/account')
 async def __user_machines_state_websocket__(websocket: WebSocket, access_token: str):
+    decoded_token = unquote(access_token)
+    
     websocket_handler = UserMachinesWebsocketHandler(
         websocket=websocket, 
         subscription_manager=main_machine_websocket_manager.user_machines_websocket_manager.subscription_manager
     )
     
-    await websocket_handler.accept(access_token)
+    await websocket_handler.accept(decoded_token)
     await websocket_handler.listen()
 
     
 @router.websocket('/global')
 async def __all_machines_state_websocket__(websocket: WebSocket, access_token: str):
+    decoded_token = unquote(access_token)
+    
     websocket_handler = AllMachinesWebsocketHandler(
         websocket=websocket, 
         subscription_manager=main_machine_websocket_manager.all_machines_websocket_manager.subscription_manager
     )
     
-    await websocket_handler.accept(access_token)
+    await websocket_handler.accept(decoded_token)
     await websocket_handler.listen()
 
     
