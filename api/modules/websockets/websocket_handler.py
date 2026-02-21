@@ -21,10 +21,10 @@ class WebSocketHandler(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     async def accept(self, access_token: str) -> None:
+        await self.websocket.accept()
+        
         try:             
             self.user = get_authenticated_user(access_token)
-            await self.websocket.accept()
-            
             self.closer = asyncio.create_task(self.__close_at_token_expiration__(access_token))
             
         except CredentialsException:
