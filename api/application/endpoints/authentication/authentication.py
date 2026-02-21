@@ -26,7 +26,7 @@ async def __login_through_swagger__(form_data: FormData):
     if not user:
         raise HTTPUnauthorizedException(detail="Incorrect username or password.")
     
-    return {"access_token": create_access_token(user), "token_type": "bearer"}
+    return {"access_token": f"Bearer {create_access_token(user)}", "token_type": "bearer"}
 
 
 @router.post("/token", response_model=Tokens)
