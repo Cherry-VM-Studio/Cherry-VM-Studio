@@ -1,4 +1,5 @@
-from typing import Literal
+from ast import TypeVar
+from typing import Any, Generic, Literal
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel
@@ -15,7 +16,7 @@ WebSocketMessageTypes = Literal[
 class WebSocketMessage(BaseModel):
     uuid: UUID = uuid4()
     type: WebSocketMessageTypes
-    body: BaseModel | dict 
+    body: Any
 
 class WebSocketMessageUuidsBody(BaseModel):
     uuids: list[UUID]
