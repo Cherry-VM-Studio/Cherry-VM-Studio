@@ -1,3 +1,4 @@
+import logging
 from uuid import UUID
 
 from fastapi import WebSocket
@@ -5,6 +6,7 @@ from fastapi.encoders import jsonable_encoder
 from modules.machine_state.models import MachineConnectionsPayload, MachineDisksPayload, MachinePropertiesPayload, MachineStatePayload
 from .models import WebSocketMessage, WebSocketMessageBaseBody
 
+logger = logging.getLogger(__name__)
 
 class MachineWebSocketMessanger:
     
@@ -21,10 +23,20 @@ class MachineWebSocketMessanger:
         )))
         
     async def send_data_static(self, ws: WebSocket, machine_properties_payloads: dict[UUID, MachinePropertiesPayload]):
-        await ws.send_json(jsonable_encoder(WebSocketMessage(
-            type="DATA_STATIC",
-            body=jsonable_encoder(machine_properties_payloads)
-        )))
+        # Log the input
+        logger.info(f"Input payload keys: {list(machine_properties_payloads.keys())}")
+        logger.info(f"Input payload types: {[type(v) for v in machine_properties_payloads.values()]}")
+        
+        # Try encoding step by step
+        encoded_body = jsonable_encoder(machine_properties_payloads)
+        logger.info(f"After encoding - body type: {type(encoded_body)}")
+        logger.info(f"After encoding - body keys: {list(encoded_body.keys()) if isinstance(encoded_body, dict) else 'not a dict'}")
+        
+        message = WebSocketMessage(type="DATA_STATIC", body=encoded_body)
+        encoded_message = jsonable_encoder(message)
+        logger.info(f"Final message structure: {encoded_message}")
+        
+        await ws.send_json(encoded_message)
         
     async def send_data_dynamic(self, ws: WebSocket, machine_state_payloads: dict[UUID, MachineStatePayload]):
         await ws.send_json(jsonable_encoder(WebSocketMessage(
