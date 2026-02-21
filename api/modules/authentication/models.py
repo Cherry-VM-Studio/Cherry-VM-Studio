@@ -4,7 +4,7 @@ from fastapi import Depends
 from pydantic import BaseModel
 from typing import Annotated, Literal
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/swagger-token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
 
 Token = Annotated[str, Depends(oauth2_scheme)]
 TokenTypes = Literal['access', 'refresh']
