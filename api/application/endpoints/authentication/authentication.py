@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse, Response
 from typing import Annotated
 
 from modules.authentication.validation import DependsOnRefreshToken, authenticate_user, get_authenticated_user, encode_guacamole_connection_string
-from modules.authentication.tokens import get_user_tokens
+from modules.authentication.tokens import create_access_token, get_user_tokens
 from modules.authentication.models import Tokens
 from modules.exceptions import HTTPUnauthorizedException
 
@@ -19,16 +19,30 @@ router = APIRouter(
     tags=['Authentication'],
 )
 
+@router.post("/swagger-token")
+async def __login_through_swagger__(form_data: FormData):
+    user = authenticate_user(form_data.username, form_data.password)
+    
+    if not user:
+        raise HTTPUnauthorizedException(detail="Incorrect username or password.")
+    
+    return {"access_token": create_access_token(user), "token_type": "bearer"}
+
+
 @router.post("/token", response_model=Tokens)
 async def __login_for_access_token__(form_data: FormData) -> Tokens:
     user = authenticate_user(form_data.username, form_data.password)
+    
     if not user:
         raise HTTPUnauthorizedException(detail="Incorrect username or password.")
+    
     return get_user_tokens(user)
+
 
 @router.get("/refresh", response_model=Tokens)
 async def __refresh_access_token__(current_user: DependsOnRefreshToken) -> Tokens:
     return get_user_tokens(current_user)
+
 
 # Currently this serves as bypass forwardauth relying on internal authentication first and external as a backup
 @router.get("/forwardauth", response_model=dict[str, str])
