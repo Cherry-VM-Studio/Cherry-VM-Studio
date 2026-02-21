@@ -1,6 +1,7 @@
 import asyncio
 from datetime import datetime, timezone
 import logging
+from urllib.parse import unquote
 from starlette.websockets import WebSocket, WebSocketState
 from pydantic import BaseModel, ConfigDict
 from fastapi.encoders import jsonable_encoder
@@ -20,8 +21,13 @@ class WebSocketHandler(BaseModel):
     
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    async def accept(self, access_token: str) -> None:
+    async def accept(self, raw_token: str) -> None:
         await self.websocket.accept()
+        
+        access_token = unquote(raw_token)
+        
+        if access_token.startswith('Bearer '):
+            access_token = access_token.replace('Bearer ', '')
         
         try:             
             self.user = get_authenticated_user(access_token)
@@ -29,6 +35,7 @@ class WebSocketHandler(BaseModel):
             
         except CredentialsException:
             return await self.close(4401, "Could not validate credentials.")
+        
         except Exception:
             await self.close(1011, "Internal server error.")
             logger.exception("Exception occured in the WebsocketHandler's accept method")
