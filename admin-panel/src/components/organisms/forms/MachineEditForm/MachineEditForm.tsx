@@ -7,13 +7,14 @@ import MembersTable from "../../tables/MembersTable/MembersTable";
 import useFetch from "../../../../hooks/useFetch";
 import classes from "./MachineEditForm.module.css";
 import { usePermissions } from "../../../../contexts/PermissionsContext";
-import { isEqual, isNull, keys, sortBy } from "lodash";
+import { isEqual, isNull, isUndefined, keys, sortBy } from "lodash";
 import MachineDetailsFieldset, { MachineConnectionProtocolsFormValues } from "../../../molecules/forms/MachineDetailsFieldset/MachineDetailsFieldset";
 import MachineConfigFieldset from "../../../molecules/forms/MachineConfigFieldset/MachineConfigFieldset";
 import MachineDisksFieldset from "../../../molecules/forms/MachineDisksFieldset/MachineDisksFieldset";
 import { useEffect, useMemo, useState } from "react";
 import AddClientsSelect from "../../../molecules/interactive/AddClientsSelect/AddClientsSelect";
 import useApi from "../../../../hooks/useApi";
+import { isAxiosError } from "axios";
 
 export interface MachineEditFormValues {
     title: string;
@@ -36,42 +37,38 @@ export interface MachineEditFormProps {
 const MachineEditForm = ({ machine }: MachineEditFormProps): React.JSX.Element => {
     const { t, tns } = useNamespaceTranslation("pages", "machine");
     const { sendRequest } = useApi();
-    const { data: loggedInUser, loading, error } = useFetch<UserExtended>("/user/me");
-    const { data: users, loading: usersLoading, error: usersError } = useFetch<Record<string, ClientExtended>>("users/all/?account_type=client");
+    const { data: loggedInUser, loading, error } = useFetch<UserExtended>("/users/me");
+    const { data: users, loading: usersLoading, error: usersError } = useFetch<Record<string, ClientExtended>>("/users/all?account_type=client");
     const { canManageMachine } = usePermissions();
     const [configTemplate, setConfigTemplate] = useState("custom");
 
-    const initialValues = useMemo(
-        () =>
-            ({
-                title: machine.title ?? "Unnamed Machine",
-                tags: machine?.tags ?? [],
-                description: machine.description?.trim(),
-                config: {
-                    ram: machine.ram_max,
-                    vcpu: machine.vcpu,
-                },
-                disks:
-                    machine.disks?.map?.(
-                        (disk) =>
-                            ({
-                                name: disk.name,
-                                type: disk.type,
-                                unit: "MiB",
-                                size: disk.size_bytes / (1024 * 1024),
-                            }) as MachineDiskForm,
-                    ) ?? [],
-                os_disk: 0,
-                assigned_clients: keys(machine.assigned_clients),
-                connection_protocols: keys(machine.connections)
-                    .sort((a, b) => (a === "ssh" ? 1 : b === "ssh" ? -1 : 0))
-                    .join("+"),
-            }) as MachineEditFormValues,
-        [JSON.stringify(machine)],
-    );
+    const getInitialValues = (): MachineEditFormValues => ({
+        title: machine.title ?? "Unnamed Machine",
+        tags: machine?.tags ?? [],
+        description: machine.description?.trim(),
+        config: {
+            ram: machine.ram_max,
+            vcpu: machine.vcpu,
+        },
+        disks:
+            machine.disks?.map?.(
+                (disk) =>
+                    ({
+                        name: disk.name,
+                        type: disk.type,
+                        unit: "MiB",
+                        size: disk.size_bytes / (1024 * 1024),
+                    }) as MachineDiskForm,
+            ) ?? [],
+        os_disk: 0,
+        assigned_clients: keys(machine.assigned_clients),
+        connection_protocols: keys(machine.connections)
+            .sort((a, b) => (a === "ssh" ? 1 : b === "ssh" ? -1 : 0))
+            .join("+") as MachineConnectionProtocolsFormValues,
+    });
 
     const form = useForm<MachineEditFormValues>({
-        initialValues: initialValues,
+        initialValues: getInitialValues(),
         validateInputOnChange: true,
         validate: {
             title: (val) =>
@@ -110,27 +107,30 @@ const MachineEditForm = ({ machine }: MachineEditFormProps): React.JSX.Element =
     });
 
     const reloadForm = () => {
-        form.setInitialValues(initialValues);
+        form.setInitialValues(getInitialValues());
         form.reset();
     };
 
     const submitChanges = async () => {
-        await sendRequest("PATCH", `machines/modify/${machine.uuid}`, { data: { assigned_clients: form.values.assigned_clients } });
+        const res = await sendRequest("PATCH", `machines/modify/${machine.uuid}`, { data: { assigned_clients: form.values.assigned_clients } });
+
+        if (isAxiosError(res)) return;
+
+        form.setInitialValues(form.values);
+        form.reset();
     };
 
     useEffect(() => {
         reloadForm();
     }, [machine.state]);
 
-    const addAssignedClient = (newClient: string) => {
-        form.setFieldValue("assigned_clients", (prev) => [...prev, newClient]);
-    };
+    const addAssignedClient = (newClient: string) => form.setFieldValue("assigned_clients", (prev) => [...prev, newClient]);
+    const removeAssignedClient = (uuid: string) => form.setFieldValue("assigned_clients", (prev) => prev.filter((e) => e !== uuid));
 
-    const removeMember = (uuid: string) => form.setFieldValue("assigned_clients", (prev) => prev.filter((e) => e !== uuid));
     const disabled = !machine || loading || !isNull(error) || !canManageMachine(loggedInUser, machine) || !["OFFLINE", "ERROR"].includes(machine.state);
-    const assignedClients = form.values.assigned_clients.map((uuid) => users?.[uuid]);
 
-    const assignedClientsChanged = !isEqual(sortBy(form.values.assigned_clients), sortBy(initialValues.assigned_clients));
+    const assignedClients = form.values.assigned_clients.map((uuid) => users?.[uuid]).filter((e) => !isUndefined(e));
+    const assignedClientsChanged = !isEqual(sortBy(form.values.assigned_clients), sortBy(form.getInitialValues().assigned_clients));
 
     return (
         <Tabs
@@ -223,7 +223,7 @@ const MachineEditForm = ({ machine }: MachineEditFormProps): React.JSX.Element =
 
                             <MembersTable
                                 usersData={assignedClients}
-                                removeMember={removeMember}
+                                removeMember={removeAssignedClient}
                                 error={error}
                                 loading={loading}
                             />

@@ -3,6 +3,7 @@ import MachinesTable from "../../../../components/organisms/tables/MachinesTable
 import classes from "./MachinesPage.module.css";
 import { isNull } from "lodash";
 import useMachineWebSocket from "../../../../hooks/useMachineWebSocket";
+import { AxiosError } from "axios";
 
 export interface MachinesPageProps {
     global?: boolean;
@@ -19,15 +20,15 @@ const MachinesPage = ({ global = false }: MachinesPageProps): React.JSX.Element 
 };
 
 const MachinesPageInner = ({ global = false }: MachinesPageProps): React.JSX.Element => {
-    const { machines } = useMachineWebSocket(global ? "global" : "account");
+    const { machines, loading, error } = useMachineWebSocket(global ? "global" : "account");
 
     return (
         <Stack w="100%">
             <Paper className={classes.tablePaper}>
                 <MachinesTable
                     machines={machines}
-                    loading={isNull(machines)}
-                    error={null}
+                    loading={loading}
+                    error={error ? new AxiosError("Error occurred with the WebSocket", "503") : null}
                     global={global}
                 />
             </Paper>

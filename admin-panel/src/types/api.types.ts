@@ -184,7 +184,7 @@ export type WebSocketMessageTypes =
     | "DATA_DYNAMIC_CONNECTIONS";
 
 type MachineWebSocketBodyMap = {
-    CREATE: Record<string, MachinePropertiesPayload>;
+    CREATE: MachinePropertiesPayload;
     DELETE: { uuid: string };
     DATA_STATIC: Record<string, MachinePropertiesPayload>;
     DATA_DYNAMIC: Record<string, MachineStatePayload>;

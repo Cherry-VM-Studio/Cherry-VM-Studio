@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import useApiWebSocket from "./useApiWebSocket";
-import { Machine, MachineState, MachineStatePayload, MachineWebSocketMessage } from "../types/api.types";
+import { Machine, MachinePropertiesPayload, MachineState, MachineStatePayload, MachineWebSocketMessage } from "../types/api.types";
 import { isNull, isUndefined, keys, mapValues, merge, pick } from "lodash";
+import useFetch from "./useFetch";
 
 export type MachineStateRetrievalModes = "subscribed" | "account" | "global";
 
 export interface useMachineWebSocketReturn {
     machines: Record<string, Machine>;
+    loading: boolean;
+    error: WebSocketEventMap["error"] | null;
 }
 
 /**
@@ -16,25 +19,46 @@ export interface useMachineWebSocketReturn {
  * @param {?string} [target] if mode === "subscribed"
  */
 const useMachineWebSocket = (mode: MachineStateRetrievalModes, target?: string): useMachineWebSocketReturn => {
-    const { lastJsonMessage } = useApiWebSocket(`/ws/machines/${mode}`, { machine_uuid: target });
+    const { lastJsonMessage, error, connectionStatus } = useApiWebSocket(`/ws/machines/${mode}`, { machine_uuid: target });
     const [machines, setMachines] = useState<Record<string, Machine>>(null);
+    const [loading, setLoading] = useState(true);
 
     const onNewMessage = (message: MachineWebSocketMessage | null) => {
         if (isNull(message)) return;
 
-        console.log(message);
-        if (message.type === "CREATE" || message.type === "DATA_STATIC") {
+        const generateNewMachine = (machine: MachinePropertiesPayload): Machine =>
+            ({
+                state: "FETCHING",
+                boot_timestamp: null,
+                connections: [],
+                active_connections: [],
+                ...machine,
+            }) as Machine;
+
+        if (message.type === "CREATE") {
+            const staticData = (message as MachineWebSocketMessage<"CREATE">).body;
+            return setMachines((prev) => ({ ...prev, [staticData.uuid]: generateNewMachine(staticData) }));
+        }
+
+        if (message.type === "DATA_STATIC") {
+            if (loading) setLoading(false);
+            const staticDataObject = (message as MachineWebSocketMessage<"DATA_STATIC">).body;
+
             return setMachines((prev) =>
-                mapValues(
-                    merge(prev ?? {}, (message as MachineWebSocketMessage<"DATA_STATIC" | "CREATE">).body),
-                    (machine) =>
+                [...keys(prev), ...keys(staticDataObject)].reduce(
+                    (acc, uuid: string) =>
                         ({
-                            state: "FETCHING",
-                            boot_timestamp: null,
-                            connections: [],
-                            active_connections: [],
-                            ...machine,
-                        }) as Machine,
+                            ...acc,
+                            [uuid]: {
+                                state: "FETCHING",
+                                boot_timestamp: null,
+                                connections: [],
+                                active_connections: [],
+                                ...prev?.[uuid],
+                                ...staticDataObject?.[uuid],
+                            },
+                        }) as Record<string, Machine>,
+                    {},
                 ),
             );
         }
@@ -121,6 +145,8 @@ const useMachineWebSocket = (mode: MachineStateRetrievalModes, target?: string):
 
     return {
         machines,
+        loading: loading || connectionStatus === "CONNECTING",
+        error,
     };
 };
 

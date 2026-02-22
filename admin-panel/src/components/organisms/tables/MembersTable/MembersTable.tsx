@@ -10,13 +10,14 @@ import ResourceLoading from "../../../atoms/feedback/ResourceLoading/ResourceLoa
 
 const MembersTable = ({ usersData, removeMember, error, loading }): React.JSX.Element => {
     const { t, tns } = useNamespaceTranslation("modals", "group");
+
     const data = useMemo(
         () =>
-            usersData.map(({ uuid, name, surname, username, email }) => ({
+            usersData?.map?.(({ uuid, name, surname, username, email }) => ({
                 uuid,
                 details: { name, surname, email, username },
-            })),
-        [usersData]
+            })) ?? [],
+        [usersData],
     );
 
     const columns = [
