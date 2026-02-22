@@ -16,7 +16,8 @@ def get_machine_connections_payload(machine_uuid: UUID, skip_membership_check: b
         raise HTTPException(status_code=500, detail="Requested data of a machine that is not managed by Cherry VM Studio.")
     
     return MachineConnectionsPayload(
-        active_connections= get_active_connections(machine_uuid),
+        uuid = machine_uuid,
+        active_connections = get_active_connections(machine_uuid),
     )
     
 

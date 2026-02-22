@@ -48,4 +48,5 @@ class MachineDisksPayload(BaseModel):
     
 
 class MachineConnectionsPayload(BaseModel):
+    uuid: UUID
     active_connections: list | None = None
