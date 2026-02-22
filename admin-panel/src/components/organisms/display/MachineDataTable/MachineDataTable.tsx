@@ -1,20 +1,30 @@
-import { Box, Divider, Group, Loader, ScrollArea, Stack, TextInput } from "@mantine/core";
+import { Box, Group, Loader, ScrollArea, Stack, TextInput } from "@mantine/core";
 import BadgeGroup from "../../../atoms/display/BadgeGroup/BadgeGroup";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
-import { MachineState } from "../../../../types/api.types";
+import { Machine, MachineState } from "../../../../types/api.types";
 import React from "react";
 import { chunk } from "lodash";
 import { IconCircleFilled } from "@tabler/icons-react";
 import ConnectToMachineSplitButton from "../../../atoms/interactive/ConnectToMachineSplitButton/ConnectToMachineSplitButton";
 
 export interface MachineDataTableProps {
-    machine: MachineState;
+    machine: Machine;
 }
 
 const MachineDataTable = ({ machine }: MachineDataTableProps): React.JSX.Element => {
     const { t, tns } = useNamespaceTranslation("pages", "machine");
-    const state = { fetching: machine?.active === undefined, loading: machine.loading, active: machine.active };
-    const stateColor = `var(--mantine-color-${state.fetching ? "orange-5" : state.loading ? "yellow-5" : state.active ? "suse-green-5" : "cherry-5"})`;
+
+    const colorMap: Record<MachineState, string> = {
+        FETCHING: "orange-6",
+        LOADING: "yellow-5",
+        BOOTING_UP: "yellow-5",
+        SHUTTING_DOWN: "yellow-5",
+        ACTIVE: "suse-green-5",
+        OFFLINE: "cherry-5",
+        ERROR: "cherry-11",
+    };
+
+    const stateColor = `var(--mantine-color-${colorMap[machine.state || "FETCHING"]})`;
     const chunkedActiveConnections = chunk(machine.active_connections?.length ? machine.active_connections : [null, null], 2);
 
     return (
@@ -43,7 +53,7 @@ const MachineDataTable = ({ machine }: MachineDataTableProps): React.JSX.Element
                                 },
                             }}
                             leftSection={
-                                state.fetching || state.loading ? (
+                                !["OFFLINE", "ERROR", "ACTIVE"].includes(machine.state) ? (
                                     <Loader
                                         type="bars"
                                         size="12"
@@ -56,14 +66,14 @@ const MachineDataTable = ({ machine }: MachineDataTableProps): React.JSX.Element
                                     />
                                 )
                             }
-                            value={t(state.fetching ? "fetching" : state.loading ? "loading" : state.active ? "online" : "offline")}
+                            value={t(machine.state.toLowerCase().replace("_", "-"))}
                         />
                         <TextInput
                             description={tns("machine-port")}
                             classNames={{ input: "borderless" }}
                             flex="1"
                             readOnly
-                            value={machine.active && machine.ras_port ? `${machine.ras_port}` : "-"}
+                            value={machine.state === "ACTIVE" && machine.ras_port ? `${machine.ras_port}` : "-"}
                         />
                     </Group>
 
@@ -90,10 +100,7 @@ const MachineDataTable = ({ machine }: MachineDataTableProps): React.JSX.Element
                 </Stack>
             </ScrollArea>
             <Box m="auto auto">
-                <ConnectToMachineSplitButton
-                    machine={machine}
-                    state={state}
-                />
+                <ConnectToMachineSplitButton machine={machine} />
             </Box>
         </Stack>
     );

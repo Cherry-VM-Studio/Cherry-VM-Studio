@@ -5,7 +5,6 @@ import useApi from "../../../hooks/useApi";
 import { IconUsersGroup } from "@tabler/icons-react";
 import useFetch from "../../../hooks/useFetch";
 import useErrorHandler from "../../../hooks/useErrorHandler";
-import { ErrorCallbackFunction } from "../../../types/hooks.types";
 import useMantineNotifications from "../../../hooks/useMantineNotifications";
 import UserMultiselect from "../../../components/molecules/interactive/UserMultiselect/UserMultiselect";
 import { safeObjectValues } from "../../../utils/misc";

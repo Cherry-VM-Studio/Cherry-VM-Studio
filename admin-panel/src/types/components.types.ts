@@ -59,7 +59,6 @@ export interface PopoverRadioGroupProps extends Omit<PopoverProps, "value" | "on
 }
 
 export interface MachineStateChartData {
-    cpu: number;
     ram_used: number;
     ram_max: number;
     time?: number;

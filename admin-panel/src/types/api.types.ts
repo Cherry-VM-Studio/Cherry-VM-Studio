@@ -125,43 +125,85 @@ export interface MachineDiskForm {
 
 export type MachineConnectionProtocols = "vnc" | "ssh" | "rdp";
 
-export interface MachineData {
+export interface MachinePropertiesPayload {
     uuid: string;
-    title: string;
-    tags: string[];
-    description: string;
-    owner: Administrator | null;
+    title?: string | null;
+    tags?: string[] | null;
+    description?: string | null;
+    owner?: Administrator | null;
     assigned_clients: Record<string, Client>;
-    domain: string | null;
-    ras_ip: string | null;
-    ras_port: number | null;
-    connections: {
-        vnc?: string;
-        rdp?: string;
+    ras_ip?: string | null;
+    ras_port?: number | null;
+    connections?: {
         ssh?: string;
-    };
-    disks: MachineDiskStaticData[];
+        rdp?: string;
+        vnc?: string;
+    } | null;
+    disks?: MachineDiskStaticData[] | null;
 }
 
-export interface MachineState extends MachineData {
+export interface MachineStatePayload {
+    uuid: string;
     active: boolean;
     loading: boolean;
-    active_connections?: Array<string> | null;
-    cpu?: number;
     vcpu: number;
-    ram_used?: number;
-    ram_max?: number;
-    boot_timestamp: string | null;
-    disks: MachineDiskDynamicData[];
+    ram_max?: number | null;
+    ram_used?: number | null;
+    boot_timestamp?: string | null;
 }
 
-export interface SimpleState {
-    fetching: boolean;
-    loading: boolean;
-    active: boolean;
+export interface MachineDisksPayload {
+    uuid: string;
+    disks?: MachineDiskDynamicData[] | null;
 }
 
-export type MachineAll = MachineData | MachineState;
+export interface MachineConnectionsPayload {
+    uuid: string;
+    active_connections?: string[] | null;
+}
+
+export type MachineState = "ACTIVE" | "LOADING" | "BOOTING_UP" | "ERROR" | "SHUTTING_DOWN" | "OFFLINE" | "FETCHING";
+
+export interface Machine
+    extends Omit<MachinePropertiesPayload, "disks">, Omit<MachineStatePayload, "active" | "loading">, MachineDisksPayload, MachineConnectionsPayload {
+    state: MachineState;
+}
+
+export type WebSocketMessageTypes =
+    | "CREATE"
+    | "DELETE"
+    | "BOOTUP_START"
+    | "BOOTUP_SUCCESS"
+    | "BOOTUP_FAIL"
+    | "SHUTDOWN_START"
+    | "SHUTDOWN_SUCCESS"
+    | "SHUTDOWN_FAIL"
+    | "DATA_STATIC"
+    | "DATA_DYNAMIC"
+    | "DATA_DYNAMIC_DISKS"
+    | "DATA_DYNAMIC_CONNECTIONS";
+
+type MachineWebSocketBodyMap = {
+    CREATE: Record<string, MachinePropertiesPayload>;
+    DELETE: { uuid: string };
+    DATA_STATIC: Record<string, MachinePropertiesPayload>;
+    DATA_DYNAMIC: Record<string, MachineStatePayload>;
+    DATA_DYNAMIC_DISKS: Record<string, MachineDisksPayload>;
+    DATA_DYNAMIC_CONNECTIONS: Record<string, MachineConnectionsPayload>;
+    BOOTUP_START: { uuid: string };
+    BOOTUP_SUCCESS: { uuid: string };
+    BOOTUP_FAIL: { uuid: string; error: string | null };
+    SHUTDOWN_START: { uuid: string };
+    SHUTDOWN_SUCCESS: { uuid: string };
+    SHUTDOWN_FAIL: { uuid: string; error: string | null };
+};
+
+export type MachineWebSocketMessage<T extends keyof MachineWebSocketBodyMap = keyof MachineWebSocketBodyMap> = {
+    uuid: string;
+    timestamp: string; // ISO 8601 Z
+    type: T;
+    body: MachineWebSocketBodyMap[T];
+};
 
 export interface CreateMachineBody {
     title: string;

@@ -1,32 +1,21 @@
 import { Button, Group, Paper, Stack, Title } from "@mantine/core";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 import useFetch from "../../../../hooks/useFetch";
-import { MachineData } from "../../../../types/api.types";
-import { keys } from "lodash";
-import useMachineState from "../../../../hooks/useMachineState";
+import { isNull, keys } from "lodash";
 import { useNavigate } from "react-router-dom";
 import useMantineNotifications from "../../../../hooks/useMantineNotifications";
 import { ERRORS } from "../../../../config/errors.config";
 import classes from "./MachinesOverview.module.css";
 import { IconExternalLink } from "@tabler/icons-react";
 import MachinesGrid from "../../../molecules/display/MachinesGrid/MachinesGrid";
+import useMachineWebSocket from "../../../../hooks/useMachineWebSocket";
 
 const MachinesOverview = (): React.JSX.Element => {
     const { t, tns } = useNamespaceTranslation("pages", "client-home");
 
-    const { sendErrorNotification } = useMantineNotifications();
     const navigate = useNavigate();
 
-    const { loading, error, data: machinesData, refresh } = useFetch<Record<string, MachineData>>("/machines/account");
-    const { machinesState, setMachinesState } = useMachineState("account");
-
-    if (error) {
-        sendErrorNotification(ERRORS.CVMM_600_UNKNOWN_ERROR);
-        console.error(error);
-        return null;
-    }
-
-    const machines = loading ? {} : { ...machinesData, ...machinesState };
+    const { machines } = useMachineWebSocket("account");
 
     return (
         <Stack className={classes.overviewContainer}>
@@ -56,8 +45,8 @@ const MachinesOverview = (): React.JSX.Element => {
             <Paper className={classes.overviewPaper}>
                 <MachinesGrid
                     machines={machines}
-                    error={error}
-                    loading={loading}
+                    error={null}
+                    loading={isNull(machines)}
                     rows={1}
                 />
             </Paper>

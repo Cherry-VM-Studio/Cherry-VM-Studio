@@ -5,7 +5,7 @@ import BadgeGroup from "../BadgeGroup/BadgeGroup";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 import AccountAvatarGroup from "../AccountAvatarGroup/AccountAvatarGroup";
 import { IconPlayerPlayFilled, IconPlayerStopFilled } from "@tabler/icons-react";
-import { MachineState, User, UserExtended } from "../../../../types/api.types";
+import { Machine, MachineState, User, UserExtended } from "../../../../types/api.types";
 import { values } from "lodash";
 import { getFullUserName } from "../../../../utils/users";
 import BusinessCard from "../BusinessCard/BusinessCard";
@@ -17,7 +17,7 @@ import MachineActivityIndicator from "../../feedback/MachineActivityIndicator/Ma
 import { useThrottledCallback } from "@mantine/hooks";
 
 interface MachineCardProps extends CardProps {
-    machine: MachineState;
+    machine: Machine;
 }
 
 const MachineCard = ({ machine, className, ...props }: MachineCardProps): React.JSX.Element => {
@@ -26,21 +26,30 @@ const MachineCard = ({ machine, className, ...props }: MachineCardProps): React.
     const { canManageMachine, canConnectToMachine } = usePermissions();
     const { sendRequest } = useApi();
 
-    const state = { fetching: machine?.active === undefined, loading: machine.loading, active: machine.active };
-    const stateColor = `var(--mantine-color-${state.fetching ? "orange-5" : state.loading ? "yellow-5" : state.active ? "suse-green-5" : "cherry-5"})`;
+    const colorMap: Record<MachineState, string> = {
+        FETCHING: "orange.5",
+        LOADING: "yellow.5",
+        BOOTING_UP: "yellow.5",
+        SHUTTING_DOWN: "yellow.5",
+        ACTIVE: "suse-green.5",
+        OFFLINE: "cherry.5",
+        ERROR: "cherry.11",
+    };
+
+    const stateColor = `var(--mantine-color-${colorMap[machine.state]})`;
 
     const canConnect = canConnectToMachine(user, machine);
 
     const toggleState = useThrottledCallback(() => {
-        if (state.active) sendRequest("POST", `/machines/stop/${machine.uuid}`);
-        else sendRequest("POST", `/machines/start/${machine.uuid}`);
+        if (machine.state === "ACTIVE") sendRequest("POST", `/machines/stop/${machine.uuid}`);
+        else if (machine.state === "OFFLINE" || machine.state === "ERROR") sendRequest("POST", `/machines/start/${machine.uuid}`);
     }, 2000);
 
     return (
         <Card className={cs(classes.card, className)}>
             <Card.Section className={classes.topSection}>
                 <Group className={classes.topSectionGroup}>
-                    <MachineActivityIndicator state={state} />
+                    <MachineActivityIndicator state={machine.state} />
                     <Stack className={classes.titleStack}>
                         <Text
                             tt="capitalize"
@@ -55,7 +64,7 @@ const MachineCard = ({ machine, className, ...props }: MachineCardProps): React.
                             c={stateColor}
                             pl="2"
                         >
-                            {t(state.fetching ? "fetching" : state.loading ? "loading" : state.active ? "online" : "offline")}
+                            {t(machine.state.toLowerCase().replace("_", "-"))}
                         </Text>
                     </Stack>
                     <BadgeGroup
@@ -161,18 +170,15 @@ const MachineCard = ({ machine, className, ...props }: MachineCardProps): React.
                 wrap="nowrap"
             >
                 <Box w="36" />
-                <ConnectToMachineSplitButton
-                    machine={machine}
-                    state={state}
-                />
+                <ConnectToMachineSplitButton machine={machine} />
                 <ActionIcon
                     variant="light"
                     size="36"
-                    color={state.active ? "red.9" : "suse-green.6"}
-                    disabled={!canConnect || state.fetching || state.loading}
+                    color={machine.state === "ACTIVE" ? "red.9" : "suse-green.6"}
+                    disabled={!canConnect || !["ACTIVE", "OFFLINE", "ERROR"].includes(machine.state)}
                     onClick={toggleState}
                 >
-                    {state.fetching || state.loading || !state.active ? <IconPlayerPlayFilled size={22} /> : <IconPlayerStopFilled size={22} />}
+                    {machine.state === "ACTIVE" ? <IconPlayerStopFilled size={22} /> : <IconPlayerPlayFilled size={22} />}
                 </ActionIcon>
             </Group>
         </Card>

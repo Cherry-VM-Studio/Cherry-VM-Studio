@@ -1,7 +1,7 @@
 import { Button, Fieldset, Stack, Tabs } from "@mantine/core";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 import { IconCheck, IconDeviceDesktopCog, IconDeviceFloppy, IconListDetails, IconUsers } from "@tabler/icons-react";
-import { ClientExtended, MachineDiskForm, MachineState, SimpleState, UserExtended } from "../../../../types/api.types";
+import { ClientExtended, Machine, MachineDiskForm, UserExtended } from "../../../../types/api.types";
 import { useForm } from "@mantine/form";
 import MembersTable from "../../tables/MembersTable/MembersTable";
 import useFetch from "../../../../hooks/useFetch";
@@ -30,19 +30,16 @@ export interface MachineEditFormValues {
 }
 
 export interface MachineEditFormProps {
-    machine: MachineState;
-    refresh: () => void;
+    machine: Machine;
 }
 
-const MachineEditForm = ({ machine, refresh }: MachineEditFormProps): React.JSX.Element => {
+const MachineEditForm = ({ machine }: MachineEditFormProps): React.JSX.Element => {
     const { t, tns } = useNamespaceTranslation("pages", "machine");
     const { sendRequest } = useApi();
     const { data: loggedInUser, loading, error } = useFetch<UserExtended>("/user/me");
     const { data: users, loading: usersLoading, error: usersError } = useFetch<Record<string, ClientExtended>>("users/all/?account_type=client");
     const { canManageMachine } = usePermissions();
     const [configTemplate, setConfigTemplate] = useState("custom");
-
-    const state: SimpleState = { fetching: machine?.active === undefined, loading: machine?.loading, active: machine?.active };
 
     const initialValues = useMemo(
         () =>
@@ -123,14 +120,14 @@ const MachineEditForm = ({ machine, refresh }: MachineEditFormProps): React.JSX.
 
     useEffect(() => {
         reloadForm();
-    }, [state.fetching]);
+    }, [machine.state]);
 
     const addAssignedClient = (newClient: string) => {
         form.setFieldValue("assigned_clients", (prev) => [...prev, newClient]);
     };
 
     const removeMember = (uuid: string) => form.setFieldValue("assigned_clients", (prev) => prev.filter((e) => e !== uuid));
-    const disabled = !machine || loading || !isNull(error) || !canManageMachine(loggedInUser, machine) || state?.fetching || state?.loading || state.active;
+    const disabled = !machine || loading || !isNull(error) || !canManageMachine(loggedInUser, machine) || !["OFFLINE", "ERROR"].includes(machine.state);
     const assignedClients = form.values.assigned_clients.map((uuid) => users?.[uuid]);
 
     const assignedClientsChanged = !isEqual(sortBy(form.values.assigned_clients), sortBy(initialValues.assigned_clients));

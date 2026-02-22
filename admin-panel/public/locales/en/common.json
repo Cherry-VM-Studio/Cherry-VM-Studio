@@ -81,5 +81,9 @@
     "change-language": "Change language",
     "save-changes": "Save changes",
     "show-more": "Show more",
-    "hide": "Hide"
+    "hide": "Hide",
+    "shutting-down": "Shutting down",
+    "booting-up": "Booting up",
+    "error": "Error",
+    "active": "Active"
 }

@@ -1,7 +1,7 @@
 import { ActionIcon, Group, MantineSize } from "@mantine/core";
 import { IconPlayerPlayFilled, IconPlayerStopFilled } from "@tabler/icons-react";
 import React from "react";
-import { MachineData, MachineState, SimpleState, UserExtended } from "../../../../types/api.types";
+import { Machine, UserExtended } from "../../../../types/api.types";
 import useApi from "../../../../hooks/useApi";
 import useFetch from "../../../../hooks/useFetch";
 import { usePermissions } from "../../../../contexts/PermissionsContext";
@@ -10,16 +10,15 @@ import { MantineActionIconAllProps } from "../../../../types/mantine.types";
 import { useThrottledCallback } from "@mantine/hooks";
 
 export interface MachineControlsProps {
-    machine: MachineData | MachineState;
-    state: SimpleState;
+    machine: Machine;
     size?: MantineSize | number | string;
     gap?: MantineSize | number | string;
     buttonProps?: MantineActionIconAllProps;
 }
 
-const MachineControls = ({ machine, state, size = "lg", gap = "sm", buttonProps }: MachineControlsProps): React.JSX.Element => {
+const MachineControls = ({ machine, size = "lg", gap = "sm", buttonProps }: MachineControlsProps): React.JSX.Element => {
     const { sendRequest } = useApi();
-    const { data: user, loading, error } = useFetch<UserExtended>("/user/me");
+    const { data: user, loading, error } = useFetch<UserExtended>("/users/me");
     const { canManageMachine } = usePermissions();
 
     const startMachine = useThrottledCallback(() => {
@@ -30,7 +29,7 @@ const MachineControls = ({ machine, state, size = "lg", gap = "sm", buttonProps 
         sendRequest("POST", `/machines/stop/${machine.uuid}`);
     }, 2000);
 
-    const disable = !machine || loading || !isNull(error) || !canManageMachine(user, machine) || state?.fetching || state?.loading;
+    const disable = isNull(machine) || loading || !isNull(error) || !canManageMachine(user, machine) || !["ACTIVE", "OFFLINE", "ERROR"].includes(machine.state);
 
     return (
         <Group
@@ -42,7 +41,7 @@ const MachineControls = ({ machine, state, size = "lg", gap = "sm", buttonProps 
                 size={size}
                 color="suse-green.9"
                 {...buttonProps}
-                disabled={disable || state?.active}
+                disabled={disable || machine.state === "ACTIVE"}
                 onClick={startMachine}
             >
                 <IconPlayerPlayFilled size={"28"} />
@@ -52,7 +51,7 @@ const MachineControls = ({ machine, state, size = "lg", gap = "sm", buttonProps 
                 size={size}
                 color="red.9"
                 {...buttonProps}
-                disabled={disable || !state?.active}
+                disabled={disable || ["OFFLINE", "ERROR"].includes(machine.state)}
                 onClick={stopMachine}
             >
                 <IconPlayerStopFilled size={"28"} />

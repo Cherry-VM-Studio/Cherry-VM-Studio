@@ -2,30 +2,26 @@ import { ActionIcon, Group } from "@mantine/core";
 import { IconPlayerPlayFilled, IconPlayerStopFilled, IconTrashXFilled } from "@tabler/icons-react";
 import React, { MouseEvent } from "react";
 import useApi from "../../../hooks/useApi";
-import { SimpleState } from "../../../types/api.types";
 import classes from "./MachineControlsCell.module.css";
 import { useThrottledCallback } from "@mantine/hooks";
 import ModalButton from "../interactive/ModalButton/ModalButton";
 import DeleteModal from "../../../modals/base/DeleteModal/DeleteModal";
+import { MachineState } from "../../../types/api.types";
 
 export interface MachineControlsCellProps {
     uuid: string;
-    state: SimpleState;
+    state: MachineState;
     disabled: boolean;
-    onStateToggle?: () => void;
-    onRemove?: (uuid: string) => void;
 }
 
-const MachineControlsCell = ({ uuid, state, disabled = false, onStateToggle, onRemove }: MachineControlsCellProps): React.JSX.Element => {
+const MachineControlsCell = ({ uuid, state, disabled = false }: MachineControlsCellProps): React.JSX.Element => {
     const { sendRequest } = useApi();
 
     const toggleState = useThrottledCallback((e) => {
         e.preventDefault();
 
-        if (state.active) sendRequest("POST", `/machines/stop/${uuid}`);
-        else sendRequest("POST", `/machines/start/${uuid}`);
-
-        onStateToggle();
+        if (state === "ACTIVE") sendRequest("POST", `/machines/stop/${uuid}`);
+        else if (state === "OFFLINE" || state === "ERROR") sendRequest("POST", `/machines/start/${uuid}`);
     }, 2000);
 
     return (
@@ -49,11 +45,11 @@ const MachineControlsCell = ({ uuid, state, disabled = false, onStateToggle, onR
             <ActionIcon
                 variant="light"
                 size="36"
-                color={state.active ? "red.9" : "suse-green.6"}
-                disabled={disabled || state.fetching || state.loading}
+                color={state === "ACTIVE" ? "red.9" : "suse-green.6"}
+                disabled={disabled || !["ACTIVE", "OFFLINE", "ERROR"].includes(state)}
                 onClick={toggleState}
             >
-                {state.fetching || state.loading || !state.active ? <IconPlayerPlayFilled size={22} /> : <IconPlayerStopFilled size={22} />}
+                {state === "ACTIVE" ? <IconPlayerStopFilled size={22} /> : <IconPlayerPlayFilled size={22} />}
             </ActionIcon>
             <ModalButton
                 ButtonComponent={ActionIcon}
@@ -61,7 +57,7 @@ const MachineControlsCell = ({ uuid, state, disabled = false, onStateToggle, onR
                     variant: "light",
                     size: "36",
                     color: "red.9",
-                    disabled: disabled || state.fetching || state?.loading || state?.active,
+                    disabled: disabled || state !== "OFFLINE",
                     className: classes.button,
                 }}
                 ModalComponent={DeleteModal}
@@ -69,7 +65,6 @@ const MachineControlsCell = ({ uuid, state, disabled = false, onStateToggle, onR
                     path: "/machines/delete",
                     uuids: [uuid],
                     i18nextPrefix: "confirm.machine-removal",
-                    onSubmit: () => onRemove(uuid),
                 }}
             >
                 <IconTrashXFilled size={"24"} />

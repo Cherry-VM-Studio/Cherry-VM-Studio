@@ -3,19 +3,17 @@ import React from "react";
 import MachineControls from "../../../atoms/interactive/MachineControls/MachineControls";
 import classes from "./MachineHeading.module.css";
 import MachineActivityIndicator from "../../../atoms/feedback/MachineActivityIndicator/MachineActivityIndicator";
-import { MachineState } from "../../../../types/api.types";
+import { Machine } from "../../../../types/api.types";
 
 export interface MachineHeadingProps {
-    machine: MachineState;
+    machine: Machine;
 }
 
 const MachineHeading = ({ machine }: MachineHeadingProps): React.JSX.Element => {
-    const state = { fetching: machine?.active === undefined, loading: machine.loading, active: machine.active };
-
     return (
         <Group className={classes.container}>
             <Group className={classes.leftGroup}>
-                <MachineActivityIndicator state={state} />
+                <MachineActivityIndicator state={machine.state} />
                 <Title
                     order={2}
                     className={classes.title}
@@ -24,10 +22,7 @@ const MachineHeading = ({ machine }: MachineHeadingProps): React.JSX.Element => 
                 </Title>
             </Group>
 
-            <MachineControls
-                machine={machine}
-                state={state}
-            />
+            <MachineControls machine={machine} />
         </Group>
     );
 };

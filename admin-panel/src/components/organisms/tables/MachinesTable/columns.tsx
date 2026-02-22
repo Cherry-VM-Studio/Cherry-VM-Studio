@@ -10,7 +10,7 @@ import MachineAssignedUserCell, {
 import CheckboxHeader from "../../../atoms/table/CheckboxHeader";
 import CheckboxCell from "../../../atoms/table/CheckboxCell";
 
-export const getColumns = (global: boolean, viewMode: boolean, onRemove: (uuid: string) => void) =>
+export const getColumns = (global: boolean, viewMode: boolean) =>
     [
         // {
         //     accessorKey: "selection",
@@ -36,7 +36,7 @@ export const getColumns = (global: boolean, viewMode: boolean, onRemove: (uuid: 
             header: t("machines.table.headers.state", { ns: "pages" }),
             cell: MachineStateCell,
             minSize: 100,
-            maxSize: 180,
+            maxSize: 230,
             sortingFn: machineStateCellSoringFn,
         },
         !global && {
@@ -78,7 +78,6 @@ export const getColumns = (global: boolean, viewMode: boolean, onRemove: (uuid: 
             cell: ({ getValue, row }) => (
                 <MachineControlsCell
                     disabled={viewMode}
-                    onRemove={onRemove}
                     {...getValue()}
                 />
             ),

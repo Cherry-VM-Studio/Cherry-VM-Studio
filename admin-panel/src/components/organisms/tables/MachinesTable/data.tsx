@@ -1,18 +1,15 @@
 import { values } from "lodash";
-import { MachineState } from "../../../../types/api.types";
+import { Machine } from "../../../../types/api.types";
 
-export const parseData = (machines: Record<string, MachineState>) =>
+export const parseData = (machines: Record<string, Machine>) =>
     values(machines).map((machine) => {
-        const state = { fetching: machine.active === undefined, loading: machine.loading, active: machine.active };
-
         return {
             uuid: machine.uuid,
-            details: { name: machine.title, state, tags: machine.tags },
-            state: state,
-            cpu: machine.cpu,
+            details: { name: machine.title, state: machine.state, tags: machine.tags },
+            state: { state: machine.state, bootTimestamp: machine.boot_timestamp },
             ram: Math.round((machine.ram_used / machine.ram_max) * 100),
             owner: [machine.owner],
             clients: values(machine.assigned_clients),
-            options: { state, uuid: machine.uuid },
+            options: { state: machine.state, uuid: machine.uuid },
         };
     });

@@ -2,10 +2,9 @@ import React from "react";
 import ConfirmationModal from "../../base/ConfirmationModal/ConfirmationModal";
 import useApi from "../../../hooks/useApi";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
-import { ErrorCallbackFunction } from "../../../types/hooks.types";
 import useMantineNotifications from "../../../hooks/useMantineNotifications";
 import useErrorHandler from "../../../hooks/useErrorHandler";
-import { ERRORS, ERRORS_EXPANDED } from "../../../config/errors.config";
+import { ERRORS_EXPANDED } from "../../../config/errors.config";
 import { AxiosError } from "axios";
 
 const DeleteAccountsModal = ({ opened, onClose, onSubmit = () => undefined, uuids }): React.JSX.Element => {

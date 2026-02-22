@@ -1,27 +1,43 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
-import { v4 as uuidv4 } from "uuid";
-import { useApiWebSocketReturn } from "../types/hooks.types.ts";
 import urlConfig from "../config/url.config.ts";
 import { useAuthentication } from "../contexts/AuthenticationContext.tsx";
 import { validPath } from "../utils/path.ts";
 import useApi from "./useApi.ts";
-import { isEmpty } from "lodash";
 
-const useApiWebSocket = (path: string): useApiWebSocketReturn => {
+export interface useApiWebSocketReturn {
+    setUrl: (path: string, params?: Record<string, string>) => void;
+    lastJsonMessage: any | null;
+    connectionStatus: string;
+}
+
+const useApiWebSocket = (path: string, params: Record<string, string> = {}): useApiWebSocketReturn => {
     const { tokens } = useAuthentication();
     const { refreshTokens } = useApi();
+    const lastReconnectRef = useRef<number | null>(null);
 
     const API_WEBSOCKET_URL: string = urlConfig.api_websockets;
-    const getUrl = (path: string) => `${API_WEBSOCKET_URL}${validPath(path)}?access_token=${tokens.access_token}`;
 
-    const [socketUrl, setSocketUrl] = useState(getUrl(path));
-    const setUrl = (path: string) => setSocketUrl(getUrl(path));
+    const buildQuery = (params: Record<string, string>) => {
+        const searchParams = new URLSearchParams(params);
+        searchParams.set("access_token", tokens.access_token);
+        return searchParams.toString();
+    };
 
-    const { sendJsonMessage, lastJsonMessage, readyState } = useWebSocket(socketUrl, {
+    const getUrl = (path: string, params: Record<string, string> = {}) => `${API_WEBSOCKET_URL}${validPath(path)}?${buildQuery(params)}`;
+
+    const [socketUrl, setSocketUrl] = useState(getUrl(path, params));
+
+    const setUrl = (path: string, params: Record<string, string> = {}) => setSocketUrl(getUrl(path, params));
+
+    const { lastJsonMessage, readyState } = useWebSocket(socketUrl, {
         shouldReconnect: (event) => {
-            if (event.code !== 4401) return false;
+            const now = Date.now();
 
+            if (event.code !== 4401) return false;
+            if (lastReconnectRef.current && now - lastReconnectRef.current < 30_000) return false;
+
+            lastReconnectRef.current = now;
             refreshTokens();
             return true;
         },
@@ -35,18 +51,9 @@ const useApiWebSocket = (path: string): useApiWebSocketReturn => {
         [ReadyState.UNINSTANTIATED]: "UNINSTANTIATED",
     }[readyState];
 
-    const sendCommand = (method: string, data: object): void =>
-        sendJsonMessage({
-            method: method,
-            uuid: uuidv4(),
-            access_token: tokens.access_token,
-            ...data,
-        });
-
     return {
         setUrl,
         lastJsonMessage,
-        sendCommand,
         connectionStatus,
     };
 };

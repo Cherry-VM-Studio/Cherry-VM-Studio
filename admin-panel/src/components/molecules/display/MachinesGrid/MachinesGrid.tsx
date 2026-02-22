@@ -1,9 +1,9 @@
-import { Group, Indicator, Loader, ScrollArea, SimpleGrid, Stack, Text } from "@mantine/core";
+import { ScrollArea, SimpleGrid } from "@mantine/core";
 import { useElementSize } from "@mantine/hooks";
 import { keys, round, values } from "lodash";
 import classes from "./MachinesGrid.module.css";
 import MachineCard from "../../../atoms/display/MachineCard/MachineCard";
-import { MachineState } from "../../../../types/api.types";
+import { Machine } from "../../../../types/api.types";
 import { AxiosError } from "axios";
 import { useTranslation } from "react-i18next";
 import { IconDeviceDesktop } from "@tabler/icons-react";
@@ -11,7 +11,7 @@ import ResourceLoading from "../../../atoms/feedback/ResourceLoading/ResourceLoa
 import ResourceError from "../../../atoms/feedback/ResourceError/ResourceError";
 
 export interface MachinesGridProps {
-    machines: Record<string, MachineState>;
+    machines: Record<string, Machine>;
     loading: boolean;
     error: AxiosError | null;
     rows?: number;

@@ -1,17 +1,15 @@
 import { Avatar, Button, Group, Modal, PasswordInput, rem, Select, SimpleGrid, Stack, TextInput } from "@mantine/core";
 import classes from "./CreateAccountModal.module.css";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
-import { hasLength, isEmail, matchesField, useForm } from "@mantine/form";
+import { hasLength, matchesField, useForm } from "@mantine/form";
 import { useState } from "react";
 import PasswordInputWithStrength from "../../../components/molecules/interactive/PasswordInputWithStrength/PasswordInputWithStrength";
 import useApi from "../../../hooks/useApi";
-import { ErrorCallbackFunction } from "../../../types/hooks.types";
 import useErrorHandler from "../../../hooks/useErrorHandler";
 import useMantineNotifications from "../../../hooks/useMantineNotifications";
 import RoleMultiselect from "../../../components/atoms/interactive/RoleMultiselect/RoleMultiselect";
 import GroupMultiselect from "../../../components/atoms/interactive/GroupMultiselect/GroupMultiselect";
 import { AxiosError, isAxiosError } from "axios";
-import { isEmpty } from "lodash";
 
 export default function CreateAccountModal({ opened, onClose, onSubmit, accountType }): React.JSX.Element {
     const [fullName, setFullName] = useState("");
@@ -47,7 +45,7 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
                           : val.length > 24
                             ? tns("validation.username-too-long")
                             : null,
-            email: (val) => (val.length && !(/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,})+$/.test(val)) ? tns("validation.email-invalid") : null),
+            email: (val) => (val.length && !/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,})+$/.test(val) ? tns("validation.email-invalid") : null),
             password: (val) =>
                 val.length < 10
                     ? tns("validation.password-too-short")

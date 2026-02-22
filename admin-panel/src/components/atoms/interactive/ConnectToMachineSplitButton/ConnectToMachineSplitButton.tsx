@@ -3,21 +3,20 @@ import SplitButton, { SplitButtonProps } from "../SplitButton/SplitButton";
 import classes from "./ConnectToMachineSplitButton.module.css";
 import { useTranslation } from "react-i18next";
 import { usePermissions } from "../../../../contexts/PermissionsContext";
-import { MachineConnectionProtocols, MachineData, SimpleState, UserExtended } from "../../../../types/api.types";
+import { Machine, MachineConnectionProtocols, UserExtended } from "../../../../types/api.types";
 import useFetch from "../../../../hooks/useFetch";
 import { keys, merge } from "lodash";
 
 export interface ConnectToMachineSplitButtonProps extends SplitButtonProps {
-    machine: MachineData;
-    state: SimpleState;
+    machine: Machine;
 }
 
-const ConnectToMachineSplitButton = ({ machine, state, ...props }: ConnectToMachineSplitButtonProps): React.JSX.Element => {
+const ConnectToMachineSplitButton = ({ machine, ...props }: ConnectToMachineSplitButtonProps): React.JSX.Element => {
     const { t } = useTranslation();
     const { data: user } = useFetch<UserExtended>("/users/me");
     const { canConnectToMachine } = usePermissions();
 
-    const canConnect = canConnectToMachine(user, machine) && !state.fetching && !state.loading && state.active;
+    const canConnect = canConnectToMachine(user, machine) && machine.state === "ACTIVE";
 
     const connectionKeys = keys(machine.connections).sort((a, b) => (a === "ssh" ? 1 : b === "ssh" ? -1 : 0)) as MachineConnectionProtocols[];
     const mainKey = connectionKeys.shift() as MachineConnectionProtocols;

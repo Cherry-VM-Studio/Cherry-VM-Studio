@@ -28,7 +28,7 @@ export interface TanstackTableProps {
     headingProps: Omit<TableStateHeadingProps, "table" | "loading">;
     controlsProps: Omit<TableControlsProps, "table" | "onFilteringChange">;
     RowComponent?: React.ComponentType<any>;
-    refresh: () => void;
+    refresh?: () => void;
     rowProps?: (uuid: string) => Record<string, any>;
     alternativeLayouts?: TanstackTableLayout[];
 }
@@ -104,7 +104,7 @@ const TanstackTable = ({
                         {...controlsProps}
                         modals={merge(
                             controlsProps.modals,
-                            controlsProps.modals?.delete && { delete: { props: { uuids: selectedUuids, onSubmit: onDelete } } }
+                            controlsProps.modals?.delete && { delete: { props: { uuids: selectedUuids, onSubmit: onDelete } } },
                         )}
                     />
                 </Group>

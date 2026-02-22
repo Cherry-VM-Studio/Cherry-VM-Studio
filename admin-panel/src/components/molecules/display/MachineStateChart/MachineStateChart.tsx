@@ -1,23 +1,18 @@
 import { Group, SegmentedControl, Stack } from "@mantine/core";
 import { AreaChart } from "@mantine/charts";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getCurrentTime } from "../../../../utils/misc";
 import { useTranslation } from "react-i18next";
-import { MachineState } from "../../../../types/api.types";
+import { Machine, MachineState } from "../../../../types/api.types";
 import { MachineStateChartData } from "../../../../types/components.types";
 
 const getLabel = (resource: string, t: Function) => (t ? t("machine.graph.resource-used", { resource: resource, ns: "pages" }) : null);
 
-const getChartProps = (currentState: MachineState | undefined, t: Function) =>
-    currentState
+const getChartProps = (machine: Machine | undefined, t: Function) =>
+    machine
         ? {
-              CPU: {
-                  yAxisProps: { domain: [0, 100], width: 80 },
-                  series: [{ name: "cpu", color: "indigo.6", label: getLabel("CPU", t) }],
-                  unit: "%",
-              },
               RAM: {
-                  yAxisProps: { domain: [0, currentState.ram_max || 1024], tickCount: 12, width: 80 },
+                  yAxisProps: { domain: [0, machine.ram_max || 1024], tickCount: 12, width: 80 },
                   series: [{ name: "ram_used", color: "teal.6", label: getLabel("RAM", t) }],
                   unit: " MB",
               },
@@ -34,7 +29,7 @@ const TIME_PERIODS = [
 const MAX_KEEP_TIME = parseInt(TIME_PERIODS[TIME_PERIODS.length - 1].value);
 
 export interface MachineStateChartProps {
-    machine: MachineState;
+    machine: Machine;
 }
 
 const MachineStateChart = ({ machine }: MachineStateChartProps) => {
@@ -45,7 +40,7 @@ const MachineStateChart = ({ machine }: MachineStateChartProps) => {
 
     useEffect(() => {
         const time = getCurrentTime();
-        const newChartData: MachineStateChartData = (({ cpu, ram_used, ram_max }) => ({ cpu, ram_used, ram_max }))(machine);
+        const newChartData: MachineStateChartData = (({ ram_used, ram_max }) => ({ ram_used, ram_max }))(machine);
 
         setChartData((pastData) => [...pastData, { time: time, ...newChartData }].slice(-MAX_KEEP_TIME));
     }, [machine]);

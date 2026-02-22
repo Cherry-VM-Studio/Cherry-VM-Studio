@@ -7,46 +7,42 @@ import TanstackTable from "../../../molecules/display/TanstackTable/TanstackTabl
 import CreateMachineSplitButton from "../../../molecules/interactive/CreateMachineSplitButton/CreateMachineSplitButton";
 import { getColumns } from "./columns";
 import { parseData } from "./data";
-import { IconLayoutGrid } from "@tabler/icons-react";
-import MachinesGrid from "../../../molecules/display/MachinesGrid/MachinesGrid";
-import { MachineState, SimpleState, User } from "../../../../types/api.types";
+import { Machine, MachineState, User } from "../../../../types/api.types";
 import { AxiosError } from "axios";
 
 export interface MachinesTableDataRow {
     uuid: string;
     details: {
         name: string;
-        state: SimpleState;
+        state: MachineState;
         tags: string[];
     };
-    state: SimpleState;
+    state: MachineState;
     cpu: number;
     ram: number;
     owner: User[];
     clients: User[];
     options: {
-        state: SimpleState;
+        state: MachineState;
         uuid: string;
     };
 }
 
 export interface MachinesTableProps {
-    machines: Record<string, MachineState>;
+    machines: Record<string, Machine>;
     loading: boolean;
     error: AxiosError | null;
-    refresh: () => void;
     global: boolean;
-    onRemove: (uuid: string) => void;
 }
 
-const MachinesTable = ({ machines, loading, refresh, error, global, onRemove }: MachinesTableProps): React.JSX.Element => {
+const MachinesTable = ({ machines, loading, error, global }: MachinesTableProps): React.JSX.Element => {
     const { t, tns } = useNamespaceTranslation("pages", "machines.controls.");
     const { hasPermissions } = usePermissions();
 
     const viewMode = global && !hasPermissions(PERMISSIONS.MANAGE_ALL_VMS);
 
     const data = useMemo(() => parseData(machines), [global, machines, viewMode]);
-    const columns = useMemo(() => getColumns(global, viewMode, onRemove), [global, viewMode]);
+    const columns = useMemo(() => getColumns(global, viewMode), [global, viewMode]);
 
     return (
         <>
@@ -54,7 +50,6 @@ const MachinesTable = ({ machines, loading, refresh, error, global, onRemove }: 
                 data={data}
                 columns={columns}
                 loading={loading}
-                refresh={refresh}
                 error={error}
                 headingProps={{
                     translations: {
@@ -80,7 +75,6 @@ const MachinesTable = ({ machines, loading, refresh, error, global, onRemove }: 
                                   children: <>{tns("create-machine")}</>,
                                   props: {
                                       disabled: viewMode,
-                                      onSubmit: refresh,
                                   },
                               },
                           ]
