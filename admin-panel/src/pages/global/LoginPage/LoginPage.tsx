@@ -26,7 +26,7 @@ export default function LoginPage() {
     });
 
     const onSubmit = form.onSubmit(async (values: TokenRequestForm) => {
-        const jsonResponse = await sendRequest("POST", "/auth/token", {
+        const jsonResponse = await sendRequest("POST", "/token", {
             data: new URLSearchParams({
                 username: values.username,
                 password: values.password,

@@ -31,7 +31,7 @@ export const useApi = (): useApiReturn => {
 
     const refreshTokens = async (): Promise<Tokens> => {
         return await axios
-            .get(getPath("/auth/refresh"), {
+            .get(getPath("/refresh"), {
                 headers: refreshHeaders,
             })
             .then((response) => {
