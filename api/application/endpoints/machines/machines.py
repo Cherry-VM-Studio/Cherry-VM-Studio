@@ -1,7 +1,7 @@
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
 from config.permissions_config import PERMISSIONS
-from modules.machine_state.queries import check_machine_access, check_machine_ownership, get_machine_connections
+from modules.machine_state.queries import check_machine_access, check_machine_ownership, get_machine_connections, check_machine_existence
 from modules.machine_state.data_payloads.static_properties_payload import get_all_machine_properties_payloads, get_machine_properties_payload, get_user_machine_properties_payloads
 from modules.machine_state.models import MachinePropertiesPayload
 from modules.machine_state.state_management import start_machine, stop_machine
@@ -144,9 +144,7 @@ async def __async_create_machine_for_group__(machines: List[MachineBulkSpec], cu
 
 @router.delete("/delete/{uuid}", response_model=None, tags=['Machine Management'])
 async def __delete_machine_async__(uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> None:
-    machine = get_machine_properties_payload(uuid)
-    
-    if not machine:
+    if not check_machine_existence(uuid):
         raise HTTPException(404, f"Virtual machine {uuid} could not be found.")
     
     if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS) and not check_machine_ownership(uuid, current_user):
@@ -160,9 +158,7 @@ async def __delete_machine_async__(uuid: UUID, current_user: DependsOnAdministra
     
 @router.patch("/modify/{uuid}", response_model=None, tags=['Machine Management'])
 async def __modify_machine__(uuid: UUID, body: ModifyMachineForm, current_user: DependsOnAdministrativeAuthentication):
-    machine = get_machine_properties_payload(uuid)
-    
-    if not machine:
+    if not check_machine_existence(uuid):
         raise HTTPException(404, f"Virtual machine of UUID={uuid} could not be found.")
     
     if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS) and not check_machine_access(uuid, current_user):

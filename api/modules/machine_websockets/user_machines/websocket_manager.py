@@ -129,10 +129,15 @@ class UserMachinesWebsocketManager:
         
     """ Sends deletion message on relevant machine deletion. """
     def on_machine_delete(self, machine_uuid: UUID):
+        logger.info(f"on_machine_delete called for {machine_uuid}")
         user_uuids = get_machine_linked_account_uuids(machine_uuid)
+        logger.info(f"Found user UUIDs: {user_uuids}")
+        
         websockets = self.subscription_manager.get_websockets_for_users(user_uuids)
+        logger.info(f"Found {len(websockets)} websockets")
         
         for websocket in websockets:
+            logger.info(f"Sending delete message to websocket {id(websocket)}")
             asyncio.create_task(machine_websocket_messanger.send_delete(websocket, machine_uuid))
        
     """ Sends updated machine properties (static data) to all websockets subscribed to a relevant account. """
