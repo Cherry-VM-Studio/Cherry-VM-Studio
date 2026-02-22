@@ -36,9 +36,9 @@ class MainMachineWebsocketManager:
         self._user_machines_websocket_manager.on_machine_create(machine_uuid)
         self._all_machines_websocket_manager.on_machine_create(machine_uuid)
         
-    def on_machine_delete(self, machine_uuid: UUID):
+    def on_machine_delete(self, machine_uuid: UUID, machine_linked_account_uuids: list[UUID]):
         self._subscribed_machine_websocket_manager.on_machine_delete(machine_uuid)
-        self._user_machines_websocket_manager.on_machine_delete(machine_uuid)
+        self._user_machines_websocket_manager.on_machine_delete(machine_uuid, machine_linked_account_uuids)
         self._all_machines_websocket_manager.on_machine_delete(machine_uuid)
         
     def on_machine_modify(self, machine_uuid: UUID):

@@ -1,7 +1,7 @@
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
 from config.permissions_config import PERMISSIONS
-from modules.machine_state.queries import check_machine_access, check_machine_ownership, get_machine_connections, check_machine_existence
+from modules.machine_state.queries import check_machine_access, check_machine_ownership, get_machine_connections, check_machine_existence, get_machine_linked_account_uuids
 from modules.machine_state.data_payloads.static_properties_payload import get_all_machine_properties_payloads, get_machine_properties_payload, get_user_machine_properties_payloads
 from modules.machine_state.models import MachinePropertiesPayload
 from modules.machine_state.state_management import start_machine, stop_machine
@@ -150,10 +150,12 @@ async def __delete_machine_async__(uuid: UUID, current_user: DependsOnAdministra
     if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS) and not check_machine_ownership(uuid, current_user):
         raise HTTPException(403, "You do not have the permissions necessary to manage this resource.")
     
+    linked_account_uuids = get_machine_linked_account_uuids(uuid)
+    
     if not await delete_machine_async(uuid):
         raise HTTPException(500, f"Failed to delete machine {uuid}.")
     
-    main_machine_websocket_manager.on_machine_delete(uuid)
+    main_machine_websocket_manager.on_machine_delete(uuid, linked_account_uuids)
     
     
 @router.patch("/modify/{uuid}", response_model=None, tags=['Machine Management'])
