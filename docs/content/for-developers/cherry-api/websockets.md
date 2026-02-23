@@ -9,7 +9,7 @@ WebSockets are a crucial element of the Cherry API, enabling frontend interface 
 
 ## Connection
 
-To connect to any WebSocket endpoint, you must include your authentication token as an access_token parameter when establishing the connection. Please note that if your token expires during an active session, you will be disconnected with error code `4401`.
+To connect to any WebSocket endpoint, you must include your authentication token as an `access_token` parameter when establishing the connection. Please note that if your token expires during an active session, you will be disconnected with error code `4401`.
 
 ## Disconnection codes
 

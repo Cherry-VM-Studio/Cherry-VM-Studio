@@ -1,7 +1,6 @@
 ---
 title: Cherry VM Studio Docs
 weight: 2
-draft: true
 ---
 
 # Welcome to Cherry VM Studio Documentation
