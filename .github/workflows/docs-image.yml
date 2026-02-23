@@ -82,7 +82,7 @@ jobs:
                   key: hugo-${{ github.run_id }}
                   restore-keys: hugo-
             - name: Build the site
-              working-directory: /docs
+              working-directory: ./docs
               run: |
                   hugo build \
                     --gc \
@@ -98,7 +98,7 @@ jobs:
             - name: Upload artifact
               uses: actions/upload-pages-artifact@v3
               with:
-                  path: /docs/public
+                  path: ./docs/public
     deploy:
         environment:
             name: github-pages
