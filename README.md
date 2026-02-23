@@ -42,8 +42,8 @@ The platform's focus is to simplify the process of virtual machines management a
 ## Resources
 
 **Installation Guide:** [link](#instalation-guide) <br/>
-**Project Wiki:** 🚧 Coming soon! <br/>
-**Documentation:** 🚧 Coming soon! <br/>
+**Project Wiki:** [link](https://cherry-vm-studio.github.io/Cherry-VM-Studio/) <br/>
+**Documentation:** [link](https://cherry-vm-studio.github.io/Cherry-VM-Studio/) <br/>
 
 ## Instalation Guide
 
