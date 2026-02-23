@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+<head><script src="/cherry-vm-studio/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=cherry-vm-studio/livereload" data-no-instant defer></script>
+  <!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="WebSockets#WebSockets are a crucial element of the Cherry API, enabling frontend interface integration and synchronization.
+Connection#To connect to any WebSocket endpoint, you must include your authentication token as an access_token parameter when establishing the connection. Please note that if your token expires during an active session, you will be disconnected with error code 4401.
+Disconnection codes#Below is a short guide to common disconnect codes shared by each websocket in the application.
+">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/cherry-vm-studio/for-developers/cherry-api/websockets/">
+  <meta property="og:site_name" content="CVMS Docs">
+  <meta property="og:title" content="WebSockets">
+  <meta property="og:description" content="WebSockets#WebSockets are a crucial element of the Cherry API, enabling frontend interface integration and synchronization.
+Connection#To connect to any WebSocket endpoint, you must include your authentication token as an access_token parameter when establishing the connection. Please note that if your token expires during an active session, you will be disconnected with error code 4401.
+Disconnection codes#Below is a short guide to common disconnect codes shared by each websocket in the application.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="for-developers">
+
+
+  <meta itemprop="name" content="WebSockets">
+  <meta itemprop="description" content="WebSockets#WebSockets are a crucial element of the Cherry API, enabling frontend interface integration and synchronization.
+Connection#To connect to any WebSocket endpoint, you must include your authentication token as an access_token parameter when establishing the connection. Please note that if your token expires during an active session, you will be disconnected with error code 4401.
+Disconnection codes#Below is a short guide to common disconnect codes shared by each websocket in the application.">
+  <meta itemprop="wordCount" content="398">
+
+<title>WebSockets | CVMS Docs</title>
+<link rel="icon" href="/cherry-vm-studio/Cherry%20VM%20Studio%20Logo%20Small.png" >
+<link rel="manifest" href="/cherry-vm-studio/manifest.json">
+<link rel="canonical" href="http://localhost:1313/cherry-vm-studio/for-developers/cherry-api/websockets/">
+<link rel="stylesheet" href="/cherry-vm-studio/book.min.cc2c524ed250aac81b23d1f4af87344917b325208841feca0968fe450f570575.css" integrity="sha256-zCxSTtJQqsgbI9H0r4c0SRezJSCIQf7KCWj&#43;RQ9XBXU=" crossorigin="anonymous">
+
+
+  <script defer src="/cherry-vm-studio/fuse.min.js"></script>
+  <script defer src="/cherry-vm-studio/en.search.min.3500fa464d8f2643af4d4686cf358c5685ed1db2cf9ea916079932840a730377.js" integrity="sha256-NQD6Rk2PJkOvTUaGzzWMVoXtHbLPnqkWB5kyhApzA3c=" crossorigin="anonymous"></script>
+
+
+
+  
+</head>
+<body dir="ltr" class="book-kind-page book-type-for-developers">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    
+<aside class="book-menu">
+  <div class="book-menu-content">
+    
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/cherry-vm-studio/"><span>CVMS Docs</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input id="book-search-input" type="text" 
+    placeholder="Search"
+    aria-label="Search"
+    maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <a>
+      For Administrators</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-2a0524d00d06eda3e9a82ee76c4df5b6" class="toggle"  />
+    <label for="section-2a0524d00d06eda3e9a82ee76c4df5b6" class="flex">
+      <a href="/cherry-vm-studio/for-administrators/getting-started/" class="">
+        Getting Started</a>
+      <img src="/cherry-vm-studio/icons/chevron-right.svg" class="book-icon" alt="Expand" />
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/cherry-vm-studio/for-administrators/getting-started/install/" class="">
+      Installation Guide</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-ed1674e0240e206afafbbf4962a3661b" class="toggle"  />
+    <label for="section-ed1674e0240e206afafbbf4962a3661b" class="flex">
+      <a role="button" class="">
+        Application Details</a>
+      <img src="/cherry-vm-studio/icons/chevron-right.svg" class="book-icon" alt="Expand" />
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/cherry-vm-studio/for-administrators/application-details/account-system/" class="">
+      Account system</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/cherry-vm-studio/for-administrators/application-details/machines/" class="">
+      Machines</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/cherry-vm-studio/for-administrators/application-details/network-panel/" class="">
+      Network Panel</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <a>
+      For Users</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-e17beb2599942c6bbc360bb03496d3e0" class="toggle"  />
+    <label for="section-e17beb2599942c6bbc360bb03496d3e0" class="flex">
+      <a role="button" class="">
+        Tutorials</a>
+      <img src="/cherry-vm-studio/icons/chevron-right.svg" class="book-icon" alt="Expand" />
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/cherry-vm-studio/for-users/tutorials/draft/" class="">
+      🚧 Work in progress</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <a>
+      For Developers</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-e05caa7fc279cdef2b70e75312c815a7" class="toggle" checked />
+    <label for="section-e05caa7fc279cdef2b70e75312c815a7" class="flex">
+      <a role="button" class="">
+        Cherry API</a>
+      <img src="/cherry-vm-studio/icons/chevron-right.svg" class="book-icon" alt="Expand" />
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/cherry-vm-studio/for-developers/cherry-api/websockets/" class="active">
+      WebSockets</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/cherry-vm-studio/for-developers/cherry-api/draft/" class="">
+      🚧 Work in progress</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-f1647a46c320f7557f581f73fc81af9f" class="toggle"  />
+    <label for="section-f1647a46c320f7557f581f73fc81af9f" class="flex">
+      <a role="button" class="">
+        Cherry Admin Panel</a>
+      <img src="/cherry-vm-studio/icons/chevron-right.svg" class="book-icon" alt="Expand" />
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/cherry-vm-studio/for-developers/cherry-admin-panel/draft/" class="">
+      🚧 Work in progress</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+
+  </div>
+</aside>
+ 
+
+    <div class="book-page">
+      <header class="book-header hidden">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/cherry-vm-studio/icons/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <h3>WebSockets</h3>
+
+  <label for="toc-control">
+    
+    <img src="/cherry-vm-studio/icons/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#connection">Connection</a></li>
+    <li><a href="#disconnection-codes">Disconnection codes</a></li>
+    <li><a href="#machine-websockets">Machine WebSockets</a>
+      <ul>
+        <li><a href="#message-types">Message types</a></li>
+        <li><a href="#important-notes">Important Notes</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article"><h1 id="websockets">WebSockets<a class="anchor" href="#websockets">#</a></h1>
+<p>WebSockets are a crucial element of the Cherry API, enabling frontend interface integration and synchronization.</p>
+<h2 id="connection">Connection<a class="anchor" href="#connection">#</a></h2>
+<p>To connect to any WebSocket endpoint, you must include your authentication token as an access_token parameter when establishing the connection. Please note that if your token expires during an active session, you will be disconnected with error code <code>4401</code>.</p>
+<h2 id="disconnection-codes">Disconnection codes<a class="anchor" href="#disconnection-codes">#</a></h2>
+<p>Below is a short guide to common disconnect codes shared by each websocket in the application.</p>
+<table>
+  <thead>
+      <tr>
+          <th>Code</th>
+          <th>Title</th>
+          <th>Description</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>1000</td>
+          <td>Undefined/Custom</td>
+          <td>-</td>
+      </tr>
+      <tr>
+          <td>1011</td>
+          <td>Internal server error</td>
+          <td>Returned on server-side exception.</td>
+      </tr>
+      <tr>
+          <td>4401</td>
+          <td>Unauthorized</td>
+          <td>Indicates issues with the user authentication token. Often returned on token validation failure or expiration.</td>
+      </tr>
+      <tr>
+          <td>4403</td>
+          <td>Forbidden</td>
+          <td>Resource requires elevated permissions to access.</td>
+      </tr>
+  </tbody>
+</table>
+<h2 id="machine-websockets">Machine WebSockets<a class="anchor" href="#machine-websockets">#</a></h2>
+<p>The following WebSocket endpoints provide real-time machine data streams within the application:</p>
+<ul>
+<li><code>/ws/machines/subscribed</code> – streams data for machines explicitly subscribed to by the client</li>
+<li><code>/ws/machines/account</code> – streams data for all machines owned by or assigned to the currently authenticated user</li>
+<li><code>/ws/machines/global</code> – streams data for all machines available in the system. Requires <code>VIEW_ALL_VMS</code> permission.</li>
+</ul>
+<p>Each message follows the unified format below:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;uuid&#34;</span>: <span style="color:#e6db74">&#34;Unique message identifier&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;Message type&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;body&#34;</span>: <span style="color:#e6db74">&#34;Message body content&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;timestamp&#34;</span>: <span style="color:#e6db74">&#34;ISO 8601 Timestamp&#34;</span>
+</span></span><span style="display:flex;"><span>}</span></span></code></pre></div><h3 id="message-types">Message types<a class="anchor" href="#message-types">#</a></h3>
+<p>The following table describes all WebSocket message types, their payload formats, trigger conditions, and purpose.</p>
+<table>
+  <thead>
+      <tr>
+          <th>Type</th>
+          <th>Body format</th>
+          <th>Sent on</th>
+          <th>Description</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>CREATE</td>
+          <td><code>MachinePropertiesPayload</code></td>
+          <td>Successful machine creation</td>
+          <td>Static properties of a newly created machine.</td>
+      </tr>
+      <tr>
+          <td>DELETE</td>
+          <td><code>{ uuid }</code></td>
+          <td>Successful machine deletion</td>
+          <td>Identifies a removed machine.</td>
+      </tr>
+      <tr>
+          <td>DATA_STATIC</td>
+          <td><code>dict[UUID, MachinePropertiesPayload]</code></td>
+          <td>WebSocket connection<!-- raw HTML omitted -->Successful properties modification</td>
+          <td>Static properties keyed by machine UUID. Full set on connect; single entry on update.</td>
+      </tr>
+      <tr>
+          <td>DATA_DYNAMIC</td>
+          <td><code>dict[UUID, MachineStatePayload]</code></td>
+          <td>WebSocket connection<!-- raw HTML omitted -->Every 1s</td>
+          <td>Dynamic machine state keyed by machine UUID.</td>
+      </tr>
+      <tr>
+          <td>DATA_DYNAMIC_DISKS</td>
+          <td><code>dict[UUID, MachineDisksPayload]</code></td>
+          <td>WebSocket connection<!-- raw HTML omitted -->WebSocket connection<!-- raw HTML omitted -->Every 2 min</td>
+          <td>Disk state data keyed by machine UUID.</td>
+      </tr>
+      <tr>
+          <td>DATA_DYNAMIC_CONNECTIONS</td>
+          <td><code>dict[UUID, MachineConnectionsPayload]</code></td>
+          <td>WebSocket connection<!-- raw HTML omitted -->Every 10s</td>
+          <td>Network connection data keyed by machine UUID.</td>
+      </tr>
+      <tr>
+          <td>BOOTUP_START</td>
+          <td><code>{ uuid }</code></td>
+          <td>Bootup initiated</td>
+          <td>Indicates boot process start.</td>
+      </tr>
+      <tr>
+          <td>BOOTUP_SUCCESS</td>
+          <td><code>{ uuid }</code></td>
+          <td>Bootup completed</td>
+          <td>Indicates successful boot.</td>
+      </tr>
+      <tr>
+          <td>BOOTUP_FAIL</td>
+          <td><code>{ uuid, error }</code></td>
+          <td>Bootup failure</td>
+          <td>Indicates failed boot with error details.</td>
+      </tr>
+      <tr>
+          <td>SHUTDOWN_START</td>
+          <td><code>{ uuid }</code></td>
+          <td>Shutdown initiated</td>
+          <td>Indicates shutdown process start.</td>
+      </tr>
+      <tr>
+          <td>SHUTDOWN_SUCCESS</td>
+          <td><code>{ uuid }</code></td>
+          <td>Shutdown completed</td>
+          <td>Indicates successful shutdown.</td>
+      </tr>
+      <tr>
+          <td>SHUTDOWN_FAIL</td>
+          <td><code>{ uuid, error }</code></td>
+          <td>Shutdown failure</td>
+          <td>Indicates failed shutdown with error details.</td>
+      </tr>
+  </tbody>
+</table>
+<h3 id="important-notes">Important Notes<a class="anchor" href="#important-notes">#</a></h3>
+<h4 id="wsmachinessubscribed"><code>/ws/machines/subscribed</code><a class="anchor" href="#wsmachinessubscribed">#</a></h4>
+<ul>
+<li>When a subscribed machine is deleted, a <code>DELETE</code> message is sent. Dynamic broadcasts for that machine stop, but the WebSocket connection remains open.</li>
+<li><code>CREATE</code> messages are not emitted on this WebSocket.</li>
+</ul>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+<div>
+
+</div>
+
+<div>
+
+</div>
+
+</div>
+
+
+
+  
+
+
+
+  
+  
+  
+  <div class="flex flex-wrap justify-between">
+    <span>
+    
+      <a href="/cherry-vm-studio/for-users/tutorials/draft/" class="flex align-center">
+        <img src="/cherry-vm-studio/icons/backward.svg" class="book-icon" alt="Backward" />
+        <span>🚧 Work in progress</span>
+      </a>
+    
+    </span>
+    <span>
+    
+      <a href="/cherry-vm-studio/for-developers/cherry-api/draft/" class="flex align-center">
+        <span>🚧 Work in progress</span>
+        <img src="/cherry-vm-studio/icons/forward.svg" class="book-icon" alt="Forward" />
+      </a>
+    
+    </span>
+  </div>
+  
+
+
+ 
+        
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+        
+        
+  
+ 
+        
+  
+  
+    <script>(function(){document.querySelectorAll("pre:has(code)").forEach(e=>{e.addEventListener("click",e.focus),e.addEventListener("copy",function(t){if(t.preventDefault(),navigator.clipboard){const t=window.getSelection().toString()||e.textContent;navigator.clipboard.writeText(t)}})})})()</script>
+  
+
+      </footer>
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+  
+  <aside class="book-toc">
+    <div class="book-toc-content">
+      
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#connection">Connection</a></li>
+    <li><a href="#disconnection-codes">Disconnection codes</a></li>
+    <li><a href="#machine-websockets">Machine WebSockets</a>
+      <ul>
+        <li><a href="#message-types">Message types</a></li>
+        <li><a href="#important-notes">Important Notes</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+    </div>
+  </aside>
+  
+ 
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

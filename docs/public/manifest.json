@@ -1,6 +1,6 @@
 {
-  "name": "Cherry VM Studio Docs",
-  "short_name": "Cherry VM Studio Docs",
+  "name": "CVMS Docs",
+  "short_name": "CVMS Docs",
   "start_url": "/cherry-vm-studio/",
   "scope": "/cherry-vm-studio/",
   "display": "standalone",

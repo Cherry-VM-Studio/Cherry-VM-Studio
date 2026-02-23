@@ -1,5 +1,5 @@
 baseURL = "https://cherry-vm-studio.github.io/cherry-vm-studio/"
-title = "Cherry VM Studio Docs"
+title = "CVMS Docs"
 theme = "hugo-book"
 languageCode = 'en-us'
 

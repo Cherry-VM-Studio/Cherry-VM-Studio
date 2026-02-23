@@ -1,6 +1,6 @@
 ---
 title: "🚧 Work in progress"
-weight: 1
+weight: 100
 ---
 
 🚧 Work in progress

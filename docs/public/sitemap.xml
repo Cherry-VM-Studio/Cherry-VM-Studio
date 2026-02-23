@@ -4,8 +4,6 @@
   <url>
     <loc>http://localhost:1313/cherry-vm-studio/for-developers/cherry-admin-panel/draft/</loc>
   </url><url>
-    <loc>http://localhost:1313/cherry-vm-studio/for-developers/cherry-api/draft/</loc>
-  </url><url>
     <loc>http://localhost:1313/cherry-vm-studio/for-users/tutorials/draft/</loc>
   </url><url>
     <loc>http://localhost:1313/cherry-vm-studio/for-developers/cherry-api/</loc>
@@ -13,6 +11,8 @@
     <loc>http://localhost:1313/cherry-vm-studio/for-administrators/</loc>
   </url><url>
     <loc>http://localhost:1313/cherry-vm-studio/for-administrators/getting-started/install/</loc>
+  </url><url>
+    <loc>http://localhost:1313/cherry-vm-studio/for-developers/cherry-api/websockets/</loc>
   </url><url>
     <loc>http://localhost:1313/cherry-vm-studio/for-administrators/application-details/account-system/</loc>
   </url><url>
@@ -22,13 +22,19 @@
   </url><url>
     <loc>http://localhost:1313/cherry-vm-studio/for-users/</loc>
   </url><url>
+    <loc>http://localhost:1313/cherry-vm-studio/for-administrators/application-details/machines/</loc>
+  </url><url>
     <loc>http://localhost:1313/cherry-vm-studio/for-developers/</loc>
+  </url><url>
+    <loc>http://localhost:1313/cherry-vm-studio/for-administrators/application-details/network-panel/</loc>
   </url><url>
     <loc>http://localhost:1313/cherry-vm-studio/for-administrators/getting-started/</loc>
   </url><url>
     <loc>http://localhost:1313/cherry-vm-studio/for-users/tutorials/</loc>
   </url><url>
     <loc>http://localhost:1313/cherry-vm-studio/for-administrators/application-details/</loc>
+  </url><url>
+    <loc>http://localhost:1313/cherry-vm-studio/for-developers/cherry-api/draft/</loc>
   </url><url>
     <loc>http://localhost:1313/cherry-vm-studio/categories/</loc>
   </url><url>
