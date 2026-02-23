@@ -24,6 +24,8 @@
   </url><url>
     <loc>http://localhost:1313/cherry-vm-studio/for-administrators/application-details/machines/</loc>
   </url><url>
+    <loc>http://localhost:1313/cherry-vm-studio/for-developers/database/</loc>
+  </url><url>
     <loc>http://localhost:1313/cherry-vm-studio/for-developers/</loc>
   </url><url>
     <loc>http://localhost:1313/cherry-vm-studio/for-administrators/application-details/network-panel/</loc>
