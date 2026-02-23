@@ -6,4 +6,6 @@ languageCode = 'en-us'
 publishDir = "public"
 
 [params]
-  BookTheme = "auto"
+    BookTheme = "light"
+    BookSection = "*"
+    BookFavicon = "Cherry VM Studio Logo Small.png"

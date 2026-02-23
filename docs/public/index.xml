@@ -1,11 +1,46 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Cherry VM Studio Docs</title>
+    <title>Cherry VM Studio Documentation on Cherry VM Studio Docs</title>
     <link>http://localhost:1313/cherry-vm-studio/</link>
-    <description>Recent content on Cherry VM Studio Docs</description>
+    <description>Recent content in Cherry VM Studio Documentation on Cherry VM Studio Docs</description>
     <generator>Hugo</generator>
     <language>en-us</language>
     <atom:link href="http://localhost:1313/cherry-vm-studio/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>🚧 Work in progress</title>
+      <link>http://localhost:1313/cherry-vm-studio/for-developers/cherry-admin-panel/draft/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/cherry-vm-studio/for-developers/cherry-admin-panel/draft/</guid>
+      <description>&lt;p&gt;🚧 Work in progress&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>🚧 Work in progress</title>
+      <link>http://localhost:1313/cherry-vm-studio/for-developers/cherry-api/draft/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/cherry-vm-studio/for-developers/cherry-api/draft/</guid>
+      <description>&lt;p&gt;🚧 Work in progress&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>🚧 Work in progress</title>
+      <link>http://localhost:1313/cherry-vm-studio/for-users/tutorials/draft/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/cherry-vm-studio/for-users/tutorials/draft/</guid>
+      <description>&lt;p&gt;🚧 Work in progress&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Installation Guide</title>
+      <link>http://localhost:1313/cherry-vm-studio/for-administrators/getting-started/install/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/cherry-vm-studio/for-administrators/getting-started/install/</guid>
+      <description>&lt;h1 id=&#34;installation-guide&#34;&gt;Installation Guide&lt;a class=&#34;anchor&#34; href=&#34;#installation-guide&#34;&gt;#&lt;/a&gt;&lt;/h1&gt;&#xD;&#xA;&lt;p&gt;🚧 Work in progress&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Account system</title>
+      <link>http://localhost:1313/cherry-vm-studio/for-administrators/application-details/account-system/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/cherry-vm-studio/for-administrators/application-details/account-system/</guid>
+      <description>&lt;h1 id=&#34;account-system&#34;&gt;Account System&lt;a class=&#34;anchor&#34; href=&#34;#account-system&#34;&gt;#&lt;/a&gt;&lt;/h1&gt;&#xD;&#xA;&lt;p&gt;🚧 Work in progress&lt;/p&gt;</description>
+    </item>
   </channel>
 </rss>

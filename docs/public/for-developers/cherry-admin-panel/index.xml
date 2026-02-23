@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Cherry Admin Panel on Cherry VM Studio Docs</title>
+    <link>http://localhost:1313/cherry-vm-studio/for-developers/cherry-admin-panel/</link>
+    <description>Recent content in Cherry Admin Panel on Cherry VM Studio Docs</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <atom:link href="http://localhost:1313/cherry-vm-studio/for-developers/cherry-admin-panel/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>🚧 Work in progress</title>
+      <link>http://localhost:1313/cherry-vm-studio/for-developers/cherry-admin-panel/draft/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/cherry-vm-studio/for-developers/cherry-admin-panel/draft/</guid>
+      <description>&lt;p&gt;🚧 Work in progress&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
