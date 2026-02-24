@@ -6,7 +6,6 @@ import LoginPage from "./pages/global/LoginPage/LoginPage.tsx";
 import { AuthenticationProvider } from "./contexts/AuthenticationContext.tsx";
 import { PermissionsProvider } from "./contexts/PermissionsContext.tsx";
 import ReverseProtected from "./wrappers/ReverseProtected.tsx";
-import MachinesPage from "./pages/administrative/machines/MachinesPage/MachinesPage.tsx";
 import MachinePage from "./pages/administrative/machines/MachinePage/MachinePage.tsx";
 import DobrePage from "./pages/global/DobrePage/DobrePage.tsx";
 import CopyrightPage from "./pages/global/CopyrightPage/CopyrightPage.tsx";
@@ -16,9 +15,9 @@ import IsoLibraryPage from "./pages/administrative/machines/IsoLibraryPage/IsoLi
 import UsersPage from "./pages/administrative/accounts/UsersPage/UsersPage.tsx";
 import GroupsPage from "./pages/administrative/accounts/GroupsPage/GroupsPage.tsx";
 import ClientHomePage from "./pages/client/main/ClientHomePage/ClientHomePage.tsx";
-import ClientMachinesPage from "./pages/client/machines/ClientMachinesPage/ClientMachinesPage.tsx";
 import ContributorsPage from "./pages/global/ContributorsPage/ContributorsPage.tsx";
-import BrandingCopyrightPage from "./pages/global/CopyrightPage/BrandingCopyrightPage.tsx";
+import MachinesPage from "./pages/global/MachinesPage/MachinesPage.tsx";
+
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -42,8 +41,8 @@ const router = createBrowserRouter(
                         <Route path='machines/templates'        element={<TemplatesLibraryPage/>}/>
                         {/* <Route path='machines/snapshots'       element={</>}/> */}
                         <Route path='machines/iso'              element={<IsoLibraryPage/>}/>
-                        <Route path='machines/all'              element={<MachinesPage global={true}/>}/>
-                        <Route path='machines'                  element={<MachinesPage/>}/>
+                        <Route path='machines/all'              element={<MachinesPage mode="administrative" global/>}/>
+                        <Route path='machines'                  element={<MachinesPage mode="administrative"/>}/>
                         <Route path='machines/machine/:uuid'    element={<MachinePage/>}/>
                         <Route path='accounts'                  element={<Navigate to='/admin/accounts/admins'/>}/>
                         <Route path='accounts/admins'           element={<UsersPage accountType="administrative"/>}/>
@@ -54,7 +53,7 @@ const router = createBrowserRouter(
                 <Route path='/client' element={<Protected accountType="client"/>}>
                     <Route element={<PanelLayout accountType="client"/>}>
                         <Route path='home'                      element={<ClientHomePage/>}/>    
-                        <Route path='machines'                  element={<ClientMachinesPage/>}/>
+                        <Route path='machines'                  element={<MachinesPage mode="client"/>}/>
                         <Route path='contributors'                  element={<ContributorsPage/>}/>
                         <Route path='credits'                       element={<CopyrightPage/>}/>
                     </Route>

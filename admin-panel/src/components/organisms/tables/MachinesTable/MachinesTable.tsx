@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { Link } from "react-router-dom";
 import PERMISSIONS from "../../../../config/permissions.config";
 import { usePermissions } from "../../../../contexts/PermissionsContext";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
@@ -10,6 +9,8 @@ import { parseData } from "./data";
 import { Machine, MachineState, User } from "../../../../types/api.types";
 import { AxiosError } from "axios";
 import DeleteModal from "../../../../modals/base/DeleteModal/DeleteModal";
+import MachinesGrid from "../../../molecules/display/MachinesGrid/MachinesGrid";
+import { IconLayoutGrid } from "@tabler/icons-react";
 
 export interface MachinesTableDataRow {
     uuid: string;
@@ -34,9 +35,10 @@ export interface MachinesTableProps {
     loading: boolean;
     error: AxiosError | null;
     global: boolean;
+    mode: "administrative" | "client";
 }
 
-const MachinesTable = ({ machines, loading, error, global }: MachinesTableProps): React.JSX.Element => {
+const MachinesTable = ({ machines, loading, error, global, mode }: MachinesTableProps): React.JSX.Element => {
     const { t, tns } = useNamespaceTranslation("pages", "machines.controls.");
     const { hasPermissions } = usePermissions();
 
@@ -48,7 +50,6 @@ const MachinesTable = ({ machines, loading, error, global }: MachinesTableProps)
     return (
         <>
             <TanstackTable
-                rawData={machines}
                 data={data}
                 columns={columns}
                 loading={loading}
@@ -69,29 +70,44 @@ const MachinesTable = ({ machines, loading, error, global }: MachinesTableProps)
                     hiddenButtons: {
                         import: true,
                         create: true,
+                        delete: mode === "client",
+                        columns: mode === "client",
                     },
-                    modals: {
-                        delete: {
-                            component: DeleteModal,
-                            props: {
-                                path: "/machines/delete",
-                                i18nextPrefix: "confirm.machine-removal",
-                            },
-                        },
-                    },
-                    additionalButtons: !global
-                        ? [
-                              {
-                                  name: "splitCreate",
-                                  component: CreateMachineSplitButton,
-                                  children: <>{tns("create-machine")}</>,
-                                  props: {
-                                      disabled: viewMode,
+                    modals:
+                        mode === "administrative"
+                            ? {
+                                  delete: {
+                                      component: DeleteModal,
+                                      props: {
+                                          path: "/machines/delete",
+                                          i18nextPrefix: "confirm.machine-removal",
+                                      },
                                   },
-                              },
-                          ]
-                        : [],
+                              }
+                            : {},
+                    additionalButtons:
+                        mode === "administrative" && !global
+                            ? [
+                                  {
+                                      name: "splitCreate",
+                                      component: CreateMachineSplitButton,
+                                      children: <>{tns("create-machine")}</>,
+                                      props: {
+                                          disabled: viewMode,
+                                      },
+                                  },
+                              ]
+                            : [],
                 }}
+                alternativeLayouts={[
+                    {
+                        component: MachinesGrid,
+                        icon: IconLayoutGrid,
+                        name: "Grid",
+                        props: { machines, loading, error },
+                    },
+                ]}
+                defaultLayout={mode === "administrative" ? 0 : 1}
                 // RowComponent={Link}
                 // rowProps={(uuid) => ({ to: `/admin/machines/machine/${uuid}` })}
             />

@@ -89,7 +89,6 @@ export const getColumns = (global: boolean, viewMode: boolean) =>
                 />
             ),
             minSize: 50,
-            maxSize: 120,
             enableHiding: false,
         },
     ].filter((e) => e);

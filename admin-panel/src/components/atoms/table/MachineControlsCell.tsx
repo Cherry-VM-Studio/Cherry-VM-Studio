@@ -45,31 +45,35 @@ const MachineControlsCell = ({ uuid, state, disabled = false }: MachineControlsC
             flex="1"
             onClick={(e) => e.preventDefault()}
         >
-            <ActionIcon
-                variant="light"
-                color="gray"
-                size="36"
-                disabled={toggleDisabled}
-                onClick={toggleState}
-            >
-                {toggleDisabled ? (
-                    <Loader
-                        color="orange.6"
-                        size={16}
-                        type="bars"
-                    />
-                ) : state === "ACTIVE" ? (
-                    <IconPlayerStopFilled
-                        size={22}
-                        color="var(--mantine-color-cherry-5)"
-                    />
-                ) : (
-                    <IconPlayerPlayFilled
-                        size={22}
-                        color="var(--mantine-color-suse-green-5)"
-                    />
-                )}
-            </ActionIcon>
+            {!disabled ? (
+                <ActionIcon
+                    variant="light"
+                    color="gray"
+                    size="36"
+                    disabled={toggleDisabled}
+                    onClick={toggleState}
+                >
+                    {toggleDisabled ? (
+                        <Loader
+                            color="orange.6"
+                            size={16}
+                            type="bars"
+                        />
+                    ) : state === "ACTIVE" ? (
+                        <IconPlayerStopFilled
+                            size={22}
+                            color="var(--mantine-color-cherry-5)"
+                        />
+                    ) : (
+                        <IconPlayerPlayFilled
+                            size={22}
+                            color="var(--mantine-color-suse-green-5)"
+                        />
+                    )}
+                </ActionIcon>
+            ) : (
+                <></>
+            )}
             <ActionIcon
                 variant="light"
                 size="36"

@@ -1,4 +1,4 @@
-import { ActionIcon, Box, Button, Flex, Group, Pagination, Stack, Tooltip } from "@mantine/core";
+import { Button, Flex, Group, Pagination, Tooltip } from "@mantine/core";
 import React from "react";
 import SizeSelect from "../../../atoms/interactive/SizeSelect/SizeSelect";
 import classes from "./TableFooter.module.css";
@@ -64,7 +64,7 @@ const TableFooter = ({ layouts, currentLayout, setCurrentLayout, pagination, set
                 <SizeSelect
                     value={pagination.pageSize}
                     setValue={(val) => setPagination((prev) => ({ ...prev, pageSize: parseInt(val as string) }))}
-                    sizes={[5, 10, 25, 50]}
+                    sizes={[3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 25, 50]}
                 />
             </Flex>
         </Group>

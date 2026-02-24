@@ -72,7 +72,8 @@ const CreateMachinesInBulkModal = ({ opened, onSubmit, onClose }: CreateMachines
     };
 
     const getNumberOfMachines = (values: CreateMachinesInBulkFormValues) =>
-        values.machines.reduce((prev, curr) => prev + curr.machine_count, 0) * (values.create_for_group_mode ? (keys(groups[values.group]?.users)?.length ?? 1) : 1);
+        values.machines.reduce((prev, curr) => prev + curr.machine_count, 0) *
+        (values.create_for_group_mode ? (keys(groups[values.group]?.users)?.length ?? 1) : 1);
 
     const groupsInSelect = values(groups).map((group: GroupType) => ({ label: group.name, value: group.uuid }));
 
@@ -92,7 +93,7 @@ const CreateMachinesInBulkModal = ({ opened, onSubmit, onClose }: CreateMachines
             withCloseButton: true,
         });
 
-        const endpoint = values.create_for_group_mode ? `/machines/create/for-group?group_uuid=${values.group}` : `/machine/create/bulk`;
+        const endpoint = values.create_for_group_mode ? `/machines/create/for-group?group_uuid=${values.group}` : `/machines/create/bulk`;
         const res = await sendRequest("POST", endpoint, { data: values.machines });
 
         if (isAxiosError(res)) {

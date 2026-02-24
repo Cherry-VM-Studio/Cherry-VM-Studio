@@ -21,13 +21,17 @@ export default function ModalButton({ children, ModalComponent, ButtonComponent 
 
     return (
         <>
-            <Portal>
-                <ModalComponent
-                    opened={opened}
-                    onClose={close}
-                    {...modalProps}
-                />
-            </Portal>
+            {ModalComponent ? (
+                <Portal>
+                    <ModalComponent
+                        opened={opened}
+                        onClose={close}
+                        {...modalProps}
+                    />
+                </Portal>
+            ) : (
+                <></>
+            )}
             <ButtonComponent
                 onClick={onButtonClick}
                 {...buttonProps}

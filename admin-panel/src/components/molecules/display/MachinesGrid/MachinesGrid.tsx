@@ -9,20 +9,24 @@ import { useTranslation } from "react-i18next";
 import { IconDeviceDesktop } from "@tabler/icons-react";
 import ResourceLoading from "../../../atoms/feedback/ResourceLoading/ResourceLoading";
 import ResourceError from "../../../atoms/feedback/ResourceError/ResourceError";
+import { Table } from "@tanstack/react-table";
 
 export interface MachinesGridProps {
+    table: Table<any>;
     machines: Record<string, Machine>;
     loading: boolean;
     error: AxiosError | null;
     rows?: number;
 }
 
-const MachinesGrid = ({ machines, loading, error, rows = Infinity }: MachinesGridProps): React.JSX.Element => {
+const MachinesGrid = ({ table, machines, loading, error }: MachinesGridProps): React.JSX.Element => {
     const { width, ref } = useElementSize();
     const { t } = useTranslation();
 
     const cols = round(width / 450);
-    const filteredMachines = values(machines)?.slice(0, cols * rows);
+
+    const shownMachineUuids = table.getPaginationRowModel().rows.map((row) => row.original.uuid);
+    const shownMachines = shownMachineUuids.map((uuid) => machines?.[uuid]).filter((e) => e);
 
     return (
         <ScrollArea
@@ -53,7 +57,7 @@ const MachinesGrid = ({ machines, loading, error, rows = Infinity }: MachinesGri
                 />
             ) : (
                 <SimpleGrid cols={cols}>
-                    {filteredMachines.map((machine, i) => (
+                    {shownMachines.map((machine, i) => (
                         <MachineCard
                             key={i}
                             machine={machine}
