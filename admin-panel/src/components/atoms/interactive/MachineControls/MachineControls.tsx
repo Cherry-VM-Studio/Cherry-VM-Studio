@@ -1,7 +1,7 @@
 import { ActionIcon, Group, MantineSize } from "@mantine/core";
 import { IconPlayerPlayFilled, IconPlayerStopFilled } from "@tabler/icons-react";
 import React from "react";
-import { Machine, UserExtended } from "../../../../types/api.types";
+import { MachineState, UserExtended } from "../../../../types/api.types";
 import useApi from "../../../../hooks/useApi";
 import useFetch from "../../../../hooks/useFetch";
 import { usePermissions } from "../../../../contexts/PermissionsContext";
@@ -10,13 +10,17 @@ import { MantineActionIconAllProps } from "../../../../types/mantine.types";
 import { useThrottledCallback } from "@mantine/hooks";
 
 export interface MachineControlsProps {
-    machine: Machine;
+    machine: {
+        uuid: string;
+        state: MachineState;
+    };
+    disabled?: boolean;
     size?: MantineSize | number | string;
     gap?: MantineSize | number | string;
     buttonProps?: MantineActionIconAllProps;
 }
 
-const MachineControls = ({ machine, size = "lg", gap = "sm", buttonProps }: MachineControlsProps): React.JSX.Element => {
+const MachineControls = ({ machine, size = "lg", gap = "sm", buttonProps, disabled = false }: MachineControlsProps): React.JSX.Element => {
     const { sendRequest } = useApi();
     const { data: user, loading, error } = useFetch<UserExtended>("/users/me");
     const { canManageMachine } = usePermissions();
@@ -29,12 +33,14 @@ const MachineControls = ({ machine, size = "lg", gap = "sm", buttonProps }: Mach
         sendRequest("POST", `/machines/stop/${machine.uuid}`);
     }, 2000);
 
-    const disable = isNull(machine) || loading || !isNull(error) || !canManageMachine(user, machine) || !["ACTIVE", "OFFLINE", "ERROR"].includes(machine.state);
+    const disable =
+        disabled || isNull(machine) || loading || !isNull(error) || !canManageMachine(user, machine) || !["ACTIVE", "OFFLINE", "ERROR"].includes(machine.state);
 
     return (
         <Group
             gap={gap}
             wrap="nowrap"
+            onClick={(e) => e.preventDefault()}
         >
             <ActionIcon
                 variant="light"

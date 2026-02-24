@@ -9,6 +9,7 @@ import { getColumns } from "./columns";
 import { parseData } from "./data";
 import { Machine, MachineState, User } from "../../../../types/api.types";
 import { AxiosError } from "axios";
+import DeleteModal from "../../../../modals/base/DeleteModal/DeleteModal";
 
 export interface MachinesTableDataRow {
     uuid: string;
@@ -47,6 +48,7 @@ const MachinesTable = ({ machines, loading, error, global }: MachinesTableProps)
     return (
         <>
             <TanstackTable
+                rawData={machines}
                 data={data}
                 columns={columns}
                 loading={loading}
@@ -55,17 +57,27 @@ const MachinesTable = ({ machines, loading, error, global }: MachinesTableProps)
                     translations: {
                         all: tns(global ? "all-machines" : "your-machines"),
                         filtered: tns("filtered-results"),
-                        selected: "",
+                        selected: tns("selected-machines"),
                     },
                 }}
                 controlsProps={{
                     translations: {
                         filter: tns("filters"),
+                        delete: tns("delete-selected"),
                     },
                     viewMode: viewMode,
                     hiddenButtons: {
                         import: true,
                         create: true,
+                    },
+                    modals: {
+                        delete: {
+                            component: DeleteModal,
+                            props: {
+                                path: "/machines/delete",
+                                i18nextPrefix: "confirm.machine-removal",
+                            },
+                        },
                     },
                     additionalButtons: !global
                         ? [
@@ -80,8 +92,8 @@ const MachinesTable = ({ machines, loading, error, global }: MachinesTableProps)
                           ]
                         : [],
                 }}
-                RowComponent={Link}
-                rowProps={(uuid) => ({ to: `/admin/machines/machine/${uuid}` })}
+                // RowComponent={Link}
+                // rowProps={(uuid) => ({ to: `/admin/machines/machine/${uuid}` })}
             />
         </>
     );

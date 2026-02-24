@@ -23,6 +23,7 @@ export interface TanstackTableProps {
     loading: boolean;
     error: AxiosError | null;
     data: Array<any>;
+    rawData?: any;
     columns: Array<any>;
     defaultHiddenColumns?: Array<string>;
     headingProps: Omit<TableStateHeadingProps, "table" | "loading">;
@@ -35,6 +36,7 @@ export interface TanstackTableProps {
 
 const TanstackTable = ({
     data,
+    rawData,
     columns,
     loading,
     error,
@@ -83,7 +85,7 @@ const TanstackTable = ({
     };
 
     const onDelete = () => {
-        refresh();
+        refresh?.();
         table.toggleAllRowsSelected(false);
     };
 
@@ -102,10 +104,7 @@ const TanstackTable = ({
                         table={table}
                         onFilteringChange={onFilteringChange}
                         {...controlsProps}
-                        modals={merge(
-                            controlsProps.modals,
-                            controlsProps.modals?.delete && { delete: { props: { uuids: selectedUuids, onSubmit: onDelete } } },
-                        )}
+                        modals={merge(controlsProps.modals, { delete: { props: { uuids: selectedUuids, onSubmit: onDelete } } })}
                     />
                 </Group>
             </Stack>
@@ -114,6 +113,7 @@ const TanstackTable = ({
                 loading={loading}
                 error={error}
                 data={data}
+                rawData={rawData}
                 {...layout?.props}
             />
             <TableFooter

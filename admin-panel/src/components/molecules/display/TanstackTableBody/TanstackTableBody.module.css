@@ -16,7 +16,6 @@
     position: sticky;
     top: 0;
     border-width: 2px;
-    padding-right: 12px;
     background-color: var(--mantine-color-dark-8);
     z-index: 100;
 }

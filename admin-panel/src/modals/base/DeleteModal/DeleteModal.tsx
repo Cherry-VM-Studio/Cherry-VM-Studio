@@ -10,7 +10,7 @@ export interface DeleteModalProps {
     i18nextPrefix: string;
     opened: boolean;
     onClose: () => void;
-    onSubmit: () => void;
+    onSubmit: (uuids: string[]) => void;
 }
 
 const DeleteModal = ({ opened, onClose, onSubmit = () => undefined, uuids, i18nextPrefix, path }: DeleteModalProps): React.JSX.Element => {
@@ -20,7 +20,7 @@ const DeleteModal = ({ opened, onClose, onSubmit = () => undefined, uuids, i18ne
     const onConfirm = async () => {
         await Promise.all(uuids.map((uuid: string) => sendRequest("DELETE", combinePaths(path, uuid))));
         onClose();
-        onSubmit();
+        onSubmit(uuids);
     };
 
     return (

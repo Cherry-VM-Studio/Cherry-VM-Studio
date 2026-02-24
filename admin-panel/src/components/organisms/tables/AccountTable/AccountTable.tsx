@@ -6,7 +6,7 @@ import DeleteAccountsModal from "../../../../modals/account/DeleteAccountsModal/
 import { IconUserPlus } from "@tabler/icons-react";
 import TanstackTable from "../../../molecules/display/TanstackTable/TanstackTable";
 import { getColumns } from "./columns";
-import { User } from "../../../../types/api.types";
+import { UserExtended } from "../../../../types/api.types";
 import { AccountType } from "../../../../types/config.types";
 import { prepareData } from "./data";
 import { usePermissions } from "../../../../contexts/PermissionsContext";
@@ -15,7 +15,7 @@ import { AxiosError } from "axios";
 export interface AccountTableProps {
     loading: boolean;
     error: AxiosError | null;
-    accounts: Record<string, User>;
+    accounts: Record<string, UserExtended>;
     accountType: AccountType;
     refresh: () => void;
     openAccountModal: (uuid: string, mode: boolean) => void;

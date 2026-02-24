@@ -36,9 +36,11 @@
         "controls": {
             "all-machines": "All machines",
             "your-machines": "Your machines",
+            "selected-machines": "Selected machines",
             "filtered-results": "Filtered results",
             "search": "Search",
             "filters": "Filters",
+            "delete-selected": "Delete selected",
             "import": "Import",
             "create-machine": "Create machine",
             "create-multiple": "Create VMs in bulk"

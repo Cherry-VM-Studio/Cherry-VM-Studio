@@ -10,6 +10,7 @@ const MachineDetailsCell = ({ getValue }): React.JSX.Element => {
         <Group
             gap="lg"
             align="start"
+            c="white"
         >
             <MachineActivityIndicator
                 state={state}

@@ -9,17 +9,18 @@ import MachineAssignedUserCell, {
 } from "../../../atoms/table/MachineAssignedUserCell";
 import CheckboxHeader from "../../../atoms/table/CheckboxHeader";
 import CheckboxCell from "../../../atoms/table/CheckboxCell";
+import MachineControlsHeader from "../../../atoms/table/MachineControlsHeader";
 
 export const getColumns = (global: boolean, viewMode: boolean) =>
     [
-        // {
-        //     accessorKey: "selection",
-        //     enableSorting: false,
-        //     header: CheckboxHeader,
-        //     cell: CheckboxCell,
-        //     maxSize: 50,
-        //     enableHiding: false,
-        // },
+        {
+            accessorKey: "selection",
+            enableSorting: false,
+            header: CheckboxHeader,
+            cell: CheckboxCell,
+            maxSize: 50,
+            enableHiding: false,
+        },
         {
             accessorKey: "details",
             header: t("machines.table.headers.name", { ns: "pages" }),
@@ -68,17 +69,23 @@ export const getColumns = (global: boolean, viewMode: boolean) =>
             header: t("machines.table.headers.assigned-clients", { ns: "pages" }),
             cell: MachineAssignedUserCell,
             minSize: 180,
+            maxSize: 300,
             sortingFn: assignedUsersCellSortingFn,
             filterFn: assignedUsersCellFilterFn,
         },
         {
             accessorKey: "options",
-            header: "",
-            enableSorting: false,
-            cell: ({ getValue, row }) => (
-                <MachineControlsCell
+            header: (props) => (
+                <MachineControlsHeader
+                    {...props}
                     disabled={viewMode}
+                />
+            ),
+            enableSorting: false,
+            cell: ({ getValue }) => (
+                <MachineControlsCell
                     {...getValue()}
+                    disabled={viewMode}
                 />
             ),
             minSize: 50,
