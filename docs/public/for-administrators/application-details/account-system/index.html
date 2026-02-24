@@ -8,22 +8,31 @@ https://github.com/alex-shpak/hugo-book
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Account System#🚧 Work in progress
+<meta name="description" content="Account System#Introduction#Cherry VM Studio uses its own internal account system, fully managed from the administrative web panel. The system is integrated with Apache Guacamole to provide centralized authentication across the platform.
+Learn more
+The platform enforces a clear separation between administrative and client accounts.
+Administrators can create and manage resources, such as virtual machines, and assign them to client accounts. Privileged administrators have extended capabilities, including managing other user accounts and modifying system-wide settings. Clients are limited to using assigned resources: they can start, stop, and access virtual machines but cannot create or modify any system resources themselves. Learn more
 ">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
 <meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/cherry-vm-studio/for-administrators/application-details/account-system/">
   <meta property="og:site_name" content="CVMS Docs">
   <meta property="og:title" content="Account system">
-  <meta property="og:description" content="Account System#🚧 Work in progress">
+  <meta property="og:description" content="Account System#Introduction#Cherry VM Studio uses its own internal account system, fully managed from the administrative web panel. The system is integrated with Apache Guacamole to provide centralized authentication across the platform.
+Learn more
+The platform enforces a clear separation between administrative and client accounts.
+Administrators can create and manage resources, such as virtual machines, and assign them to client accounts. Privileged administrators have extended capabilities, including managing other user accounts and modifying system-wide settings. Clients are limited to using assigned resources: they can start, stop, and access virtual machines but cannot create or modify any system resources themselves. Learn more">
   <meta property="og:locale" content="en_us">
   <meta property="og:type" content="article">
     <meta property="article:section" content="for-administrators">
 
 
   <meta itemprop="name" content="Account system">
-  <meta itemprop="description" content="Account System#🚧 Work in progress">
-  <meta itemprop="wordCount" content="6">
+  <meta itemprop="description" content="Account System#Introduction#Cherry VM Studio uses its own internal account system, fully managed from the administrative web panel. The system is integrated with Apache Guacamole to provide centralized authentication across the platform.
+Learn more
+The platform enforces a clear separation between administrative and client accounts.
+Administrators can create and manage resources, such as virtual machines, and assign them to client accounts. Privileged administrators have extended capabilities, including managing other user accounts and modifying system-wide settings. Clients are limited to using assigned resources: they can start, stop, and access virtual machines but cannot create or modify any system resources themselves. Learn more">
+  <meta itemprop="wordCount" content="231">
 
 <title>Account system | CVMS Docs</title>
 <link rel="icon" href="/cherry-vm-studio/Cherry%20VM%20Studio%20Logo%20Small.png" >
@@ -33,7 +42,7 @@ https://github.com/alex-shpak/hugo-book
 
 
   <script defer src="/cherry-vm-studio/fuse.min.js"></script>
-  <script defer src="/cherry-vm-studio/en.search.min.3500fa464d8f2643af4d4686cf358c5685ed1db2cf9ea916079932840a730377.js" integrity="sha256-NQD6Rk2PJkOvTUaGzzWMVoXtHbLPnqkWB5kyhApzA3c=" crossorigin="anonymous"></script>
+  <script defer src="/cherry-vm-studio/en.search.min.20699d79d1adaa0e1699d4ae0bf7c2a009b3980f2c1904b391065b72c6ca54ff.js" integrity="sha256-IGmdedGtqg4WmdSuC/fCoAmzmA8sGQSzkQZbcsbKVP8=" crossorigin="anonymous"></script>
 
 
 
@@ -423,10 +432,32 @@ https://github.com/alex-shpak/hugo-book
 
   <label for="toc-control">
     
+    <img src="/cherry-vm-studio/icons/toc.svg" class="book-icon" alt="Table of Contents" />
+    
   </label>
 </div>
 
 
+  
+  <aside class="hidden">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#introduction">Introduction</a></li>
+    <li><a href="#more-on-guacamole-synchronization">More on Guacamole Synchronization</a></li>
+    <li><a href="#account-types">Account Types</a>
+      <ul>
+        <li><a href="#administrators">Administrators</a></li>
+        <li><a href="#clients">Clients</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
   
  
       </header>
@@ -434,6 +465,39 @@ https://github.com/alex-shpak/hugo-book
       
       
   <article class="markdown book-article"><h1 id="account-system">Account System<a class="anchor" href="#account-system">#</a></h1>
+<h2 id="introduction">Introduction<a class="anchor" href="#introduction">#</a></h2>
+<p><strong>Cherry VM Studio</strong> uses its own internal account system, fully managed from the administrative web panel. The system is integrated with <strong>Apache Guacamole</strong> to provide centralized authentication across the platform.</p>
+<p><a href="#more-on-guacamole-synchronization">Learn more</a></p>
+<p>The platform enforces a clear separation between <strong>administrative</strong> and <strong>client</strong> accounts.</p>
+<ul>
+<li>Administrators can create and manage resources, such as virtual machines, and assign them to client accounts.</li>
+<li>Privileged administrators have extended capabilities, including managing other user accounts and modifying system-wide settings.</li>
+<li>Clients are limited to using assigned resources: they can start, stop, and access virtual machines but cannot create or modify any system resources themselves.</li>
+</ul>
+<p><a href="#account-types">Learn more</a></p>
+<h2 id="more-on-guacamole-synchronization">More on Guacamole Synchronization<a class="anchor" href="#more-on-guacamole-synchronization">#</a></h2>
+<p>When a user account is created or managed in CVMS, corresponding authentication data is synchronized with Guacamole. This integration enables logging in to virtual machines using CVMS credentials and seamless access to virtual machines directly from the CVMS web panel without requiring a second login prompt.</p>
+<p>Although users can authenticate to Apache Guacamole using CVMS credentials, the reverse is not supported. For this reason, administrators should:</p>
+<ul>
+<li>
+<p>Manage all user accounts exclusively through the CVMS administrative panel.</p>
+</li>
+<li>
+<p>Avoid creating or modifying user accounts directly in Guacamole.</p>
+</li>
+<li>
+<p>Treat CVMS as the single source of truth for authentication and authorization.</p>
+</li>
+</ul>
+<h2 id="account-types">Account Types<a class="anchor" href="#account-types">#</a></h2>
+<p>🚧 Work in progress</p>
+<h3 id="administrators">Administrators<a class="anchor" href="#administrators">#</a></h3>
+<p>🚧 Work in progress</p>
+<h4 id="base-capabilities">Base capabilities<a class="anchor" href="#base-capabilities">#</a></h4>
+<p>🚧 Work in progress</p>
+<h4 id="additional-permissions">Additional permissions<a class="anchor" href="#additional-permissions">#</a></h4>
+<p>🚧 Work in progress</p>
+<h3 id="clients">Clients<a class="anchor" href="#clients">#</a></h3>
 <p>🚧 Work in progress</p>
 </article>
  
@@ -507,6 +571,28 @@ https://github.com/alex-shpak/hugo-book
     </div>
 
     
+  
+  <aside class="book-toc">
+    <div class="book-toc-content">
+      
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#introduction">Introduction</a></li>
+    <li><a href="#more-on-guacamole-synchronization">More on Guacamole Synchronization</a></li>
+    <li><a href="#account-types">Account Types</a>
+      <ul>
+        <li><a href="#administrators">Administrators</a></li>
+        <li><a href="#clients">Clients</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+    </div>
+  </aside>
   
  
   </main>
