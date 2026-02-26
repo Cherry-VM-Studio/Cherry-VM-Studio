@@ -28,7 +28,7 @@ def prepare_from_database_record(record: RoleInDB) -> Role:
     
     return role
 
-class RoleTableManager(SimpleTableManager):
+class _RoleTableManager(SimpleTableManager):
     model_extended: Type[RoleExtended] = RoleExtended
     
     def __init__(self):
@@ -151,4 +151,6 @@ class RoleTableManager(SimpleTableManager):
  
             
 
-RoleLibrary = RoleTableManager()
+RoleLibrary = _RoleTableManager()
+
+__all__ = ["RoleLibrary"]

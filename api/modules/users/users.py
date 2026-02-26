@@ -17,7 +17,7 @@ from modules.users.validation import validate_group_creation, validate_user_crea
 from .models import Administrator, AnyUser, AnyUserExtended, CreateAdministratorArgs, CreateAnyUserForm, CreateClientArgs, CreateGroupArgs, CreateGroupForm, GetUsersFilters, ModifyUserArgs, ModifyUserForm
 
 
-class UsersSystemManager():
+class _UsersSystemManager():
     
     def get_user(self, uuid: UUID) -> Optional[AnyUser]:
         return AdministratorLibrary.get_record_by_uuid(uuid) or ClientLibrary.get_record_by_uuid(uuid)
@@ -140,4 +140,6 @@ class UsersSystemManager():
         return GroupLibrary.create_record(CreateGroupArgs.model_validate(form.model_dump()))
 
     
-UsersManager = UsersSystemManager()
+UsersManager = _UsersSystemManager()
+
+__all__ = ["UsersManager"]

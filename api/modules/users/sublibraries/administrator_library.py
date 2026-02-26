@@ -39,7 +39,7 @@ def prepare_from_database_record(record: AdministratorInDB) -> Administrator:
         
     return administrator
     
-class AdministratorTableManager(SimpleTableManager):
+class _AdministratorTableManager(SimpleTableManager):
     model_extended: Type[AdministratorExtended] = AdministratorExtended
     
     def __init__(self):
@@ -165,4 +165,6 @@ class AdministratorTableManager(SimpleTableManager):
             with connection.cursor() as cursor:
                 cursor.execute("UPDATE administrators SET last_active = CURRENT_TIMESTAMP WHERE uuid = %s", (uuid,))
     
-AdministratorLibrary = AdministratorTableManager()
+AdministratorLibrary = _AdministratorTableManager()
+
+__all__ = ["AdministratorLibrary"]

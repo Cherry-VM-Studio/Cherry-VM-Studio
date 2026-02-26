@@ -4,12 +4,10 @@ import logging
 from urllib.parse import unquote
 from starlette.websockets import WebSocket, WebSocketState
 from pydantic import BaseModel, ConfigDict
-from fastapi.encoders import jsonable_encoder
+from modules.websockets.websocket_manager import GlobalWebSocketManager
 from modules.users.models import AnyUser
 from modules.exceptions.models import CredentialsException
 from modules.authentication.validation import decode_token, get_authenticated_user
-from modules.exceptions import RaisedException
-from .models import AcknowledgeResponse, RejectResponse, CommandData
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +29,8 @@ class WebSocketHandler(BaseModel):
         
         try:             
             self.user = get_authenticated_user(access_token)
+            await GlobalWebSocketManager.register(self.user.uuid, self)
+            
             self.closer = asyncio.create_task(self.__close_at_token_expiration__(access_token))
             
         except CredentialsException:
@@ -57,6 +57,10 @@ class WebSocketHandler(BaseModel):
     async def close(self, code: int = 1000, reason: str | None = None) -> None:
         if self.closer is not None:
             self.closer.cancel()
+            
+        if self.user:
+            await GlobalWebSocketManager.unregister(self.user.uuid, self)
+            
         try:
             if self.is_connected():
                 await self.websocket.close(code, reason)

@@ -7,7 +7,7 @@ from .subscribed_machine.websocket_manager import SubscribedMachineWebsocketsMan
 
 
 @dataclass(frozen=True)
-class MainMachineWebsocketManager:
+class _MainMachineWebsocketManager:
     _subscribed_machine_websocket_manager = SubscribedMachineWebsocketsManager()
     _user_machines_websocket_manager = UserMachinesWebsocketManager()
     _all_machines_websocket_manager = AllMachinesWebsocketManager()
@@ -82,4 +82,6 @@ class MainMachineWebsocketManager:
         self._user_machines_websocket_manager.on_machine_shutdown_fail(machine_uuid, error)
         self._all_machines_websocket_manager.on_machine_shutdown_fail(machine_uuid, error)
         
-main_machine_websocket_manager = MainMachineWebsocketManager()
+MachineWebSocketManager = _MainMachineWebsocketManager()
+
+__all__ = ["MachineWebSocketManager"]

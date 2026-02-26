@@ -12,7 +12,7 @@ from modules.machine_lifecycle.xml_translator import *
 from modules.machine_lifecycle.machines import *
 from modules.machine_lifecycle.models import MachineParameters, MachineDisk, CreateMachineForm, MachineBulkSpec
 from modules.machine_lifecycle.disks import get_machine_disk_size
-from modules.machine_websockets.main_manager import main_machine_websocket_manager
+from modules.machine_websockets.main_manager import MachineWebSocketManager
 
 router = APIRouter(
     prefix='/machines',
@@ -65,13 +65,13 @@ async def __start_machine__(uuid: UUID, current_user: DependsOnAuthentication) -
     if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS) and not check_machine_access(uuid, current_user):
         raise HTTPException(403, "You do not have the necessary permissions to manage this resource.")
     
-    main_machine_websocket_manager.on_machine_bootup_start(uuid)
+    MachineWebSocketManager.on_machine_bootup_start(uuid)
     
     if not await start_machine(uuid):
-        main_machine_websocket_manager.on_machine_bootup_fail(uuid, f"Virtual machine of UUID={uuid} failed to start.")
+        MachineWebSocketManager.on_machine_bootup_fail(uuid, f"Virtual machine of UUID={uuid} failed to start.")
         raise HTTPException(500, f"Virtual machine of UUID={uuid} failed to start.")
     
-    main_machine_websocket_manager.on_machine_bootup_success(uuid)
+    MachineWebSocketManager.on_machine_bootup_success(uuid)
     
 
 @router.post("/stop/{uuid}", response_model=None, tags=['Machine State'])
@@ -84,13 +84,13 @@ async def __stop_machine__(uuid: UUID, current_user: DependsOnAuthentication) ->
     if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS) and not check_machine_access(uuid, current_user):
         raise HTTPException(403, "You do not have the necessary permissions to manage this resource.")
     
-    main_machine_websocket_manager.on_machine_shutdown_start(uuid)
+    MachineWebSocketManager.on_machine_shutdown_start(uuid)
     
     if not await stop_machine(uuid):
-        main_machine_websocket_manager.on_machine_shutdown_fail(uuid, f"Virtual machine of UUID={uuid} failed to start.")
+        MachineWebSocketManager.on_machine_shutdown_fail(uuid, f"Virtual machine of UUID={uuid} failed to start.")
         raise HTTPException(500, f"Virtual machine of UUID={uuid} failed to stop.")
     
-    main_machine_websocket_manager.on_machine_shutdown_success(uuid)
+    MachineWebSocketManager.on_machine_shutdown_success(uuid)
 
 
 @router.post("/create", response_model=UUID, tags=['Machine Management'])
@@ -103,7 +103,7 @@ async def __async_create_machine__(machine_parameters: CreateMachineForm, curren
     if machine_parameters.source_type == 'iso':
         update_iso_last_used(machine_parameters.source_uuid)
 
-    main_machine_websocket_manager.on_machine_create(machine_uuid)
+    MachineWebSocketManager.on_machine_create(machine_uuid)
 
     return machine_uuid
 
@@ -120,7 +120,7 @@ async def __async_create_machine_bulk__(machines: List[MachineBulkSpec], current
             update_iso_last_used(machine_spec.machine_config.source_uuid)
             
     for machine_uuid in machine_uuids:
-        main_machine_websocket_manager.on_machine_create(machine_uuid)
+        MachineWebSocketManager.on_machine_create(machine_uuid)
             
     return machine_uuids
 
@@ -137,7 +137,7 @@ async def __async_create_machine_for_group__(machines: List[MachineBulkSpec], cu
             update_iso_last_used(machine_spec.machine_config.source_uuid)
      
     for machine_uuid in machine_uuids:
-        main_machine_websocket_manager.on_machine_create(machine_uuid)
+        MachineWebSocketManager.on_machine_create(machine_uuid)
             
     return machine_uuids
 
@@ -155,7 +155,7 @@ async def __delete_machine_async__(uuid: UUID, current_user: DependsOnAdministra
     if not await delete_machine_async(uuid):
         raise HTTPException(500, f"Failed to delete machine {uuid}.")
     
-    main_machine_websocket_manager.on_machine_delete(uuid, linked_account_uuids)
+    MachineWebSocketManager.on_machine_delete(uuid, linked_account_uuids)
     
     
 @router.patch("/modify/{uuid}", response_model=None, tags=['Machine Management'])
@@ -167,7 +167,7 @@ async def __modify_machine__(uuid: UUID, body: ModifyMachineForm, current_user: 
         raise HTTPException(403, "You do not have the necessary permissions to manage this resource.")
     
     modify_machine(uuid, body)
-    main_machine_websocket_manager.on_machine_modify(uuid)
+    MachineWebSocketManager.on_machine_modify(uuid)
     
 
 ################################

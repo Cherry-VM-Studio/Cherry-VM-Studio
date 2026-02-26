@@ -25,7 +25,7 @@ def prepare_from_database_record(record: GroupInDB) -> Group:
     return group
 
 
-class GroupTableManager(SimpleTableManager):
+class _GroupTableManager(SimpleTableManager):
     model_extended: Type[GroupExtended] = GroupExtended
     
     def __init__(self):
@@ -144,4 +144,6 @@ class GroupTableManager(SimpleTableManager):
                     cursor.execute(insert_query)
         
 
-GroupLibrary = GroupTableManager()
+GroupLibrary = _GroupTableManager()
+
+__all__ = ["GroupLibrary"]

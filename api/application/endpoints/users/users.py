@@ -2,6 +2,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
+from api.modules.websockets.websocket_manager import GlobalWebSocketManager
 from modules.users.permissions import is_admin
 from modules.users.models import AccountType, AnyUserExtended, ChangePasswordBody, CreateAnyUserForm, GetUsersFilters, ModifyUserForm
 from modules.users.users import UsersManager
@@ -62,6 +63,7 @@ async def __modify_user__(uuid: UUID, form: ModifyUserForm, current_user: Depend
     
 @router.delete("/delete/{uuid}", response_model=None )
 async def __delete_user__(uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> None:
-    return UsersManager.delete_user(uuid)
+    UsersManager.delete_user(uuid)
+    await GlobalWebSocketManager.disconnect_user(uuid, 4403, "User account got deleted.")
     
         

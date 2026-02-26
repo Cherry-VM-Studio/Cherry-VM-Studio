@@ -30,7 +30,7 @@ def prepare_from_database_record(record: ClientInDB) -> Client:
     return client
 
 
-class ClientTableManager(SimpleTableManager):
+class _ClientTableManager(SimpleTableManager):
     model_extended: Type[ClientExtended] = ClientExtended
     
     def __init__(self):
@@ -140,4 +140,6 @@ class ClientTableManager(SimpleTableManager):
                 cursor.execute("UPDATE clients SET last_active = CURRENT_TIMESTAMP WHERE uuid = %s", (uuid,))
     
         
-ClientLibrary = ClientTableManager()
+ClientLibrary = _ClientTableManager()
+
+__all__ = ["ClientLibrary"]
