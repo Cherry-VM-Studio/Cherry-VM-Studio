@@ -8,14 +8,14 @@ if TYPE_CHECKING:
 
 class _WebSocketManager:
     def __init__(self):
-        self._connections: dict[UUID, set[WebSocketHandler]] = dict()
+        self._connections: dict[UUID, set["WebSocketHandler"]] = dict()
         self._lock = asyncio.Lock()
 
-    async def register(self, user_uuid: UUID, handler: WebSocketHandler):
+    async def register(self, user_uuid: UUID, handler: "WebSocketHandler"):
         async with self._lock:
             self._connections.setdefault(user_uuid, set()).add(handler)
 
-    async def unregister(self, user_uuid: UUID, handler: WebSocketHandler):
+    async def unregister(self, user_uuid: UUID, handler: "WebSocketHandler"):
         async with self._lock:
             if user_uuid in self._connections:
                 self._connections[user_uuid].discard(handler)
