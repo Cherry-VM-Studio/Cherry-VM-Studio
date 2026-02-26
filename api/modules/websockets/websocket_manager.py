@@ -1,7 +1,9 @@
 import asyncio
 from uuid import UUID
+from typing import TYPE_CHECKING
 
-from modules.websockets.websocket_handler import WebSocketHandler
+if TYPE_CHECKING:
+    from modules.websockets.websocket_handler import WebSocketHandler
 
 
 class _WebSocketManager:
