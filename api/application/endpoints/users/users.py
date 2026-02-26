@@ -2,7 +2,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-from api.modules.websockets.websocket_manager import GlobalWebSocketManager
+from modules.websockets.websocket_manager import GlobalWebSocketManager
 from modules.users.permissions import is_admin
 from modules.users.models import AccountType, AnyUserExtended, ChangePasswordBody, CreateAnyUserForm, GetUsersFilters, ModifyUserForm
 from modules.users.users import UsersManager
