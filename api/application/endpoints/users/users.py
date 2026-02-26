@@ -1,3 +1,4 @@
+import logging
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
@@ -7,6 +8,9 @@ from modules.users.permissions import is_admin
 from modules.users.models import AccountType, AnyUserExtended, ChangePasswordBody, CreateAnyUserForm, GetUsersFilters, ModifyUserForm
 from modules.users.users import UsersManager
 from modules.authentication.validation import DependsOnAdministrativeAuthentication, DependsOnAuthentication, get_authenticated_user
+
+logger = logging.getLogger(__name__)
+
 
 router = APIRouter(
     prefix='/users',
@@ -57,8 +61,19 @@ async def __change_password__(uuid: UUID, body: ChangePasswordBody, current_user
 
 
 @router.put("/modify/{uuid}", response_model=UUID)
-async def __modify_user__(uuid: UUID, form: ModifyUserForm, current_user: DependsOnAdministrativeAuthentication) -> UUID:
-    return UsersManager.modify_user(uuid, form, current_user)
+async def __modify_user__(uuid: UUID, form: ModifyUserForm, current_user: DependsOnAdministrativeAuthentication) -> AnyUserExtended:
+    user = UsersManager.modify_user(uuid, form, current_user)
+    
+    if user is None:
+        await GlobalWebSocketManager.disconnect_user(uuid, 4403, "Could not retrieve user account.")
+        
+        logger.error(f"Could not retrieve user account after its modification! uuid={uuid}")
+        raise HTTPException(500, "Internal error occured during modification. Could not find modified user.")
+    
+    if user.disabled:
+        await GlobalWebSocketManager.disconnect_user(uuid, 4403, "User account got disabled")
+        
+    return UsersManager.extend_user_model(user)
     
     
 @router.delete("/delete/{uuid}", response_model=None )

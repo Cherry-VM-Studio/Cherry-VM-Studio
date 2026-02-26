@@ -81,7 +81,7 @@ class _UsersSystemManager():
         if user.account_type == 'client':
             return ClientLibrary.remove_record(uuid)
         
-    def modify_user(self, uuid: UUID, form: ModifyUserForm, logged_in_user: Administrator):
+    def modify_user(self, uuid: UUID, form: ModifyUserForm, logged_in_user: Administrator) -> AnyUser | None:
         user = self.get_user(uuid)
         
         if user is None:
@@ -108,7 +108,7 @@ class _UsersSystemManager():
             
             ClientLibrary.modify_record(uuid, args)
         
-        return uuid
+        return self.get_user(uuid)
         
     def change_password(self, uuid: UUID, new_password: str, logged_in_user: Administrator):
         user = self.get_user(uuid)

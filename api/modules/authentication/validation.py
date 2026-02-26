@@ -35,16 +35,15 @@ def decode_token(token: Token) -> DecodedTokenPayload:
 
 def validate_user_token(token: Token, token_type: TokenTypes) -> AnyUserExtended:
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[AUTHENTICATION_CONFIG.algorithm])
+        payload = decode_token(token)
 
         if not is_token_of_type(payload, token_type):
             raise InvalidTokenError()
 
-        sub = payload.get("sub")
-        uuid = UUID(sub)
+        uuid = UUID(payload.subject)
         user = UsersManager.get_user(uuid)
         
-        if user is None:
+        if user is None or user.disabled:
             raise CredentialsException()
 
         UsersManager.update_user_last_active(user)
@@ -58,7 +57,7 @@ def validate_user_token(token: Token, token_type: TokenTypes) -> AnyUserExtended
 def authenticate_user(username: str, password: str) -> AnyUserExtended | Literal[False]:
     user = UsersManager.get_user_by_username(username)
     
-    if not user:
+    if not user or user.disabled:
         return False
     
     password_in_db = UsersManager.get_user_password(user.uuid)
