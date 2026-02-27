@@ -19,6 +19,12 @@ class WebSocketHandler(BaseModel):
     
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
+    def __hash__(self):
+        return id(self.websocket)
+
+    def __eq__(self, other):
+        return self is other
+
     async def accept(self, raw_token: str) -> None:
         await self.websocket.accept()
         
