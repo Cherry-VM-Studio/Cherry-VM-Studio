@@ -12,11 +12,11 @@ export interface TanstackTableBodyProps {
     table: Table<any>;
     loading: boolean;
     error: Response | null;
-    RowComponent?: React.ReactElement;
+    RowComponent?: React.ComponentType<any>;
     rowProps?: (uuid: string) => Record<string, any>;
 }
 
-const TanstackTableBody = ({ table, loading, error, RowComponent, rowProps }): React.JSX.Element => {
+const TanstackTableBody = ({ table, loading, error, RowComponent, rowProps }: TanstackTableBodyProps): React.JSX.Element => {
     const { t } = useTranslation();
     RowComponent = RowComponent || Box;
 

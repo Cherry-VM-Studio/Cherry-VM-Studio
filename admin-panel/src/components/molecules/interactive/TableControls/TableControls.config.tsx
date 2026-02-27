@@ -9,7 +9,7 @@ const getDefaultButtons = (
     icons: TableControlsIcons,
     translations: TableControlsTranslations,
     viewMode: boolean,
-    deleteMode: boolean
+    deleteMode: boolean,
 ): TableControlsDefaultButtonsConfig => ({
     columns: {
         small: {
@@ -55,7 +55,6 @@ const getDefaultButtons = (
             props: {
                 size: "36",
                 variant: "default",
-                disabled: true,
             },
             children: <icons.import size={20} />,
         },
@@ -67,7 +66,6 @@ const getDefaultButtons = (
                 w: 140,
                 variant: "default",
                 leftSection: <icons.import size={16} />,
-                disabled: true,
             },
             children: translations.import,
         },

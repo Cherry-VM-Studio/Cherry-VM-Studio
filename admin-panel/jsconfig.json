@@ -1,13 +1,11 @@
 {
     "compilerOptions": {
-          "module": "ESNext",              // Keep module as ESNext
-          "target": "es6",
-          "jsx": "preserve",
-          "allowImportingTsExtensions": true,
-          "moduleResolution": "node",      // Add this line to resolve modules like Node.js
-          "types": ["vite/client"]
+        "module": "ESNext", // Keep module as ESNext
+        "target": "es6",
+        "jsx": "preserve",
+        "allowImportingTsExtensions": true,
+        "moduleResolution": "node", // Add this line to resolve modules like Node.js
+        "types": ["vite/client"],
     },
-    "exclude": [
-        "node_modules"
-    ]
+    "exclude": ["node_modules"]
 }

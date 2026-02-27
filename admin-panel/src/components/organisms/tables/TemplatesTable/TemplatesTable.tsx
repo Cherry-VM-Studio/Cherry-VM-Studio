@@ -55,6 +55,9 @@ const TemplatesTable = ({ templates, loading, error, refresh }: TemplatesTablePr
                     create: tns("create-template"),
                 },
                 searchColumnKey: "name",
+                hiddenButtons: {
+                    import: true,
+                },
             }}
         />
     );

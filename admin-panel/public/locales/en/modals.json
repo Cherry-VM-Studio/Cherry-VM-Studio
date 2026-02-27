@@ -24,6 +24,7 @@
     },
     "account": {
         "title-create": "Create new account",
+        "title-import": "Import accounts",
         "name": "Name",
         "surname": "Surname",
         "name-surname": "Name",

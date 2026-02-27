@@ -1,6 +1,6 @@
 import { ScrollArea, SimpleGrid } from "@mantine/core";
 import { useElementSize } from "@mantine/hooks";
-import { keys, round, values } from "lodash";
+import { keys, round } from "lodash";
 import classes from "./MachinesGrid.module.css";
 import MachineCard from "../../../atoms/display/MachineCard/MachineCard";
 import { Machine } from "../../../../types/api.types";

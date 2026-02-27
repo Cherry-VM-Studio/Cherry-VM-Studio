@@ -58,6 +58,7 @@ const GroupsTable = ({ groups, error, loading, refresh, openGroupModal }: Groups
                 },
                 hiddenButtons: {
                     columns: true,
+                    import: true,
                 },
             }}
         />

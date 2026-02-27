@@ -11,6 +11,7 @@ import { AccountType } from "../../../../types/config.types";
 import { prepareData } from "./data";
 import { usePermissions } from "../../../../contexts/PermissionsContext";
 import { AxiosError } from "axios";
+import ImportAccountsModal from "../../../../modals/account/ImportAccountsModal/ImportAccountsModal";
 
 export interface AccountTableProps {
     loading: boolean;
@@ -53,6 +54,10 @@ const AccountTable = ({ accounts, accountType, loading, error, refresh, openAcco
                     },
                     delete: {
                         component: DeleteAccountsModal,
+                    },
+                    import: {
+                        component: ImportAccountsModal,
+                        props: { accountType, onSubmit: refresh },
                     },
                 },
                 translations: {
