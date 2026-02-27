@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 from modules.users.models import AnyUser, AnyUserExtended
 from application.env import SECRET_KEY
 from config.authentication_config import AUTHENTICATION_CONFIG
-from .models import Token, TokenTypes, Tokens
+from .models import DecodedTokenPayload, Token, TokenTypes, Tokens
 
 
 
@@ -31,15 +31,15 @@ def get_user_tokens(user: AnyUser | AnyUserExtended):
     )
     
 
-def is_token_of_type(payload, token_type: TokenTypes):
-    return payload.get("token_type") == token_type
+def is_token_of_type(payload: DecodedTokenPayload, token_type: TokenTypes):
+    return payload.token_type == token_type
 
 
-def is_access_token(payload):
+def is_access_token(payload: DecodedTokenPayload):
     return is_token_of_type(payload, 'access')
 
 
-def is_refresh_token(payload):
+def is_refresh_token(payload: DecodedTokenPayload):
     return is_token_of_type(payload, 'refresh')
 
 
