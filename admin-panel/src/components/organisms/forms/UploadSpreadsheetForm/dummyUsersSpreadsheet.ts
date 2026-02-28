@@ -1,4 +1,4 @@
-const users = [
+const dummyUsersSpreadsheet = [
     {
         name: "Levey",
         surname: "Denecamp",
@@ -181,4 +181,4 @@ const users = [
     },
 ];
 
-export default users;
+export default dummyUsersSpreadsheet;

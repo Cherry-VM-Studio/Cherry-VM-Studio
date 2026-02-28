@@ -70,13 +70,15 @@ const TanstackTableBody = ({ table, loading, error, RowComponent, rowProps }: Ta
             {error ? (
                 <ResourceError
                     icon={IconList}
-                    message={t("error-table")}
+                    title={t("error-occured")}
+                    message={t("error-resources")}
                     mt="-64px"
                 />
             ) : loading ? (
                 <ResourceLoading
                     icon={IconList}
-                    message={t("loading-table")}
+                    title={t("loading")}
+                    message={t("fetching-records")}
                     mt="-64px"
                 />
             ) : (

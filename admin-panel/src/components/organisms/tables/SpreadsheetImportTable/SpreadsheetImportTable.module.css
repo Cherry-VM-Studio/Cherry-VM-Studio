@@ -16,11 +16,23 @@
     width: 100%;
 }
 
+.trError {
+    background-color: color-mix(in srgb, var(--mantine-color-red-8) 10%, transparent);
+}
+
+.trError * {
+    color: var(--mantine-color-red-9);
+}
+
 .tr:has(.th) {
     position: sticky;
     top: 0;
     background-color: var(--mantine-color-dark-6);
     z-index: 100;
+}
+
+.tr:not(:has(.th)) {
+    scroll-margin-top: 45px;
 }
 
 .tr:last-child {
@@ -49,4 +61,17 @@
     justify-content: center;
     align-items: center;
     gap: var(--mantine-spacing-xs);
+}
+
+.errorTooltip {
+    background-color: var(--mantine-color-red-8);
+    color: var(--mantine-color-dark-8);
+    font-weight: 500;
+}
+
+.errorIconWrapper {
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    cursor: help;
 }

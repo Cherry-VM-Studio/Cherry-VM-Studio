@@ -1,23 +1,29 @@
-import { Button, Checkbox, Flex, Group, Modal, Select, Stack, Stepper, Text, TextInput, Title } from "@mantine/core";
+import { Button, Checkbox, Group, Modal, Paper, Select, Stack, Stepper, Text, TextInput, Title } from "@mantine/core";
 import { AccountType } from "../../../types/config.types";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
 import { useEffect, useRef, useState } from "react";
-import { Dropzone, MIME_TYPES } from "@mantine/dropzone";
-import { IconChevronLeft, IconChevronRight, IconFileTypeCsv, IconRepeat, IconUpload, IconX } from "@tabler/icons-react";
-import { isNull, truncate } from "lodash";
-import { formatBytesToRelevantUnit } from "../../../utils/files";
+import {
+    IconArrowBigUpFilled,
+    IconArrowDown,
+    IconArrowUp,
+    IconChevronLeft,
+    IconChevronRight,
+    IconChevronUp,
+    IconEraser,
+    IconRepeat,
+} from "@tabler/icons-react";
+import { isEmpty, isNull, max, min } from "lodash";
 import Papa, { ParseConfig, ParseError, ParseResult } from "papaparse";
 import SpreadsheetImportTable from "../../../components/organisms/tables/SpreadsheetImportTable/SpreadsheetImportTable";
-import dummies from "./dummies.js";
-
+import UploadSpreadsheetForm from "../../../components/organisms/forms/UploadSpreadsheetForm/UploadSpreadsheetForm";
+import ImportAccountsModalHeader from "./ImportAccountsModalHeader";
+import classes from "./ImportAccountsModal.module.css";
 export interface ImportAccountModalProps {
     opened: boolean;
     onClose: () => void;
     onSubmit: () => void;
     accountType: AccountType;
 }
-
-const MAX_CSV_SIZE = 20 * 1024 * 1024; // 20MiB
 
 const ImportAccountsModal = ({ opened, onClose, onSubmit, accountType }: ImportAccountModalProps): React.JSX.Element => {
     const defaultOptions = {
@@ -27,8 +33,6 @@ const ImportAccountsModal = ({ opened, onClose, onSubmit, accountType }: ImportA
         header: true,
     };
 
-    const openRef = useRef<() => void>(null);
-
     const { tns, t } = useNamespaceTranslation("modals", "account");
     const [file, setFile] = useState<File | null>(null);
     const [active, setActive] = useState(0);
@@ -36,13 +40,15 @@ const ImportAccountsModal = ({ opened, onClose, onSubmit, accountType }: ImportA
     const [data, setData] = useState<Array<Record<string, string> | Array<string>>>(null);
     const [headers, setHeaders] = useState<string[] | null>(null);
     const [errors, setErrors] = useState<ParseError[]>([]);
+    const [criticalError, setCriticalError] = useState<ParseError | null>(null);
+    const [currentFocusedError, setCurrentFocusedError] = useState(0);
 
     useEffect(() => {
-        // setActive(0);
-        // setFile(null);
-        // setData(null);
-        // setHeaders(null);
-        // setOptions(defaultOptions);
+        setActive(0);
+        setFile(null);
+        setData(null);
+        setHeaders(null);
+        setOptions(defaultOptions);
     }, [opened]);
 
     useEffect(() => {
@@ -51,6 +57,19 @@ const ImportAccountsModal = ({ opened, onClose, onSubmit, accountType }: ImportA
             setActive(1);
         }
     }, [file]);
+
+    useEffect(() => {
+        if (isEmpty(errors)) return;
+
+        if (currentFocusedError >= errors.length) {
+            setCurrentFocusedError(0);
+            return;
+        }
+
+        const row = errors[currentFocusedError].row;
+
+        document.getElementById(`spreadsheet-table-row-${row}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, [currentFocusedError, errors]);
 
     const parseFile = () => {
         if (!file) return;
@@ -72,6 +91,12 @@ const ImportAccountsModal = ({ opened, onClose, onSubmit, accountType }: ImportA
                         }) as ParseConfig,
                 );
                 setHeaders(res.meta.fields || null);
+
+                const criticalErr = res.errors.find((e) => e.type === "Quotes");
+
+                if (criticalErr) {
+                    setCriticalError(criticalErr);
+                }
             },
         });
     };
@@ -94,190 +119,11 @@ const ImportAccountsModal = ({ opened, onClose, onSubmit, accountType }: ImportA
         }
     };
 
-    const modalHeader = (
-        <Stack
-            pl="8px"
-            pr="32px"
-            pt="16px"
-        >
-            <Stepper
-                active={active}
-                pr="lg"
-            >
-                <Stepper.Step
-                    label="Step 1:"
-                    description="Upload the file"
-                >
-                    <Group
-                        w="100%"
-                        gap="4rem"
-                        pr="xl"
-                    >
-                        <Stack
-                            gap="4"
-                            flex="1"
-                        >
-                            <Title
-                                order={2}
-                                mt="lg"
-                            >
-                                Upload the file
-                            </Title>
-                            <Text>Make sure the file is in the CSV format.</Text>
-                        </Stack>
-                        <Stack
-                            gap="4"
-                            flex="1"
-                        >
-                            <Title
-                                order={2}
-                                mt="lg"
-                            >
-                                The data we're looking for
-                            </Title>
-                            <Text>You will have the chance to rename and rearange the columns in the next steps. </Text>
-                        </Stack>
-                    </Group>
-                </Stepper.Step>
-                <Stepper.Step
-                    label="Step 2:"
-                    description="Choose parsing options"
-                >
-                    <Stack
-                        gap="4"
-                        flex="1"
-                    >
-                        <Title
-                            order={2}
-                            mt="lg"
-                        >
-                            Configure parsing
-                        </Title>
-                        <Text>Define the parsing configuration and click the reparse button submit changes.</Text>
-                    </Stack>
-                </Stepper.Step>
-                <Stepper.Step
-                    label="Step 3:"
-                    description="Assign columns to parameters"
-                />
-                <Stepper.Step
-                    label="Step 4:"
-                    description="Validate and submit"
-                />
-            </Stepper>
-        </Stack>
-    );
-
     const content = [
-        <>
-            <Group
-                w="100%"
-                gap="4rem"
-                align="start"
-                flex="1"
-                mih="0"
-                pb="xl"
-                pr="xl"
-            >
-                <Flex
-                    flex="1"
-                    h="100%"
-                    maw="50%"
-                >
-                    <Dropzone
-                        acceptColor="lime.6"
-                        accept={[MIME_TYPES.csv]}
-                        multiple={false}
-                        maxFiles={1}
-                        onDrop={(files) => setFile(files[0])}
-                        onReject={(files) => console.log(files)}
-                        maxSize={MAX_CSV_SIZE}
-                        flex="1"
-                        p="lg"
-                        styles={{
-                            inner: {
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                height: "100%",
-                                flexDirection: "column",
-                                gap: "var(--mantine-spacing-lg)",
-                            },
-                        }}
-                        activateOnClick={false}
-                        openRef={openRef}
-                    >
-                        <Group
-                            justify="center"
-                            gap="xl"
-                            style={{ pointerEvents: "none" }}
-                        >
-                            <Dropzone.Accept>
-                                <IconUpload
-                                    size={52}
-                                    color="var(--mantine-color-lime-5)"
-                                    stroke={1.5}
-                                />
-                            </Dropzone.Accept>
-                            <Dropzone.Reject>
-                                <IconX
-                                    size={52}
-                                    color="var(--mantine-color-cherry-6)"
-                                    stroke={1.5}
-                                />
-                            </Dropzone.Reject>
-                            <Dropzone.Idle>
-                                <IconFileTypeCsv
-                                    size={52}
-                                    color={isNull(file) ? "white" : "var(--mantine-color-lime-5)"}
-                                    stroke={1.5}
-                                />
-                            </Dropzone.Idle>
-
-                            <div>
-                                <Text
-                                    size="xl"
-                                    inline
-                                    c="white"
-                                >
-                                    Drag your CSV spreadsheet here
-                                </Text>
-                                <Text
-                                    size="sm"
-                                    inline
-                                    mt={7}
-                                    c="dark.1"
-                                >
-                                    File should not exceed 20MB
-                                </Text>
-                            </div>
-                        </Group>
-                        <Button
-                            w="140"
-                            variant="white"
-                            c="black"
-                            onClick={() => openRef.current?.()}
-                            style={{ pointerEvents: "all" }}
-                        >
-                            Upload file
-                        </Button>
-                    </Dropzone>
-                </Flex>
-                <Flex
-                    flex="1"
-                    mah="100%"
-                    maw="50%"
-                >
-                    <SpreadsheetImportTable
-                        headers={["name", "surname", "email", "username", "password", "account_type", "memberships"]}
-                        loading={false}
-                        readOnly
-                        records={dummies}
-                        errors={[]}
-                    />
-                </Flex>
-            </Group>
-        </>,
+        <UploadSpreadsheetForm
+            onUpload={(f) => setFile(f)}
+            onReject={() => console.error("File rejected")}
+        />,
         <>
             <Stack gap="md">
                 <Group>
@@ -357,8 +203,57 @@ const ImportAccountsModal = ({ opened, onClose, onSubmit, accountType }: ImportA
                 headers={headers}
                 loading={isNull(data)}
                 readOnly
-                errors={errors}
+                rowErrors={errors}
+                criticalError={criticalError}
             />
+            <Paper
+                bg="dark.8"
+                p="sm"
+                bd="1px solid var(--mantine-color-dark-6)"
+            >
+                <Group>
+                    <Text
+                        c={isEmpty(errors) ? "lime" : "red.7"}
+                        fw="600"
+                    >
+                        Parsing completed: {isEmpty(errors) ? `No errors detected` : `${errors.length} row errors detected.`}
+                    </Text>
+                    {!isEmpty(errors) ? (
+                        <>
+                            <Button
+                                variant="light"
+                                color="gray"
+                                size="compact-sm"
+                                onClick={() => setCurrentFocusedError(0)}
+                            >
+                                Jump to first
+                            </Button>
+                            <Button
+                                variant="light"
+                                color="gray"
+                                size="compact-sm"
+                                onClick={() => setCurrentFocusedError((prev) => prev + 1)}
+                            >
+                                Jump to next
+                            </Button>
+                            <Button
+                                variant="light"
+                                color="gray"
+                                size="compact-sm"
+                                onClick={() => setErrors([])}
+                            >
+                                <Group gap="6">
+                                    <IconEraser
+                                        size="16"
+                                        stroke={3}
+                                    />
+                                    Ignore all
+                                </Group>
+                            </Button>
+                        </>
+                    ) : undefined}
+                </Group>
+            </Paper>
             <Group
                 justify="center"
                 mt="auto"
@@ -394,7 +289,7 @@ const ImportAccountsModal = ({ opened, onClose, onSubmit, accountType }: ImportA
                     c={isNull(file) ? "dimmed" : "black"}
                     styles={{ label: { width: "100%", justifyContent: "center" } }}
                     p="0"
-                    disabled={isNull(file)}
+                    disabled={isNull(data) || !isEmpty(errors)}
                     onClick={() => {
                         setActive(1);
                         parseFile();
@@ -418,38 +313,19 @@ const ImportAccountsModal = ({ opened, onClose, onSubmit, accountType }: ImportA
     return (
         <Modal
             opened={opened}
-            title={modalHeader}
+            title={<ImportAccountsModalHeader activeStep={active} />}
             onClose={onClose}
             size="auto"
             fullScreen
-            styles={{
-                inner: {
-                    margin: 32,
-                    width: "calc(100vw - 64px)",
-                },
-                content: {
-                    width: "calc(100vw - 64px)",
-                    height: "calc(100vh - 64px)",
-                    maxHeight: "calc(100vh - 64px)",
-                    borderRadius: "var(--mantine-radius-lg)",
-                    display: "flex",
-                    flexDirection: "column",
-                },
-                body: {
-                    padding: "0 20px 20px",
-                    minHeight: "0",
-                    flex: 1,
-                },
-                title: { fontSize: "var(--mantine-h2-font-size)", flex: 1 },
-                header: { alignItems: "start", minHeight: "fit-content" },
+            classNames={{
+                inner: classes.modalInner,
+                content: classes.modalContent,
+                body: classes.modalBody,
+                header: classes.modalHeader,
+                title: classes.modalTitle,
             }}
         >
-            <Stack
-                h="100%"
-                flex="1"
-            >
-                {content[active]}
-            </Stack>
+            <Stack className={classes.modalStack}>{content[active]}</Stack>
         </Modal>
     );
 };

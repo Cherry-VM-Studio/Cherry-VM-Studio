@@ -1,0 +1,19 @@
+.container {
+    padding: 1rem 2rem 0 0.5rem;
+}
+
+.stepper {
+    padding-right: var(--mantine-spacing-lg);
+}
+
+.titleGroup1 {
+    width: 100%;
+    gap: 4rem;
+    padding-right: var(--mantine-spacing-xl);
+}
+
+.titleStack {
+    gap: 4px;
+    flex: 1;
+    margin-top: var(--mantine-spacing-lg);
+}

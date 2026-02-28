@@ -85,5 +85,10 @@
     "shutting-down": "Shutting down",
     "booting-up": "Booting up",
     "error": "Error",
-    "active": "Active"
+    "active": "Active",
+    "fetching-records": "Fetching table records",
+    "parsing-spreadsheet-file": "Parsing the spreadsheet file",
+    "error-parsing": "Could not parse the file: {{error}}",
+    "error-occured": "Error occured",
+    "error-resources": "Could not load the resources."
 }
