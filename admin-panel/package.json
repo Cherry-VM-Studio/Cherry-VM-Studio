@@ -20,6 +20,7 @@
         "@mantine/notifications": "^8.3.3",
         "@tabler/icons-react": "^3.34.0",
         "@tanstack/react-table": "^8.21.2",
+        "@tanstack/react-virtual": "^3.13.19",
         "@xyflow/react": "^12.3.2",
         "axios": "^1.12.2",
         "classnames": "^2.5.1",

@@ -5,7 +5,6 @@ import { useRef } from "react";
 import SpreadsheetImportTable from "../../tables/SpreadsheetImportTable/SpreadsheetImportTable";
 import dummyUsersSpreadsheet from "./dummyUsersSpreadsheet";
 import classes from "./UploadSpreadsheetForm.module.css";
-import cs from "classnames";
 
 export interface UploadSpreadsheetFormProps {
     onUpload: (file: FileWithPath) => void;

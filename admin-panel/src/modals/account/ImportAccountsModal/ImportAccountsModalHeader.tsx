@@ -39,7 +39,12 @@ const ImportAccountsModalHeader = ({ activeStep }: ImportAccountsModalHeaderProp
                 <Stepper.Step
                     label="Step 3:"
                     description="Assign columns to parameters"
-                />
+                >
+                    <Stack className={classes.titleStack}>
+                        <Title order={2}>Assign columns</Title>
+                        <Text>Match your columns to the account creation parameters.</Text>
+                    </Stack>
+                </Stepper.Step>
                 <Stepper.Step
                     label="Step 4:"
                     description="Validate and submit"

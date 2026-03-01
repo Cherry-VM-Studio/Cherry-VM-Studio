@@ -1,0 +1,27 @@
+.rightControlsGroup {
+    flex: 1;
+    margin-top: 42px;
+}
+
+.checkboxLabel {
+    font-size: 14px;
+}
+
+.reparseButton {
+    width: 120px;
+    font-weight: 500;
+    background-color: white;
+    color: black;
+    margin-left: auto;
+}
+
+.nextButtonLabel {
+    width: 100%;
+    justify-content: center;
+}
+
+.outputPaper {
+    background-color: var(--mantine-color-dark-8);
+    padding: var(--mantine-spacing-sm);
+    border: 1px solid var(--mantine-color-dark-6);
+}

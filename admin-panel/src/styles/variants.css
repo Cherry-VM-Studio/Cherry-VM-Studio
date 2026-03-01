@@ -24,3 +24,11 @@
 .full-height {
     height: 100%;
 }
+
+button[data-variant="white"] {
+    color: black !important;
+
+    &[data-disabled] {
+        color: var(--mantine-color-dimmed) !important;
+    }
+}
