@@ -12,11 +12,10 @@ export interface AssignColsSpreadsheetForm {
     headers: string[] | null;
     onCancel?: () => void;
     onSubmit?: (assignment: Record<string, string>) => void;
+    properties: string[];
 }
 
-const PROPERTIES = ["name", "surname", "email", "username", "password", "account_type", "memberships"] as const;
-
-const AssignColsSpreadsheetForm = ({ data, headers, onCancel, onSubmit }: AssignColsSpreadsheetForm): React.JSX.Element => {
+const AssignColsSpreadsheetForm = ({ properties, data, headers, onCancel, onSubmit }: AssignColsSpreadsheetForm): React.JSX.Element => {
     const { tns, t } = useNamespaceTranslation("modals", "account");
 
     const [assignment, setAssignment] = useState({});
@@ -35,12 +34,12 @@ const AssignColsSpreadsheetForm = ({ data, headers, onCancel, onSubmit }: Assign
                 propertyAssignment={{
                     assignment,
                     setAssignment,
-                    properties: [...PROPERTIES],
+                    properties: [...properties],
                 }}
             />
             <Paper className={classes.outputPaper}>
                 <Text fw="600">
-                    Assigned {values(assignment).filter((e) => e).length} of {PROPERTIES.length} properties.
+                    Assigned {values(assignment).filter((e) => e).length} of {properties.length} properties.
                 </Text>
             </Paper>
             <Group

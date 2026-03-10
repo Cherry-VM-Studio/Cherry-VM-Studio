@@ -90,5 +90,6 @@
     "parsing-spreadsheet-file": "Parsing the spreadsheet file",
     "error-parsing": "Could not parse the file: {{error}}",
     "error-occured": "Error occured",
-    "error-resources": "Could not load the resources."
+    "error-resources": "Could not load the resources.",
+    "submit": "Submit"
 }

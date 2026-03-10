@@ -11,7 +11,7 @@ export interface AssignPropertiesHeaderProps {
 
 const AssignPropertiesHeader = ({ properties, values, setValues, columnKey }): React.JSX.Element => {
     const onChange = (val: string | null) => setValues((prev: Record<string, string>) => ({ ...prev, [columnKey]: val }));
-    const filteredData = properties.filter((prop: string) => prop === values[columnKey] || !(prop in _.values(values)));
+    const filteredData = properties.filter((prop: string) => prop === values[columnKey] || !_.values(values).includes(prop));
 
     return (
         <Select

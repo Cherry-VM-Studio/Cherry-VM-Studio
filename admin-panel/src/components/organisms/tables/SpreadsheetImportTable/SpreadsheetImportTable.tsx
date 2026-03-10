@@ -1,6 +1,6 @@
 import { Box, Flex, ScrollArea, Select, TextInput, Tooltip } from "@mantine/core";
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import { isEmpty, isNull, isUndefined, keys, values } from "lodash";
+import { isBoolean, isEmpty, isNull, isUndefined, keys, values } from "lodash";
 import React, { useMemo } from "react";
 import { IconCircle, IconCircleCheck, IconExclamationCircleFilled, IconFileAlert, IconList } from "@tabler/icons-react";
 import ResourceLoading from "../../../atoms/feedback/ResourceLoading/ResourceLoading";
@@ -12,12 +12,19 @@ import ResourceError from "../../../atoms/feedback/ResourceError/ResourceError";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import AssignPropertiesHeader from "../../../atoms/table/AssignPropertiesHeader";
 
+export interface RowError {
+    row: number;
+    message?: string;
+    field?: string;
+}
+
 export interface SpreadsheetImportTableProps {
     records: Array<Array<string> | Record<string, string>>;
     headers?: string[] | null;
     loading?: boolean;
     readOnly?: boolean;
-    rowErrors?: ParseError[];
+    setCellData?: (rowId: number, colKey: string, newValue: string) => void;
+    rowErrors?: RowError[];
     criticalError?: ParseError;
     propertyAssignment?: {
         assignment: Record<string, string>;
@@ -63,6 +70,7 @@ const SpreadsheetImportTable = ({
     criticalError = null,
     readOnly = false,
     propertyAssignment = null,
+    setCellData = undefined,
 }: SpreadsheetImportTableProps): React.JSX.Element => {
     const { t } = useTranslation();
 
@@ -71,9 +79,17 @@ const SpreadsheetImportTable = ({
     const data = useMemo(() => {
         if (!records?.length) return [];
 
+        const findError = (index: number) => {
+            const err = rowErrors?.find((e) => e.row === index);
+
+            if (isUndefined(err)) return;
+
+            return err?.message ?? true;
+        };
+
         return records.map((record, index) => ({
             ...(record as Record<string, string>),
-            __error__: rowErrors?.find((e) => e.row === index)?.message,
+            __error__: findError(index),
         }));
     }, [JSON.stringify(records), JSON.stringify(rowErrors)]);
 
@@ -92,12 +108,13 @@ const SpreadsheetImportTable = ({
                     ) : (
                         <Flex className={classes.cellText}>{key}</Flex>
                     ),
-                cell: ({ getValue }) =>
+                cell: ({ getValue, row, column }) =>
                     readOnly ? (
                         <Flex className={classes.cellText}>{getValue() as string}</Flex>
                     ) : (
                         <TextInput
                             value={getValue()}
+                            onChange={(e) => setCellData(row.index, key, e.currentTarget.value)}
                             variant="unstyled"
                             styles={{ input: { textOverflow: "ellipsis" } }}
                         />
@@ -113,12 +130,15 @@ const SpreadsheetImportTable = ({
         () => ({
             accessorKey: "__error__",
             header: undefined,
-            cell: ({ getValue }) =>
-                getValue() ? (
+            cell: ({ getValue }) => {
+                const val = getValue();
+
+                return val ? (
                     <Tooltip
-                        label={getValue()}
+                        label={val}
                         position="right"
                         className={classes.errorTooltip}
+                        disabled={isBoolean(val)}
                     >
                         <Flex className={classes.errorIconWrapper}>
                             <IconExclamationCircleFilled
@@ -129,7 +149,9 @@ const SpreadsheetImportTable = ({
                     </Tooltip>
                 ) : (
                     <></>
-                ),
+                );
+            },
+
             minSize: 48,
             maxSize: 48,
         }),

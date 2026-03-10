@@ -48,7 +48,12 @@ const ImportAccountsModalHeader = ({ activeStep }: ImportAccountsModalHeaderProp
                 <Stepper.Step
                     label="Step 4:"
                     description="Validate and submit"
-                />
+                >
+                    <Stack className={classes.titleStack}>
+                        <Title order={2}>Validate data</Title>
+                        <Text>Review the account details and resolve any validation issues.</Text>
+                    </Stack>
+                </Stepper.Step>
             </Stepper>
         </Stack>
     );

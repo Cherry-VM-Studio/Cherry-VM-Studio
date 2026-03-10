@@ -1,6 +1,3 @@
-import { NumberFormatterFactory } from "@mantine/core";
-import { AccountType } from "./config.types";
-
 export interface TokenRequestForm {
     username: string;
     password: string;
@@ -97,6 +94,18 @@ export interface RoleExtended extends Omit<Role, "users"> {
 export type User = Administrator | Client;
 
 export type UserExtended = AdministratorExtended | ClientExtended;
+
+export interface CreateUserForm {
+    username: string;
+    password: string;
+    name: string;
+    surname: string;
+    email: string;
+    disabled: boolean;
+    account_type: "administrative" | "client";
+    roles?: string[];
+    groups?: string[];
+}
 
 // machines
 

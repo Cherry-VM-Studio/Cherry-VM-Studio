@@ -11,7 +11,7 @@ export interface UploadSpreadsheetFormProps {
     onReject: (file: FileRejection) => void;
 }
 
-const MAX_CSV_SIZE = 10 * 1024 * 1024; // 10MiB
+const MAX_CSV_SIZE = 5 * 1024 * 1024; // 5MiB
 
 const UploadSpreadsheetForm = ({ onUpload, onReject }: UploadSpreadsheetFormProps): React.JSX.Element => {
     const openRef = useRef<() => void>(null);
@@ -68,7 +68,7 @@ const UploadSpreadsheetForm = ({ onUpload, onReject }: UploadSpreadsheetFormProp
                                 mt={7}
                                 c="dark.1"
                             >
-                                File should not exceed 10MB
+                                File should not exceed 5MB
                             </Text>
                         </div>
                     </Group>
