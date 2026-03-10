@@ -1,7 +1,25 @@
 import datetime as dt
 from typing import Literal, Union
 from uuid import UUID, uuid4
-from pydantic import BaseModel, model_validator
+from pydantic import BaseModel, field_validator, model_validator
+from pydantic import BaseModel, field_validator
+from uuid import UUID, uuid4
+
+class StrippedModel(BaseModel):
+    @field_validator("*", mode="before")
+    @classmethod
+    def strip_strings(cls, value):
+        if isinstance(value, str):
+            return value.strip()
+        return value
+    
+class UUIDModel(StrippedModel):
+    uuid: UUID
+
+    @model_validator(mode="after")
+    def set_uuid(self):
+        self.uuid = uuid4()
+        return self
 
 # 
 #   BASE TYPES
@@ -111,7 +129,7 @@ class GetUsersFilters(BaseModel):
     role: UUID | None = None
     group: UUID | None = None
 
-class CreateAdministratorForm(BaseModel):
+class CreateAdministratorForm(StrippedModel):
     password: str
     username: str
     email: str | None = None
@@ -121,8 +139,7 @@ class CreateAdministratorForm(BaseModel):
     account_type: Literal["administrative"] = "administrative"
     roles: list[UUID] = []
     
-    
-class CreateClientForm(BaseModel):
+class CreateClientForm(StrippedModel):
     password: str
     username: str
     email: str | None = None
@@ -132,11 +149,11 @@ class CreateClientForm(BaseModel):
     account_type: Literal["client"] = "client"
     groups: list[UUID] = []
     
-class CreateGroupForm(BaseModel):
+class CreateGroupForm(StrippedModel):
     name: str
     users: list[UUID]
 
-class ModifyUserForm(BaseModel):
+class ModifyUserForm(StrippedModel):
     username: str | None = None
     email: str | None = None
     name: str | None = None
@@ -152,34 +169,19 @@ class ModifyUserArgs(BaseModel):
     surname: str | None = None
     disabled: bool | None = None
 
-class CreateAdministratorArgs(CreateAdministratorForm):
-    uuid: UUID = uuid4()
+class CreateAdministratorArgs(CreateAdministratorForm, UUIDModel):
+    pass
     
-    @model_validator(mode="after")
-    def __randomize_uuid__(self):
-        self.uuid = uuid4()
-        return self
+class CreateClientArgs(CreateClientForm, UUIDModel):
+    pass
     
-class CreateClientArgs(CreateClientForm):
-    uuid: UUID = uuid4()
-    
-    @model_validator(mode="after")
-    def __randomize_uuid__(self):
-        self.uuid = uuid4()
-        return self
-    
-class CreateGroupArgs(CreateGroupForm):
-    uuid: UUID = uuid4()
-    
-    @model_validator(mode="after")
-    def __randomize_uuid__(self):
-        self.uuid = uuid4()
-        return self
+class CreateGroupArgs(CreateGroupForm, UUIDModel):
+    pass
 
 class ChangePasswordBody(BaseModel):
     password: str
     
-class RenameGroupBody (BaseModel):
+class RenameGroupBody (StrippedModel):
     name: str
 
 # 

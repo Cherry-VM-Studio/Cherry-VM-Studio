@@ -1,5 +1,5 @@
 from uuid import UUID
-from pydantic import BaseModel, model_validator
+from pydantic import BaseModel, field_validator, model_validator
 from typing import Optional, Literal, Union, TypedDict
 from dataclasses import dataclass
 
@@ -116,6 +116,20 @@ class CreateMachineForm(BaseModel):
     disks: list[CreateMachineFormDisk]
     os_disk: int = 0
     
+    @field_validator("title", "description", mode="before")
+    @classmethod
+    def strip_strings(cls, value):
+        if isinstance(value, str):
+            return value.strip()
+        return value
+    
+    @field_validator("tags", mode="before")
+    @classmethod
+    def strip_set(cls, value):
+        if value is None:
+            return value
+        return {s.strip() for s in value}
+    
 class MachineBulkSpec(BaseModel):
     machine_config: CreateMachineForm
     machine_count: int
@@ -130,3 +144,17 @@ class ModifyMachineForm(BaseModel):
     
     config: CreateMachineFormConfig | None = None
     disks: list[CreateMachineFormDisk] | None = None
+    
+    @field_validator("title", "description", mode="before")
+    @classmethod
+    def strip_strings(cls, value):
+        if isinstance(value, str):
+            return value.strip()
+        return value
+    
+    @field_validator("tags", mode="before")
+    @classmethod
+    def strip_set(cls, value):
+        if value is None:
+            return value
+        return {s.strip() for s in value}
