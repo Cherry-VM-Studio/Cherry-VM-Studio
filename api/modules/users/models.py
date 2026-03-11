@@ -10,8 +10,6 @@ class StrippedModel(BaseModel):
     @classmethod
     def strip_strings(cls, value):
         if isinstance(value, str):
-            if not len(value):
-                return None
             return value.strip()
         return value
     

@@ -57,7 +57,10 @@ class _UsersSystemManager():
         if user.account_type == 'client':
             return ClientLibrary.extend_model(user)
     
-    def create_user(self, form: CreateAnyUserForm, logged_in_user: Administrator) -> UUID:               
+    def create_user(self, form: CreateAnyUserForm, logged_in_user: Administrator) -> UUID:        
+        if form.email and not len(form.email):
+            form.email = None
+               
         validate_user_creation(form)
         
         if form.account_type == 'administrative':
