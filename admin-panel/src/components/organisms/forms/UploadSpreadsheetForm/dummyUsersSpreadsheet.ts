@@ -5,8 +5,6 @@ const dummyUsersSpreadsheet = [
         email: "ldenecamp0@java.com",
         username: "ldenecamp0",
         password: 'uI5?6"tiAAIK',
-        account_type: "client",
-        memberships: "Dogs",
     },
     {
         name: "Erma",
@@ -14,8 +12,6 @@ const dummyUsersSpreadsheet = [
         email: "egavagan2@godaddy.com",
         username: "egavagan2",
         password: "gI2`4BGGu+{Scz}o+#",
-        account_type: "client",
-        memberships: "Cats",
     },
     {
         name: "Billy",
@@ -23,8 +19,6 @@ const dummyUsersSpreadsheet = [
         email: "bchoak4@noaa.gov",
         username: "bchoak4",
         password: "xH3\\tDWLy@OS~*a",
-        account_type: "client",
-        memberships: "Dogs&Cats",
     },
     {
         name: "Laverna",
@@ -32,8 +26,6 @@ const dummyUsersSpreadsheet = [
         email: "lpendrid5@lulu.com",
         username: "lpendrid5",
         password: "lN5!2an}%ChE<>/",
-        account_type: "client",
-        memberships: "Dogs&Cats",
     },
     {
         name: "Carly",
@@ -41,8 +33,6 @@ const dummyUsersSpreadsheet = [
         email: "cgingedale6@sbwire.com",
         username: "cgingedale6",
         password: "uB3_I&k,Jo}nDD",
-        account_type: "client",
-        memberships: "Dogs&Cats",
     },
     {
         name: "Garret",
@@ -50,8 +40,6 @@ const dummyUsersSpreadsheet = [
         email: "gbryett7@altervista.org",
         username: "gbryett7",
         password: "hQ3+FD&$&)6fsmDDUz",
-        account_type: "client",
-        memberships: "Cats",
     },
     {
         name: "Efren",
@@ -59,8 +47,6 @@ const dummyUsersSpreadsheet = [
         email: "eshilburne9@homestead.com",
         username: "eshilburne9",
         password: "yM2=2=#qh92s}O9",
-        account_type: "client",
-        memberships: "Dogs",
     },
     {
         name: "Bernhard",
@@ -68,8 +54,6 @@ const dummyUsersSpreadsheet = [
         email: "bgowthropa@flickr.com",
         username: "bgowthropa",
         password: "uP8(Pn*2f%Fdp",
-        account_type: "client",
-        memberships: "Cats",
     },
     {
         name: "Bartholomeo",
@@ -77,8 +61,6 @@ const dummyUsersSpreadsheet = [
         email: "bvennings3@huffingtonpost.com",
         username: "bvennings3",
         password: "sW7=#Pq%jo?+0_",
-        account_type: "administrative",
-        memberships: "ISO File Manager",
     },
     {
         name: "Ethelind",
@@ -86,8 +68,6 @@ const dummyUsersSpreadsheet = [
         email: "ecanton1@delicious.com",
         username: "ecanton1",
         password: 'vH2+7=upnb"zb',
-        account_type: "administrative",
-        memberships: "Machine Manager&ISO File Manager",
     },
 
     {
@@ -96,8 +76,6 @@ const dummyUsersSpreadsheet = [
         email: "fmccurley8@desdev.cn",
         username: "fmccurley8",
         password: "zD4`zsf6Nno<IAZCkOr",
-        account_type: "administrative",
-        memberships: "Machine Manager",
     },
 
     {
@@ -106,8 +84,6 @@ const dummyUsersSpreadsheet = [
         email: "bfeldonb@ucoz.ru",
         username: "bfeldonb",
         password: "xZ2,J/Lq{W",
-        account_type: "administrative",
-        memberships: "Machine Manager&ISO File Manager",
     },
     {
         name: "Sissy",
@@ -115,8 +91,6 @@ const dummyUsersSpreadsheet = [
         email: "scruickshankc@delicious.com",
         username: "scruickshankc",
         password: "wP1&f,VOHBrMWvT8",
-        account_type: "administrative",
-        memberships: "Machine Manager",
     },
     {
         name: "Walt",
@@ -124,8 +98,6 @@ const dummyUsersSpreadsheet = [
         email: "wgawnd@webmd.com",
         username: "wgawnd",
         password: "rM3}j\"l)ZYjxuuhn$F'O",
-        account_type: "administrative",
-        memberships: "Machine Manager&ISO File Manager",
     },
 
     {
@@ -134,8 +106,6 @@ const dummyUsersSpreadsheet = [
         email: "cbenoith@zdnet.com",
         username: "cbenoith",
         password: 'pF4?saJW"Ve',
-        account_type: "administrative",
-        memberships: "Machine Manager",
     },
 
     {
@@ -144,8 +114,6 @@ const dummyUsersSpreadsheet = [
         email: "ogarej@ning.com",
         username: "ogarej",
         password: "cB5/r5<AZ.#xA",
-        account_type: "administrative",
-        memberships: "Machine Manager&ISO File Manager",
     },
 ];
 

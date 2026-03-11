@@ -29,7 +29,7 @@ const resolveDuplicate = (val: string, maxChars: number, values: string[]): stri
     let id = "001";
     let newVal = `${trimmed}-${id}`;
 
-    while (moreThanOnce(values, newVal)) {
+    while (values.includes(newVal)) {
         id = incrementBase32(id);
         newVal = `${trimmed}-${id}`;
     }
@@ -50,8 +50,8 @@ const generateUsername = (target: Record<string, string>, values: string[]) => {
     else if (email) username = email.slice(0, 20);
     else username = resolveDuplicate("account", 24, values);
 
-    if (moreThanOnce(values, username)) {
-        resolveDuplicate(username, 24, values);
+    if (values.includes(username)) {
+        username = resolveDuplicate(username, 24, values);
     }
 
     return username;
@@ -107,26 +107,6 @@ const VALIDATION = {
             },
         },
         {
-            key: "too-short",
-            message: "Username must be at least 3 characters long.",
-            autofixMessage: "Appends a tag to the end of the username.",
-            validate: (val) => val?.length < 3,
-            autofix: (val, _, values) => {
-                return resolveDuplicate(val, 24, values);
-            },
-        },
-        {
-            key: "too-long",
-            message: "Username length cannot exceed 24 characters.",
-            autofixMessage: "Truncates the username to fit the length limits. Might append a tag to the end of the username in case of a duplicate.",
-            validate: (val) => val?.length > 24,
-            autofix: (val, _, values) => {
-                let trimmed = val.slice(0, 24);
-                if (moreThanOnce(values, trimmed)) trimmed = resolveDuplicate(trimmed, 24, values);
-                return trimmed;
-            },
-        },
-        {
             key: "invalid-chars",
             message: "Username contains invalid characters.",
             autofixMessage: "Generates a username automatically from other properties such as name, surname, or email.",
@@ -148,9 +128,31 @@ const VALIDATION = {
             key: "duplicate",
             message: "Duplicate username found.",
             autofixMessage: "Appends a tag to the end of the username. The username may be truncated to fit length limits.",
-            validate: (val, _, values) => val && values.includes(val),
+            validate: (val, _, values) => {
+                return val && moreThanOnce(values, val);
+            },
             autofix: (val, _, values) => {
                 return resolveDuplicate(val, 24, values);
+            },
+        },
+        {
+            key: "too-short",
+            message: "Username must be at least 3 characters long.",
+            autofixMessage: "Appends a tag to the end of the username.",
+            validate: (val) => val && val?.length < 3,
+            autofix: (val, _, values) => {
+                return resolveDuplicate(val, 24, values);
+            },
+        },
+        {
+            key: "too-long",
+            message: "Username length cannot exceed 24 characters.",
+            autofixMessage: "Truncates the username to fit the length limits. Might append a tag to the end of the username in case of a duplicate.",
+            validate: (val) => val && val?.length > 24,
+            autofix: (val, _, values) => {
+                let trimmed = val.slice(0, 24);
+                if (moreThanOnce(values, trimmed)) trimmed = resolveDuplicate(trimmed, 24, values);
+                return trimmed;
             },
         },
     ],
@@ -159,7 +161,7 @@ const VALIDATION = {
             key: "too-short",
             message: "Password must be at least 12 characters long.",
             autofixMessage: "Generate a secure password.",
-            validate: (val) => val?.length < 12,
+            validate: (val) => !val || val?.length < 12,
             autofix: () => generatePassword(16),
         },
         {
@@ -192,12 +194,12 @@ const VALIDATION = {
             validate: (val) => val?.length && !/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,})+$/.test(val),
             autofix: () => "",
         },
-    ],
-    account_type: [
         {
-            key: "invalid",
-            message: 'Account type must be either "client" or "administrative".',
-            validate: (val) => !["client", "administrative"].includes(val?.toLowerCase()),
+            key: "duplicate",
+            message: "Duplicate username found.",
+            autofixMessage: "Erase duplicate emails.",
+            validate: (val, _, values) => val && moreThanOnce(values, val),
+            autofix: () => "",
         },
     ],
 } as ValidationConfig;

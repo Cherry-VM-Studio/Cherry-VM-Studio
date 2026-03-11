@@ -55,6 +55,7 @@ const getDefaultButtons = (
             props: {
                 size: "36",
                 variant: "default",
+                disabled: viewMode,
             },
             children: <icons.import size={20} />,
         },
@@ -66,6 +67,8 @@ const getDefaultButtons = (
                 w: 140,
                 variant: "default",
                 leftSection: <icons.import size={16} />,
+
+                disabled: viewMode,
             },
             children: translations.import,
         },

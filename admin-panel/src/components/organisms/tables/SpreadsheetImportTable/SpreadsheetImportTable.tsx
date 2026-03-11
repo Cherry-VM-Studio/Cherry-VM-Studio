@@ -1,8 +1,8 @@
 import { Box, Flex, ScrollArea, Select, TextInput, Tooltip } from "@mantine/core";
 import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import { isBoolean, isEmpty, isNull, isUndefined, keys, values } from "lodash";
+import { isBoolean, isEmpty, isNull, isUndefined, keys } from "lodash";
 import React, { useMemo } from "react";
-import { IconCircle, IconCircleCheck, IconExclamationCircleFilled, IconFileAlert, IconList } from "@tabler/icons-react";
+import { IconExclamationCircle, IconFileAlert, IconList } from "@tabler/icons-react";
 import ResourceLoading from "../../../atoms/feedback/ResourceLoading/ResourceLoading";
 import { useTranslation } from "react-i18next";
 import classes from "./SpreadsheetImportTable.module.css";
@@ -33,35 +33,6 @@ export interface SpreadsheetImportTableProps {
     };
 }
 
-interface SelectHeaderCellProps {
-    columnKey: string;
-    propertyAssignment: SpreadsheetImportTableProps["propertyAssignment"];
-}
-
-const SelectHeaderCell = React.memo(({ columnKey, propertyAssignment }: SelectHeaderCellProps) => {
-    const { assignment, setAssignment, properties } = propertyAssignment!;
-
-    const onChange = React.useCallback(
-        (val: string) => {
-            if (assignment[columnKey] === val) return; // no-op if same
-            setAssignment((prev) => ({ ...prev, [columnKey]: val }));
-        },
-        [assignment, columnKey, setAssignment],
-    );
-
-    return (
-        <Select
-            w="100%"
-            variant="filled"
-            value={assignment[columnKey]}
-            onChange={onChange}
-            data={properties}
-            mt="xs"
-            mb="xs"
-        />
-    );
-});
-
 const SpreadsheetImportTable = ({
     records,
     headers = null,
@@ -79,19 +50,36 @@ const SpreadsheetImportTable = ({
     const data = useMemo(() => {
         if (!records?.length) return [];
 
-        const findError = (index: number) => {
-            const err = rowErrors?.find((e) => e.row === index);
-
-            if (isUndefined(err)) return;
-
-            return err?.message ?? true;
-        };
-
-        return records.map((record, index) => ({
-            ...(record as Record<string, string>),
-            __error__: findError(index),
+        const errorsMap = new Map(rowErrors?.map((e) => [e.row, e?.message ?? true]));
+        return records.map((r, i) => ({
+            ...r,
+            __error__: errorsMap.get(i),
         }));
     }, [JSON.stringify(records), JSON.stringify(rowErrors)]);
+
+    const EditableCell = React.memo(
+        ({
+            value,
+            rowIndex,
+            columnKey,
+            setCellData,
+            error,
+        }: {
+            value: string;
+            rowIndex: number;
+            columnKey: string;
+            setCellData?: Function;
+            error?: boolean;
+        }) => (
+            <TextInput
+                value={value}
+                onChange={(e) => setCellData?.(rowIndex, columnKey, e.currentTarget.value)}
+                variant="unstyled"
+                styles={{ input: { textOverflow: "ellipsis" } }}
+                error={error}
+            />
+        ),
+    );
 
     const spreadsheetColumns = useMemo(
         () =>
@@ -110,13 +98,19 @@ const SpreadsheetImportTable = ({
                     ),
                 cell: ({ getValue, row, column }) =>
                     readOnly ? (
-                        <Flex className={classes.cellText}>{getValue() as string}</Flex>
+                        <Flex
+                            className={classes.cellText}
+                            c={row.original.__error_field__ === column.columnDef.accessorKey ? "red.7" : undefined}
+                        >
+                            {getValue() as string}
+                        </Flex>
                     ) : (
-                        <TextInput
-                            value={getValue()}
-                            onChange={(e) => setCellData(row.index, key, e.currentTarget.value)}
-                            variant="unstyled"
-                            styles={{ input: { textOverflow: "ellipsis" } }}
+                        <EditableCell
+                            value={getValue() as string}
+                            rowIndex={row.index}
+                            columnKey={column.columnDef.accessorKey as string}
+                            setCellData={setCellData}
+                            error={row.original.__error_field__ === column.columnDef.accessorKey}
                         />
                     ),
                 minSize: 200,
@@ -141,7 +135,7 @@ const SpreadsheetImportTable = ({
                         disabled={isBoolean(val)}
                     >
                         <Flex className={classes.errorIconWrapper}>
-                            <IconExclamationCircleFilled
+                            <IconExclamationCircle
                                 color="var(--mantine-color-red-7)"
                                 size="22"
                             />

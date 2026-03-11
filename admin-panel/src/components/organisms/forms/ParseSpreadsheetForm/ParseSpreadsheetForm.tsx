@@ -4,7 +4,7 @@ import Papa, { ParseConfig, ParseError, ParseMeta, ParseResult } from "papaparse
 import { useEffect, useState } from "react";
 import { decodeCharacters, encodeCharacters } from "../../../../utils/chars";
 import { IconChevronLeft, IconChevronRight, IconEraser, IconRepeat } from "@tabler/icons-react";
-import SpreadsheetImportTable from "../../tables/SpreadsheetImportTable/SpreadsheetImportTable";
+import SpreadsheetImportTable, { RowError } from "../../tables/SpreadsheetImportTable/SpreadsheetImportTable";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 import classes from "./ParseSpreadsheetForm.module.css";
 
@@ -167,7 +167,7 @@ const ParseSpreadsheetForm = ({ file, onCancel, onSubmit, resetTrigger }: ParseS
                 headers={headers}
                 loading={isNull(data)}
                 readOnly
-                rowErrors={parseErrors}
+                rowErrors={parseErrors as RowError[]}
                 criticalError={criticalError}
             />
             <Paper className={classes.outputPaper}>

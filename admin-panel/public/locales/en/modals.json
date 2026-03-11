@@ -24,7 +24,6 @@
     },
     "account": {
         "title-create": "Create new account",
-        "title-import": "Import accounts",
         "name": "Name",
         "surname": "Surname",
         "name-surname": "Name",
@@ -85,6 +84,54 @@
             "users-password-client": "This user can CHANGE both administrative and client account's PASSWORDS.",
             "manage-iso-files": "This user can MANAGE global ISO files.",
             "manage-system-resources": "This user can MANAGE system resource limits."
+        }
+    },
+    "import-accounts": {
+        "title": "Import accounts",
+
+        "header": {
+            "steps": {
+                "1": {
+                    "label": "Step 1:",
+                    "description": "Upload the file",
+                    "title": "Upload the file"
+                },
+                "1_info": {
+                    "title": "The data we're looking for",
+                    "subtitle": "You will have a chance to rename and rearrange your columns in the next steps."
+                },
+                "2": {
+                    "label": "Step 2:",
+                    "description": "Choose parsing options",
+                    "title": "Configure parsing",
+                    "subtitle": "Define the parsing configuration and click the reparse button to submit changes."
+                },
+                "3": {
+                    "label": "Step 3:",
+                    "description": "Assign columns to parameters",
+                    "title": "Assign columns",
+                    "subtitle": "Match your columns to the account creation parameters."
+                },
+                "4": {
+                    "label": "Step 4:",
+                    "description": "Validate and submit",
+                    "title": "Validate data",
+                    "subtitle": "Review the account details and resolve any validation issues."
+                }
+            }
+        },
+
+        "importing": {
+            "title": "Importing users",
+            "description": "{{count}} of {{total}} users created"
+        },
+        "importing-success": {
+            "title": "Users imported",
+            "description": "Successfully created {{count}} users."
+        },
+        "importing-error": {
+            "title": "Error occured during user import",
+            "description": "Created {{success}} users, but {{failed}} failed."
         }
     },
     "group": {

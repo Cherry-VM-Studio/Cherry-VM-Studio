@@ -9,11 +9,12 @@ import classes from "./UploadSpreadsheetForm.module.css";
 export interface UploadSpreadsheetFormProps {
     onUpload: (file: FileWithPath) => void;
     onReject: (file: FileRejection) => void;
+    properties: string[];
 }
 
 const MAX_CSV_SIZE = 5 * 1024 * 1024; // 5MiB
 
-const UploadSpreadsheetForm = ({ onUpload, onReject }: UploadSpreadsheetFormProps): React.JSX.Element => {
+const UploadSpreadsheetForm = ({ onUpload, onReject, properties }: UploadSpreadsheetFormProps): React.JSX.Element => {
     const openRef = useRef<() => void>(null);
 
     return (
@@ -82,7 +83,7 @@ const UploadSpreadsheetForm = ({ onUpload, onReject }: UploadSpreadsheetFormProp
             </Flex>
             <Flex className={classes.item}>
                 <SpreadsheetImportTable
-                    headers={["name", "surname", "email", "username", "password", "account_type", "memberships"]}
+                    headers={properties}
                     records={dummyUsersSpreadsheet}
                     readOnly
                 />
