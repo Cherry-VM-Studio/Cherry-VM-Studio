@@ -99,7 +99,7 @@ This section defines the constraints and validation rules applied to user accoun
 
 ### User Account Validation Rules
 
-| Field        | Requirement / Constraint                                                                                                             | Example / Notes                      |
+| Field        | Requirements                                                                                                            | Example                      |
 | ------------ | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------ |
 | **Username** | 3–24 characters; must start with a letter; only alphanumeric characters, underscores (`_`), hyphens (`-`), and periods (`.`) allowed | `john_doe`, `Alice-123`, `user.name` |
 | **Password** | Minimum 12 characters; must include at least one digit, one lowercase letter, one uppercase letter, and one special character        | `P@ssword1234!`                      |
