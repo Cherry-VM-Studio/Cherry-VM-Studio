@@ -14,7 +14,7 @@ class StrippedModel(BaseModel):
         return value
     
 class UUIDModel(StrippedModel):
-    uuid: UUID
+    uuid: UUID = uuid4()
 
     @model_validator(mode="after")
     def set_uuid(self):
