@@ -1,7 +1,7 @@
 import { ActionIcon, Box, ScrollArea } from "@mantine/core";
 import { IconCaretDownFilled, IconCaretUpDown, IconCaretUpFilled, IconList } from "@tabler/icons-react";
 import { flexRender, Table } from "@tanstack/react-table";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import classes from "./TanstackTableBody.module.css";
 import cs from "classnames";
 import { useTranslation } from "react-i18next";
@@ -21,13 +21,7 @@ const TanstackTableBody = ({ table, loading, error, RowComponent, rowProps }: Ta
     RowComponent = RowComponent || Box;
 
     return (
-        <ScrollArea
-            className={cs(classes.table)}
-            classNames={{ content: "auto-width full-height" }}
-            scrollbars="xy"
-            offsetScrollbars
-            pos="relative"
-        >
+        <Box className={cs(classes.table, "customScroll")}>
             {table.getHeaderGroups().map((headerGroup) => (
                 <Box
                     className={classes.tr}
@@ -106,7 +100,8 @@ const TanstackTableBody = ({ table, loading, error, RowComponent, rowProps }: Ta
                     </RowComponent>
                 ))
             )}
-        </ScrollArea>
+            {/* </ScrollArea > */}
+        </Box>
     );
 };
 

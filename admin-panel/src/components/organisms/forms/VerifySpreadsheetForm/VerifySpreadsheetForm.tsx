@@ -9,6 +9,7 @@ import { UserExtended } from "../../../../types/api.types";
 import _, { isString, isUndefined, keys } from "lodash";
 import { useThrottledCallback } from "@mantine/hooks";
 import AccountImportValidationError from "../../../molecules/feedback/AccountImportValidationError/AccountImportValidationError";
+import Papa from "papaparse";
 
 export type AutofixFunction = (val: string | undefined, target: Record<string, string>, values: string[], ...props: any[]) => string;
 export interface Validator {
@@ -68,7 +69,25 @@ const VerifySpreadsheetForm = ({ properties, data, setData, onSubmit, onCancel, 
         [errors],
     );
 
-    console.log(rowErrors);
+    const downloadCurrent = () => {
+        const csv = Papa.unparse(data);
+        
+        const now = new Date();
+        const timestamp = now.toISOString().replace(/[:.]/g, "-")   .replace("T", "_").split("Z")[0];
+
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `users-import-${timestamp}.csv`;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        URL.revokeObjectURL(url);
+    }
 
     // mutates by reference
     const runValidators = (property: string, record: Record<string, string>, rowIndex: number, validators: Validator[], target: ValidationErrors) => {
