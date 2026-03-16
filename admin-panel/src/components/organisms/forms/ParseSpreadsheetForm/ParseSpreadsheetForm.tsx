@@ -18,7 +18,7 @@ export interface ParseSpreadsheetFormProps {
 }
 
 const ParseSpreadsheetForm = ({ file, onCancel, onSubmit, resetTrigger }: ParseSpreadsheetFormProps): React.JSX.Element => {
-    const { tns, t } = useNamespaceTranslation("modals", "account");
+    const { tns, t } = useNamespaceTranslation("modals", "import-accounts");
 
     const defaultOptions = {
         delimiter: "",
@@ -156,7 +156,7 @@ const ParseSpreadsheetForm = ({ file, onCancel, onSubmit, resetTrigger }: ParseS
                                     size="14"
                                     stroke="3"
                                 />
-                                Reparse
+                                {t("reparse")}
                             </Group>
                         </Button>
                     </Group>
@@ -176,8 +176,8 @@ const ParseSpreadsheetForm = ({ file, onCancel, onSubmit, resetTrigger }: ParseS
                         c={isEmpty(parseErrors) ? "lime" : "red.7"}
                         fw="600"
                     >
-                        Parsing completed:{" "}
-                        {criticalError ? `Critical error detected` : isEmpty(parseErrors) ? `No errors detected` : `${parseErrors.length} row errors detected.`}
+                        {tns("parsing.completed")}
+                        {tns(criticalError ? "parsing.error-critical" : "parsing.errors", { count: parseErrors?.length ?? 0 })}
                     </Text>
                     {!criticalError && !isEmpty(parseErrors) ? (
                         <>
@@ -187,7 +187,7 @@ const ParseSpreadsheetForm = ({ file, onCancel, onSubmit, resetTrigger }: ParseS
                                 size="compact-sm"
                                 onClick={() => setCurrentFocusedError(0)}
                             >
-                                Jump to first
+                                {t("jump-to-first")}
                             </Button>
                             <Button
                                 variant="light"
@@ -195,7 +195,7 @@ const ParseSpreadsheetForm = ({ file, onCancel, onSubmit, resetTrigger }: ParseS
                                 size="compact-sm"
                                 onClick={() => setCurrentFocusedError((prev) => prev + 1)}
                             >
-                                Jump to next
+                                {t("jump-to-next")}
                             </Button>
                             <Button
                                 variant="light"
@@ -208,7 +208,7 @@ const ParseSpreadsheetForm = ({ file, onCancel, onSubmit, resetTrigger }: ParseS
                                         size="16"
                                         stroke={3}
                                     />
-                                    Ignore all
+                                    {t("ignore-all")}
                                 </Group>
                             </Button>
                         </>
@@ -227,16 +227,7 @@ const ParseSpreadsheetForm = ({ file, onCancel, onSubmit, resetTrigger }: ParseS
                     classNames={{ label: classes.nextButtonLabel }}
                     onClick={cancel}
                 >
-                    <Group
-                        gap="6"
-                        ml="-12px"
-                    >
-                        <IconChevronLeft
-                            size={14}
-                            stroke={5}
-                        />
-                        Go back
-                    </Group>
+                    {t("go-back")}
                 </Button>
                 <Button
                     w="150px"
@@ -245,16 +236,7 @@ const ParseSpreadsheetForm = ({ file, onCancel, onSubmit, resetTrigger }: ParseS
                     disabled={isNull(data) || !isEmpty(parseErrors) || !!criticalError}
                     onClick={() => onSubmit?.(data, headers)}
                 >
-                    <Group
-                        gap="6"
-                        ml="12px"
-                    >
-                        {t("next")}
-                        <IconChevronRight
-                            size={14}
-                            stroke={5}
-                        />
-                    </Group>
+                    {t("next")}
                 </Button>
             </Group>
         </>

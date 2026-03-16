@@ -43,7 +43,7 @@ const ImportAccountsModal = ({ opened, onClose, onSubmit, accountType }: ImportA
 
     const prepareData = useCallback(
         (assignment: Record<string, PropertyKey>) =>
-            setPreparedData(data.map((record) => _.mapKeys(record, (_, key) => assignment[key]) as Record<PropertyKey, string>)),
+            setPreparedData(data.map((record) => _.mapKeys(_.pick(record, _.keys(assignment)), (_, key) => assignment[key]) as Record<PropertyKey, string>)),
         [JSON.stringify(data)],
     );
 

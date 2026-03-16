@@ -116,11 +116,19 @@
                     "label": "Step 4:",
                     "description": "Validate and submit",
                     "title": "Validate data",
-                    "subtitle": "Review the account details and resolve any validation issues."
+                    "subtitle": "Review the account details and resolve any validation issues. Click \"submit and create\" to finish importing accounts."
                 }
             }
         },
 
+        "assigned": "Assigned {{count}} of {{total}} properties.",
+        "parsing": {
+            "completed": "Parsing completed: ",
+            "error-critical": "Critical error detected.",
+            "errors_zero": "No errors detected.",
+            "errors_one": "1 row error detected.",
+            "errors_other": "{{count}} row errors detected."
+        },
         "importing": {
             "title": "Importing users",
             "description": "{{count}} of {{total}} users created"

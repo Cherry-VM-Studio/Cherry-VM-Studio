@@ -1,6 +1,6 @@
-import { Button, Group, Paper, ScrollArea, Stack } from "@mantine/core";
+import { Box, Button, Group, Paper, ScrollArea, Stack } from "@mantine/core";
 import SpreadsheetImportTable from "../../tables/SpreadsheetImportTable/SpreadsheetImportTable";
-import { IconCheck, IconChevronLeft } from "@tabler/icons-react";
+import { IconCheck, IconChevronLeft, IconDownload } from "@tabler/icons-react";
 import { useTranslation } from "react-i18next";
 import classes from "./VerifySpreadsheetForm.module.css";
 import { useEffect, useMemo, useState } from "react";
@@ -71,9 +71,9 @@ const VerifySpreadsheetForm = ({ properties, data, setData, onSubmit, onCancel, 
 
     const downloadCurrent = () => {
         const csv = Papa.unparse(data);
-        
+
         const now = new Date();
-        const timestamp = now.toISOString().replace(/[:.]/g, "-")   .replace("T", "_").split("Z")[0];
+        const timestamp = now.toISOString().replace(/[:.]/g, "-").replace("T", "_").split("Z")[0];
 
         const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
@@ -87,7 +87,7 @@ const VerifySpreadsheetForm = ({ properties, data, setData, onSubmit, onCancel, 
         document.body.removeChild(link);
 
         URL.revokeObjectURL(url);
-    }
+    };
 
     // mutates by reference
     const runValidators = (property: string, record: Record<string, string>, rowIndex: number, validators: Validator[], target: ValidationErrors) => {
@@ -232,46 +232,49 @@ const VerifySpreadsheetForm = ({ properties, data, setData, onSubmit, onCancel, 
                 </Paper>
             </Group>
             <Group
-                justify="center"
+                justify="space-between"
                 mt="auto"
             >
                 <Button
                     w="150"
                     variant="default"
                     className="borderless"
-                    fw="600"
                     classNames={{ label: classes.nextButtonLabel }}
-                    onClick={onCancel}
+                    onClick={downloadCurrent}
                 >
                     <Group
                         gap="6"
                         ml="-12px"
                     >
-                        <IconChevronLeft
-                            size={14}
-                            stroke={5}
+                        <IconDownload
+                            size={16}
+                            stroke={3}
                         />
-                        Go back
+                        {t("download")}
                     </Group>
                 </Button>
-                <Button
-                    w="150px"
-                    variant="white"
-                    classNames={{ label: classes.nextButtonLabel }}
-                    onClick={() => onSubmit?.()}
-                    disabled={loading || rowErrors.length > 0}
-                >
-                    <Group
-                        gap="6"
-                        ml="12px"
+                <Group justify="center">
+                    <Button
+                        w="150"
+                        variant="default"
+                        className="borderless"
+                        fw="600"
+                        classNames={{ label: classes.nextButtonLabel }}
+                        onClick={onCancel}
                     >
-                        {t("submit")}
-                        <IconCheck
-                            size={14}
-                            stroke={5}
-                        />
-                    </Group>
-                </Button>
+                        {t("go-back")}
+                    </Button>
+                    <Button
+                        w="200px"
+                        variant="white"
+                        classNames={{ label: classes.nextButtonLabel }}
+                        onClick={() => onSubmit?.()}
+                        disabled={loading || rowErrors.length > 0}
+                    >
+                        {t("submit-and-create")}
+                    </Button>
+                </Group>
+                <Box w="150" />
             </Group>
         </Stack>
     );
