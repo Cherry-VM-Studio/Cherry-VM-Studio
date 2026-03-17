@@ -26,7 +26,7 @@ const DeleteAccountsModal = ({ opened, onClose, onSubmit = () => undefined, uuid
     };
 
     const onConfirm = () => {
-        uuids.forEach((uuid: string) => sendRequest("DELETE", `users/delete/${uuid}`, undefined, onPostError));
+        sendRequest("DELETE", `users/delete-many`, { data: uuids ?? [] }, onPostError);
         onClose();
         onSubmit();
     };

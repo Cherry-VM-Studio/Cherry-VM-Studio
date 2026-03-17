@@ -131,15 +131,19 @@
         },
         "importing": {
             "title": "Importing users",
-            "description": "{{count}} of {{total}} users created"
+            "description": "Creating {{total}} users in the environment."
         },
         "importing-success": {
             "title": "Users imported",
             "description": "Successfully created {{count}} users."
         },
         "importing-error": {
-            "title": "Error occured during user import",
-            "description": "Created {{success}} users, but {{failed}} failed."
+            "title": "Import error",
+            "description": "Error occured during importing users."
+        },
+        "importing-error-too-many": {
+            "title": "Exceeded import limit",
+            "description": "Cannot create more than 4096 users at once!"
         }
     },
     "group": {

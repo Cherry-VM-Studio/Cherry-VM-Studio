@@ -48,69 +48,49 @@ const ImportAccountsModal = ({ opened, onClose, onSubmit, accountType }: ImportA
     );
 
     const submit = async () => {
-        const total = preparedData.length;
-        let successCount = 0;
-        let failCount = 0;
+        onClose?.();
 
-        // show initial notification
+        const total = preparedData.length;
+
         const notificationId = notifications.show({
             color: "yellow",
             title: tns("importing.title"),
-            message: tns("importing.description", { count: 0, total }),
+            message: tns("importing.description", { count: total }),
             loading: true,
             autoClose: false,
             withCloseButton: true,
         });
 
-        onClose?.();
-
-        for (const record of preparedData) {
-            console.log(record.username, record.email, record.name);
-            try {
-                const baseData = {
-                    account_type: accountType,
-                    username: record.username,
-                    password: record.password,
-                };
-
-                const optionalData = _.pickBy(
-                    {
-                        name: record.name,
-                        surname: record.surname,
-                        email: record.email,
-                    },
-                    _.identity,
-                );
-
-                const res = await sendRequest("POST", "/users/create", { data: { ...baseData, ...optionalData } });
-
-                if (isAxiosError(res)) failCount += 1;
-                else successCount += 1;
-
-                notifications.update({
-                    id: notificationId,
-                    message: tns("importing.description", { count: successCount, total }),
-                });
-            } catch (err) {
-                failCount += 1;
-                notifications.update({
-                    id: notificationId,
-                    message: tns("importing.description", { count: successCount, total }),
-                });
-            }
+        if (total > 4096) {
+            notifications.update({
+                id: notificationId,
+                color: "red",
+                title: tns("importing-error-too-many.title"),
+                message: tns("importing-error-too-many.description"),
+                autoClose: false,
+                withCloseButton: false,
+            });
+            return;
         }
+
+        const usersData = preparedData.map((record) => ({
+            account_type: accountType,
+            username: record.username,
+            password: record.password,
+            ..._.pickBy({ name: record.name, surname: record.surname, email: record.email }, _.identity),
+        }));
+
+        const res = await sendRequest("POST", "/users/create-in-bulk", { data: usersData });
+        const isError = isAxiosError(res);
 
         notifications.update({
             id: notificationId,
             loading: false,
-            color: failCount > 0 ? "red" : "lime",
-            title: failCount > 0 ? tns("importing-error.title") : tns("importing-success.title"),
-            message:
-                failCount > 0
-                    ? tns("importing-error.description", { success: successCount, failed: failCount })
-                    : tns("importing-success.description", { count: successCount }),
-            autoClose: failCount > 0 ? false : 3000,
-            withCloseButton: failCount > 0,
+            color: isError ? "red" : "lime",
+            title: isError ? tns("importing-error.title") : tns("importing-success.title"),
+            message: isError ? tns("importing-error.description") : tns("importing-success.description", { count: total }),
+            autoClose: isError ? false : 3000,
+            withCloseButton: isError,
         });
 
         onSubmit?.();
