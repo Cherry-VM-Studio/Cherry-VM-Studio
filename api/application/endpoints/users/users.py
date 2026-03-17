@@ -13,7 +13,6 @@ from modules.users.users import UsersManager
 from modules.authentication.validation import DependsOnAdministrativeAuthentication, DependsOnAuthentication, get_authenticated_user
 
 logger = logging.getLogger(__name__)
-executor = ThreadPoolExecutor()
 
 jobs: dict[UUID, Literal["pending", "success", "error"]] = {}
 
@@ -66,22 +65,16 @@ async def __create_users_in_bulk__(forms: list[CreateAnyUserForm], current_user:
     
     job_uuid = uuid4()
     jobs[job_uuid] = "pending"
-    
-    loop = asyncio.new_event_loop()
 
-    def task_in_thread():
+    async def run_task():
         try:
-            asyncio.set_event_loop(loop)
-            loop.run_until_complete(UsersManager.create_users(forms, current_user))
+            await UsersManager.create_users(forms, current_user)
             jobs[job_uuid] = "success"
         except Exception as e:
             print("Background task error:", e)
             jobs[job_uuid] = "error"
-        finally:
-            loop.close()
-
-    # schedule the task in the thread pool
-    executor.submit(task_in_thread)
+    
+    asyncio.create_task(asyncio.to_thread(asyncio.run, run_task()))
     
     return {"job_uuid": job_uuid, "status": "pending"}
 
