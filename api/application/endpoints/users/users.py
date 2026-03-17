@@ -76,7 +76,7 @@ async def __create_users_in_bulk__(forms: list[CreateAnyUserForm], current_user:
     
     return {"job_uuid": job_uuid, "status": "pending"}
 
-@router.get("/create-in-bulk/job-status/{job_id}")
+@router.get("/create-in-bulk/job-status/{job_uuid}")
 async def __get_create_users_in_bulk_job_status__(job_uuid: UUID):
     status = jobs.get(job_uuid)
     if status is None:
