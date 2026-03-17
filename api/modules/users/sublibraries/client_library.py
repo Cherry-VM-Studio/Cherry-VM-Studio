@@ -108,9 +108,7 @@ class _ClientTableManager(SimpleTableManager):
         all_groups = GroupLibrary.get_all_records()
         all_group_uuids = set(all_groups.keys())
         
-        assigned_groups_values_sql = []
-        assigned_groups_params = []
-        assigned_groups_values_template = sql.SQL("({}, {})").format(sql.Placeholder(),sql.Placeholder())
+        groups_query_data = []
         
         for args in args_list:
             args.username = args.username.lower()
@@ -120,28 +118,22 @@ class _ClientTableManager(SimpleTableManager):
                 if not group_uuid in all_group_uuids:
                     raise HTTPException(400, f"The following group does not exist in the system: {group_uuid}")
                 
-                assigned_groups_values_sql.append(assigned_groups_values_template)
-                assigned_groups_params.extend([args.uuid, group_uuid])
-                
-        fields = ["uuid", "username", "password", "email", "name", "surname", "disabled"]
-
-        query = sql.SQL("INSERT INTO clients ({fields}) VALUES ({placeholders})").format(
-            fields=sql.SQL(', ').join(map(sql.Identifier, fields)),
-            placeholders=sql.SQL(', ').join(sql.Placeholder(k) for k in fields)
-        )
+                groups_query_data.append({"client_uuid": args.uuid, "group_uuid": group_uuid})
+        
         data = [args.model_dump() for args in args_list]
         
-        assign_roles_query = sql.SQL("""
-            INSERT INTO clients_groups (client_uuid, group_uuid)
-            VALUES {values}
-            ON CONFLICT DO NOTHING
-        """).format(values=sql.SQL(", ").join(assigned_groups_values_sql))
-        
         logging.info("[create-users-in-bulk] Creating client users in bulk.")
-        await cursor.executemany(query, data)
+        await cursor.executemany("""
+             INSERT INTO clients (uuid, username, password, email, name, surname, disabled) 
+             VALUES (%(uuid)s, %(username)s, %(password)s, %(email)s, %(name)s, %(surname)s, %(disabled)s)              
+        """, data)
+        
         logging.info("[create-users-in-bulk] Assigning newly created clients to groups.")
-        if assigned_groups_params:
-            await cursor.execute(assign_roles_query, assigned_groups_params)
+        if groups_query_data:
+            await cursor.executemany("""
+                INSERT INTO clients_groups (client_uuid, group_uuid) 
+                VALUES (%(client_uuid)s, %(group_uuid)s)
+            """, groups_query_data)
     
     @override
     def remove_record(self, uuid: UUID):

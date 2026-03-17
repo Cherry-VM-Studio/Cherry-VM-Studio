@@ -129,9 +129,7 @@ class _AdministratorTableManager(SimpleTableManager):
         
         required_permissions = 0
         
-        assigned_roles_values_sql = []
-        assigned_roles_params = []
-        assigned_roles_values_template = sql.SQL("({}, {})").format(sql.Placeholder(),sql.Placeholder())
+        roles_query_data = []
         
         for args in args_list:
             args.username = args.username.lower()
@@ -140,32 +138,27 @@ class _AdministratorTableManager(SimpleTableManager):
             for role_uuid in args.roles:
                 if not role_uuid in all_role_uuids:
                     raise HTTPException(400, f"The following role does not exist in the system: {role_uuid}")
+                
                 required_permissions |= all_roles[role_uuid].permissions
-                assigned_roles_values_sql.append(assigned_roles_values_template)
-                assigned_roles_params.extend([args.uuid, role_uuid])
+                roles_query_data.append({"administrator_uuid": args.uuid, "role_uuid": role_uuid})
                 
         if not has_permissions(logged_in_user, required_permissions):
             raise HTTPException(403, "You do not have necessary permissions to assign the attached set of roles to another user.")
         
-        fields = ["uuid", "username", "password", "email", "name", "surname", "disabled"]
-
-        query = sql.SQL("INSERT INTO administrators ({fields}) VALUES ({placeholders})").format(
-            fields=sql.SQL(', ').join(map(sql.Identifier, fields)),
-            placeholders=sql.SQL(', ').join(sql.Placeholder(k) for k in fields)
-        )
         data = [args.model_dump() for args in args_list]
         
-        assign_roles_query = sql.SQL("""
-            INSERT INTO administrators_roles (administrator_uuid, role_uuid)
-            VALUES {values}
-            ON CONFLICT DO NOTHING
-        """).format(values=sql.SQL(", ").join(assigned_roles_values_sql))
-        
         logger.info("[create-users-in-bulk] Creating administrative users in bulk.")
-        await cursor.executemany(query, data)
+        await cursor.executemany("""
+             INSERT INTO administrators (uuid, username, password, email, name, surname, disabled) 
+             VALUES (%(uuid)s, %(username)s, %(password)s, %(email)s, %(name)s, %(surname)s, %(disabled)s)              
+        """, data)
+        
         logger.info("[create-users-in-bulk] Assigning roles to newly created administrators.")
-        if assigned_roles_params:
-            await cursor.execute(assign_roles_query, assigned_roles_params)
+        if roles_query_data:
+            await cursor.executemany("""
+                INSERT INTO administrators_roles (client_uuid, group_uuid) 
+                VALUES (%(client_uuid)s, %(group_uuid)s)
+            """, roles_query_data)
     
     @override
     def remove_record(self, uuid: UUID):
