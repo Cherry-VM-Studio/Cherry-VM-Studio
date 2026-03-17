@@ -144,7 +144,7 @@ class CreateAdministratorForm(StrippedModel):
     def fix_email(cls, value):
         if value is not None and not len(value):
             return None
-        return value
+        return value.lower()
     
 class CreateClientForm(StrippedModel):
     password: str
@@ -161,7 +161,7 @@ class CreateClientForm(StrippedModel):
     def fix_email(cls, value):
         if value is not None and not len(value):
             return None
-        return value
+        return value.lower()
     
 class CreateGroupForm(StrippedModel):
     name: str

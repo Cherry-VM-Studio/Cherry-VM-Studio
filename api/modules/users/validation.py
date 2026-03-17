@@ -14,7 +14,7 @@ def validate_user_creation(user_data: CreateAnyUserForm):
         raise HTTPException(status_code=409, detail=f"User with email \"{user_data.email}\" already exists.")
     
     if not re.match(REGEX_CONFIG.username, user_data.username):
-        raise HTTPException(status_code=400, detail="Invalid username. Username must be between 3 and 24 characters in length, start with a letter and only contain alphanumeric characters, underscores, hyphens and periods.")
+        raise HTTPException(status_code=400, detail="Invalid username. Username must be between 3 and 24 characters in length, start with a letter and only contain alphanumeric characters, underscores, hyphens and periods. All letters must be lowercase.")
     
     if not re.match(REGEX_CONFIG.password, user_data.password):
         raise HTTPException(status_code=400, detail="Invalid password. Password must be at least 12 characters long and contain at least one digit, lowercase letter, upercase letter and one of the special characters.")
