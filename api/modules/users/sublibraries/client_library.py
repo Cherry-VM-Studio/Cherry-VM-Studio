@@ -1,4 +1,5 @@
 import asyncio
+from concurrent.futures import ThreadPoolExecutor
 import logging
 import time
 from typing import Any, Type, override
@@ -16,6 +17,8 @@ from ..models import Client, ClientExtended, ClientInDB, CreateClientArgs, Modif
 
 
 logger = logging.getLogger(__name__)
+
+_thread_pool = ThreadPoolExecutor(max_workers=4)
 
 
 def prepare_from_database_record(record: ClientInDB) -> Client:
@@ -111,34 +114,29 @@ class _ClientTableManager(SimpleTableManager):
         
         groups_query_data = []
         
-        logging.info("[create-users-in-bulk] Started parsing data for the database.")
-        hash_start_total = time.time()
-        hash_count = 0
-        groups_query_data = []
-
-        for args in args_list:
+        loop = asyncio.get_event_loop()
+        passwords = [args.password for args in args_list]
+        hash_start = time.time()
+        hash_tasks = [
+            loop.run_in_executor(_thread_pool, hash_password, pw) 
+            for pw in passwords
+        ]
+        hashed_passwords = await asyncio.gather(*hash_tasks)
+        hash_time = time.time() - hash_start
+        
+        logging.info(f"Hashed {len(passwords)} passwords in {hash_time:.2f}s ({hash_time/len(passwords)*1000:.1f}ms avg)")
+        
+        for args, hashed_password in zip(args_list, hashed_passwords):
             args.username = args.username.lower()
-            
-            # Time individual hash
-            start = time.time()
-            args.password = hash_password(args.password)
-            hash_time = time.time() - start
-            hash_count += 1
-            
-            if hash_count % 100 == 0:  # Log every 100 hashes
-                logging.info(f"Hashed {hash_count} passwords, last took {hash_time*1000:.1f}ms")
+            args.password = hashed_password
             
             for group_uuid in args.groups:
                 if not group_uuid in all_group_uuids:
                     raise HTTPException(400, f"The following group does not exist in the system: {group_uuid}")
                 
                 groups_query_data.append({"client_uuid": args.uuid, "group_uuid": group_uuid})
-
-        data = [args.model_dump() for args in args_list]
-
-        total_time = time.time() - hash_start_total
-        logging.info(f"[create-users-in-bulk] Hashed {hash_count} passwords in {total_time:.2f}s")
-        logging.info(f"[create-users-in-bulk] Average: {total_time/hash_count*1000:.1f}ms per password")
+            
+                
         logging.info("[create-users-in-bulk] Completed parsing data for the database.")
         
         data = [args.model_dump() for args in args_list]
