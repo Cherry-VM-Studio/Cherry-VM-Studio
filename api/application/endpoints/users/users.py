@@ -1,7 +1,7 @@
 import asyncio
 import logging
 from uuid import UUID
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from modules.websockets.websocket_manager import GlobalWebSocketManager
@@ -55,11 +55,15 @@ async def __read_users__(
 async def __create_user__(form: CreateAnyUserForm, current_user: DependsOnAdministrativeAuthentication) -> UUID:   
     return UsersManager.create_user(form, current_user)
 
-@router.post("/create-in-bulk", response_model=list[UUID])
-async def __create_users_in_bulk__(forms: list[CreateAnyUserForm], current_user: DependsOnAdministrativeAuthentication):
+@router.post("/create-in-bulk")
+async def __create_users_in_bulk__(forms: list[CreateAnyUserForm], current_user: DependsOnAdministrativeAuthentication, background_tasks: BackgroundTasks):
     if len(forms) > 4096:
         raise HTTPException(413, "Bulk creation request exceeds allowed limit of 4096 users.")
-    return UsersManager.create_users(forms, current_user)
+    
+    def schedule_create_users():
+        asyncio.create_task(UsersManager.create_users(forms, current_user))
+
+    background_tasks.add_task(schedule_create_users)
 
 
 @router.put("/change-password/{uuid}", response_model=None)

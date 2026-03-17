@@ -1,9 +1,10 @@
+import asyncio
 import logging
 from typing import Any, Type, override
 from uuid import UUID
 
 from fastapi import HTTPException
-from psycopg import Cursor, sql
+from psycopg import AsyncCursor, Cursor, sql
 from modules.users.permissions import has_permissions
 from modules.postgresql import pool
 from ..models import Administrator, AdministratorExtended, AdministratorInDB, CreateAdministratorArgs, ModifyUserArgs, Role
@@ -120,7 +121,7 @@ class _AdministratorTableManager(SimpleTableManager):
         
         return args.uuid
     
-    def create_records(self, args_list: list[CreateAdministratorArgs], logged_in_user: Administrator, cursor: Cursor[Any]) -> list[UUID]:
+    async def create_records(self, args_list: list[CreateAdministratorArgs], logged_in_user: Administrator, cursor: AsyncCursor[Any]):
         from .roles_library import RoleLibrary
         
         all_roles: dict[UUID, Role] = RoleLibrary.get_all_records()
@@ -160,11 +161,11 @@ class _AdministratorTableManager(SimpleTableManager):
             ON CONFLICT DO NOTHING
         """).format(values=sql.SQL(", ").join(assigned_roles_values_sql))
         
-        cursor.executemany(query, data)
+        logging.info("Creating administrative users in bulk.")
+        await cursor.executemany(query, data)
+        logging.info("Assigning roles to newly created administrators.")
         if assigned_roles_params:
-            cursor.execute(assign_roles_query, assigned_roles_params)
-        
-        return [args.uuid for args in args_list]
+            await cursor.execute(assign_roles_query, assigned_roles_params)
     
     @override
     def remove_record(self, uuid: UUID):
@@ -186,8 +187,6 @@ class _AdministratorTableManager(SimpleTableManager):
                 connection.commit()
                 
     def remove_records(self, uuids: list[UUID], cursor: Cursor[Any]):
-        from .roles_library import RoleLibrary
-       
         cursor.execute("DELETE FROM administrators WHERE uuid = ANY(%s)",(uuids,))
         
         for uuid in uuids:

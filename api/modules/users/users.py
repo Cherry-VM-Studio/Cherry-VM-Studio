@@ -6,9 +6,9 @@ from uuid import UUID
 
 from fastapi import HTTPException
 
-from modules.postgresql import pool
 from config.permissions_config import PERMISSIONS
 from config.regex_config import REGEX_CONFIG
+from modules.postgresql.main import async_pool, pool
 from modules.authentication.passwords import hash_password
 from modules.postgresql.simple_select import select_single_field
 from modules.users.permissions import verify_can_change_password, verify_permissions
@@ -74,12 +74,11 @@ class _UsersSystemManager():
         if form.account_type == 'client':
             return ClientLibrary.create_record(CreateClientArgs.model_validate(form.model_dump()))
         
-    def create_users(self, forms: list[CreateAnyUserForm], logged_in_user: Administrator) -> list[UUID]:
+    async def create_users(self, forms: list[CreateAnyUserForm], logged_in_user: Administrator):
         usernames = []
         emails = []
         administrators_args_list = []
         clients_args_list = []
-        output_uuids = []
         
         for form in forms:
             validate_user_creation(form)
@@ -102,21 +101,18 @@ class _UsersSystemManager():
         if len(clients_args_list):
             verify_permissions(logged_in_user, PERMISSIONS.MANAGE_CLIENT_USERS)
             
-        with pool.connection() as connection:
-            with connection.cursor() as cursor:
-                with connection.transaction():
+        async with async_pool.connection() as connection:
+            async with connection.cursor() as cursor:
+                async with connection.transaction():
                     try:
-                        with connection.transaction(): 
-                            if administrators_args_list:
-                                output_uuids.extend(AdministratorLibrary.create_records(administrators_args_list, logged_in_user, cursor))
-                            if clients_args_list:
-                                output_uuids.extend(ClientLibrary.create_records(clients_args_list, cursor))
+                        if administrators_args_list:
+                            await AdministratorLibrary.create_records(administrators_args_list, logged_in_user, cursor)
+                        if clients_args_list:
+                            await ClientLibrary.create_records(clients_args_list, cursor)
                     except Exception as e:
                         logger.exception("Error creating users in bulk")
                         raise HTTPException(500, "An error occurred while creating users in bulk.")
-                        
-            
-        return output_uuids
+
      
     def delete_user(self, uuid: UUID, logged_in_user: Administrator):
         user = self.get_user(uuid)

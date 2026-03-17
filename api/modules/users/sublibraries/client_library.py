@@ -1,8 +1,9 @@
+import asyncio
 import logging
 from typing import Any, Type, override
 from uuid import UUID
 from fastapi import HTTPException
-from psycopg import Cursor, sql
+from psycopg import AsyncCursor, Cursor, sql
 
 from modules.authentication.passwords import hash_password
 from modules.postgresql import pool
@@ -101,7 +102,7 @@ class _ClientTableManager(SimpleTableManager):
         
         return args.uuid
     
-    def create_records(self, args_list: list[CreateClientArgs], cursor: Cursor[Any]) -> list[UUID]:
+    async def create_records(self, args_list: list[CreateClientArgs], cursor: AsyncCursor[Any]):
         from .group_library import GroupLibrary
         
         all_groups = GroupLibrary.get_all_records()
@@ -136,11 +137,11 @@ class _ClientTableManager(SimpleTableManager):
             ON CONFLICT DO NOTHING
         """).format(values=sql.SQL(", ").join(assigned_groups_values_sql))
         
-        cursor.executemany(query, data)
+        logging.info("Creating client users in bulk.")
+        await cursor.executemany(query, data)
+        logging.info("Assigning newly created clients to groups.")
         if assigned_groups_params:
-            cursor.execute(assign_roles_query, assigned_groups_params)
-        
-        return [args.uuid for args in args_list]
+            await cursor.execute(assign_roles_query, assigned_groups_params)
     
     @override
     def remove_record(self, uuid: UUID):
