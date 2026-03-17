@@ -20,7 +20,6 @@ logger = logging.getLogger(__name__)
 
 _thread_pool = ThreadPoolExecutor(max_workers=4)
 
-
 def prepare_from_database_record(record: ClientInDB) -> Client:
     client = Client.model_validate(record.model_dump())
     
@@ -116,15 +115,11 @@ class _ClientTableManager(SimpleTableManager):
         
         loop = asyncio.get_event_loop()
         passwords = [args.password for args in args_list]
-        hash_start = time.time()
         hash_tasks = [
             loop.run_in_executor(_thread_pool, hash_password, pw) 
             for pw in passwords
         ]
         hashed_passwords = await asyncio.gather(*hash_tasks)
-        hash_time = time.time() - hash_start
-        
-        logging.info(f"Hashed {len(passwords)} passwords in {hash_time:.2f}s ({hash_time/len(passwords)*1000:.1f}ms avg)")
         
         for args, hashed_password in zip(args_list, hashed_passwords):
             args.username = args.username.lower()
@@ -135,9 +130,6 @@ class _ClientTableManager(SimpleTableManager):
                     raise HTTPException(400, f"The following group does not exist in the system: {group_uuid}")
                 
                 groups_query_data.append({"client_uuid": args.uuid, "group_uuid": group_uuid})
-            
-                
-        logging.info("[create-users-in-bulk] Completed parsing data for the database.")
         
         data = [args.model_dump() for args in args_list]
         

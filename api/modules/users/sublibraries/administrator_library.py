@@ -1,4 +1,5 @@
 import asyncio
+from concurrent.futures import ThreadPoolExecutor
 import logging
 from typing import Any, Type, override
 from uuid import UUID
@@ -16,6 +17,7 @@ from modules.authentication.passwords import hash_password
 
 logger = logging.getLogger(__name__)
 
+_thread_pool = ThreadPoolExecutor(max_workers=4)
 
 def prepare_from_database_record(record: AdministratorInDB) -> Administrator:
     administrator = Administrator.model_validate(record.model_dump())
@@ -128,12 +130,19 @@ class _AdministratorTableManager(SimpleTableManager):
         all_role_uuids = set(all_roles.keys())
         
         required_permissions = 0
-        
         roles_query_data = []
         
-        for args in args_list:
+        loop = asyncio.get_event_loop()
+        passwords = [args.password for args in args_list]
+        hash_tasks = [
+            loop.run_in_executor(_thread_pool, hash_password, pw) 
+            for pw in passwords
+        ]
+        hashed_passwords = await asyncio.gather(*hash_tasks)
+        
+        for args, hashed_password in zip(args_list, hashed_passwords):
             args.username = args.username.lower()
-            args.password = hash_password(args.password)
+            args.password = hashed_password
          
             for role_uuid in args.roles:
                 if not role_uuid in all_role_uuids:
