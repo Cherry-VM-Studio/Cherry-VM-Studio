@@ -72,7 +72,7 @@ async def __create_users_in_bulk__(forms: list[CreateAnyUserForm], current_user:
         except Exception:
             jobs[job_uuid] = "error"
 
-    background_tasks.add_task(task_wrapper)
+    background_tasks.add_task(lambda: asyncio.create_task(task_wrapper()))
     
     return {"job_uuid": job_uuid, "status": "pending"}
 
