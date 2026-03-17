@@ -269,7 +269,7 @@ const VerifySpreadsheetForm = ({ properties, data, setData, onSubmit, onCancel, 
                         variant="white"
                         classNames={{ label: classes.nextButtonLabel }}
                         onClick={() => onSubmit?.()}
-                        disabled={loading || rowErrors.length > 0}
+                        disabled={!_.isNull(error) || loading || rowErrors.length > 0}
                     >
                         {t("submit-and-create")}
                     </Button>

@@ -24,7 +24,7 @@ export const useMantineNotifications = () => {
         key: string,
         options: SendNotificationOptions | undefined = {},
         interpolatedValues: object | undefined = {},
-        customProps = {}
+        customProps = {},
     ) => {
         const notificationId = options.uniqueId ? getUniqueId(key) : key;
 
@@ -51,7 +51,7 @@ export const useMantineNotifications = () => {
             id: notificationId,
             withCloseButton: true,
             loading: false,
-            autoClose: 5000,
+            autoClose: 20000,
             className: "error-class",
             color: "red",
             icon: <IconX />,

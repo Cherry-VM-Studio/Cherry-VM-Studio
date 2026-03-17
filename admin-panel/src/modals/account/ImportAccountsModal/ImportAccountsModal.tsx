@@ -9,11 +9,12 @@ import ParseSpreadsheetForm from "../../../components/organisms/forms/ParseSprea
 import { ParsedData } from "../../../components/organisms/forms/ParseSpreadsheetForm/ParseSpreadsheetForm";
 import AssignColsSpreadsheetForm from "../../../components/organisms/forms/AssignColsSpreadsheetForm/AssignColsSpreadsheetForm";
 import VerifySpreadsheetForm from "../../../components/organisms/forms/VerifySpreadsheetForm/VerifySpreadsheetForm";
-import _ from "lodash";
+import _, { isUndefined } from "lodash";
 import VALIDATION from "./fieldValidation.config";
 import useApi from "../../../hooks/useApi";
 import { notifications } from "@mantine/notifications";
 import { isAxiosError } from "axios";
+import { IconX } from "@tabler/icons-react";
 export interface ImportAccountModalProps {
     opened: boolean;
     onClose: () => void;
@@ -55,14 +56,14 @@ const ImportAccountsModal = ({ opened, onClose, onSubmit, accountType }: ImportA
         const notificationId = notifications.show({
             color: "yellow",
             title: tns("importing.title"),
-            message: tns("importing.description", { count: total }),
+            message: tns("importing.description", { total: total }),
             loading: true,
             autoClose: false,
             withCloseButton: true,
         });
 
         if (total > 4096) {
-            notifications.update({
+            return notifications.update({
                 id: notificationId,
                 color: "red",
                 title: tns("importing-error-too-many.title"),
@@ -70,8 +71,32 @@ const ImportAccountsModal = ({ opened, onClose, onSubmit, accountType }: ImportA
                 autoClose: false,
                 withCloseButton: false,
             });
-            return;
         }
+
+        const updateNotificationToError = () => {
+            notifications.update({
+                id: notificationId,
+                loading: false,
+                color: "red",
+                title: tns("importing-error.title"),
+                message: tns("importing-error.description"),
+                autoClose: false,
+                withCloseButton: true,
+                icon: <IconX />,
+            });
+        };
+
+        const updateNotificationToSuccess = () => {
+            notifications.update({
+                id: notificationId,
+                loading: false,
+                color: "lime",
+                title: tns("importing-success.title"),
+                message: tns("importing-success.description", { total: total }),
+                autoClose: 5000,
+                withCloseButton: false,
+            });
+        };
 
         const usersData = preparedData.map((record) => ({
             account_type: accountType,
@@ -81,17 +106,27 @@ const ImportAccountsModal = ({ opened, onClose, onSubmit, accountType }: ImportA
         }));
 
         const res = await sendRequest("POST", "/users/create-in-bulk", { data: usersData });
-        const isError = isAxiosError(res);
 
-        notifications.update({
-            id: notificationId,
-            loading: false,
-            color: isError ? "red" : "lime",
-            title: isError ? tns("importing-error.title") : tns("importing-success.title"),
-            message: isError ? tns("importing-error.description") : tns("importing-success.description", { count: total }),
-            autoClose: isError ? false : 3000,
-            withCloseButton: isError,
-        });
+        if (isAxiosError(res)) {
+            return updateNotificationToError();
+        }
+
+        if (isUndefined(res?.job_uuid)) {
+            console.warn("POST /users/create-in-bulk didn't return job_uuid property required for fetching the creation status.");
+            return updateNotificationToError();
+        }
+
+        const jobUuid = res?.job_uuid;
+        let status = "pending";
+
+        while (status === "pending") {
+            await new Promise((resolve) => setTimeout(resolve, 3000));
+            const statusRes = await sendRequest("GET", `/users/create-in-bulk/job-status/${jobUuid}`, undefined, null);
+            status = statusRes?.status || "error";
+        }
+
+        if (status === "error") updateNotificationToError();
+        else updateNotificationToSuccess();
 
         onSubmit?.();
     };

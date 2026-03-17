@@ -94,7 +94,8 @@
                 "1": {
                     "label": "Step 1:",
                     "description": "Upload the file",
-                    "title": "Upload the file"
+                    "title": "Upload the file",
+                    "subtitle": "Make sure the file is in the CSV format."
                 },
                 "1_info": {
                     "title": "The data we're looking for",
@@ -135,11 +136,11 @@
         },
         "importing-success": {
             "title": "Users imported",
-            "description": "Successfully created {{count}} users."
+            "description": "Successfully created {{total}} users."
         },
         "importing-error": {
             "title": "Import error",
-            "description": "Error occured during importing users."
+            "description": "Error occured while importing users."
         },
         "importing-error-too-many": {
             "title": "Exceeded import limit",

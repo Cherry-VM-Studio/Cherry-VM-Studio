@@ -1,4 +1,9 @@
 {
+    "ERR_NETWORK": {
+        "code": 504,
+        "title": "Service unavailable",
+        "message": "API service is either not responding or unreachable. Please ensure a proper connection to the API service."
+    },
     "ETIMEDOUT": {
         "code": 504,
         "title": "Service unavailable",

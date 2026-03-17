@@ -4,12 +4,12 @@ import { ValidationConfig } from "../../../components/organisms/forms/VerifySpre
 const moreThanOnce = (arr: string[], str: string) => arr.indexOf(str) !== arr.lastIndexOf(str);
 
 const incrementBase32 = (numStr: string) => {
-    const alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUV";
+    const alphabet = "0123456789abcdefghijklmnopqrstuv";
     let carry = 1;
     let result = "";
 
     for (let i = numStr.length - 1; i >= 0; i--) {
-        let sum = alphabet.indexOf(numStr[i].toUpperCase()) + carry;
+        let sum = alphabet.indexOf(numStr[i].toLowerCase()) + carry;
         carry = Math.floor(sum / 32);
         result = alphabet[sum % 32] + result;
     }
@@ -38,9 +38,12 @@ const resolveDuplicate = (val: string, maxChars: number, values: string[]): stri
 };
 
 const generateUsername = (target: Record<string, string>, values: string[]) => {
-    const name = (target?.name ?? "").replace(/[^a-zA-Z]/g, "");
-    const surname = (target?.surname ?? "").replace(/[^a-zA-Z]/g, "");
-    const email = (target?.email ?? "").split("@")?.[0]?.replace(/[^a-zA-Z]/g, "");
+    const name = (target?.name ?? "").replace(/[^a-zA-Z]/g, "").toLowerCase();
+    const surname = (target?.surname ?? "").replace(/[^a-zA-Z]/g, "").toLowerCase();
+    const email = (target?.email ?? "")
+        .split("@")?.[0]
+        ?.replace(/[^a-zA-Z]/g, "")
+        .toLowerCase();
 
     let username = "";
 
@@ -108,9 +111,9 @@ const VALIDATION = {
         },
         {
             key: "invalid-chars",
-            message: "Username contains invalid characters.",
+            message: "Username contains invalid characters. It may only contain lowercase letters, digits, underscores, periods and hyphens.",
             autofixMessage: "Generates a username automatically from other properties such as name, surname, or email.",
-            validate: (val) => val && !/^[\w.-]*$/.test(val),
+            validate: (val) => val && !/^[a-z0-9_\.-]*$/.test(val),
             autofix: (_, target, values) => {
                 return generateUsername(target, values);
             },
@@ -196,9 +199,14 @@ const VALIDATION = {
         },
         {
             key: "duplicate",
-            message: "Duplicate username found.",
+            message: "Duplicate email found.",
             autofixMessage: "Erase duplicate emails.",
-            validate: (val, _, values) => val && moreThanOnce(values, val),
+            validate: (val, _, values) =>
+                val &&
+                moreThanOnce(
+                    values.map((e) => e?.toLowerCase()),
+                    val.toLowerCase(),
+                ),
             autofix: () => "",
         },
     ],
