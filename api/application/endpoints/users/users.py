@@ -1,4 +1,5 @@
 import asyncio
+from concurrent.futures import ThreadPoolExecutor
 import logging
 from typing import Literal
 from uuid import UUID, uuid4
@@ -12,6 +13,7 @@ from modules.users.users import UsersManager
 from modules.authentication.validation import DependsOnAdministrativeAuthentication, DependsOnAuthentication, get_authenticated_user
 
 logger = logging.getLogger(__name__)
+executor = ThreadPoolExecutor()
 
 jobs: dict[UUID, Literal["pending", "success", "error"]] = {}
 
@@ -65,14 +67,16 @@ async def __create_users_in_bulk__(forms: list[CreateAnyUserForm], current_user:
     job_uuid = uuid4()
     jobs[job_uuid] = "pending"
     
-    async def task_wrapper():
+    loop = asyncio.get_running_loop()
+
+    async def task():
         try:
             await UsersManager.create_users(forms, current_user)
             jobs[job_uuid] = "success"
         except Exception:
             jobs[job_uuid] = "error"
 
-    background_tasks.add_task(lambda: asyncio.create_task(task_wrapper()))
+    executor.submit(lambda: asyncio.run_coroutine_threadsafe(task(), loop))
     
     return {"job_uuid": job_uuid, "status": "pending"}
 
