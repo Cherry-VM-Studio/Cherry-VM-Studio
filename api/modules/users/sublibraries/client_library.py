@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import time
 from typing import Any, Type, override
 from uuid import UUID
 from fastapi import HTTPException
@@ -111,19 +112,33 @@ class _ClientTableManager(SimpleTableManager):
         groups_query_data = []
         
         logging.info("[create-users-in-bulk] Started parsing data for the database.")
-        i = 0
+        hash_start_total = time.time()
+        hash_count = 0
+        groups_query_data = []
+
         for args in args_list:
-            logging.info(f"[create-users-in-bulk] Parsing user nr {i}. User has {len(args.groups)} groups assigned.")
             args.username = args.username.lower()
+            
+            # Time individual hash
+            start = time.time()
             args.password = hash_password(args.password)
+            hash_time = time.time() - start
+            hash_count += 1
+            
+            if hash_count % 100 == 0:  # Log every 100 hashes
+                logging.info(f"Hashed {hash_count} passwords, last took {hash_time*1000:.1f}ms")
             
             for group_uuid in args.groups:
                 if not group_uuid in all_group_uuids:
                     raise HTTPException(400, f"The following group does not exist in the system: {group_uuid}")
                 
                 groups_query_data.append({"client_uuid": args.uuid, "group_uuid": group_uuid})
-            
-                
+
+        data = [args.model_dump() for args in args_list]
+
+        total_time = time.time() - hash_start_total
+        logging.info(f"[create-users-in-bulk] Hashed {hash_count} passwords in {total_time:.2f}s")
+        logging.info(f"[create-users-in-bulk] Average: {total_time/hash_count*1000:.1f}ms per password")
         logging.info("[create-users-in-bulk] Completed parsing data for the database.")
         
         data = [args.model_dump() for args in args_list]
