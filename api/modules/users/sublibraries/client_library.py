@@ -137,9 +137,9 @@ class _ClientTableManager(SimpleTableManager):
             ON CONFLICT DO NOTHING
         """).format(values=sql.SQL(", ").join(assigned_groups_values_sql))
         
-        logging.info("Creating client users in bulk.")
+        logging.info("[create-users-in-bulk] Creating client users in bulk.")
         await cursor.executemany(query, data)
-        logging.info("Assigning newly created clients to groups.")
+        logging.info("[create-users-in-bulk] Assigning newly created clients to groups.")
         if assigned_groups_params:
             await cursor.execute(assign_roles_query, assigned_groups_params)
     

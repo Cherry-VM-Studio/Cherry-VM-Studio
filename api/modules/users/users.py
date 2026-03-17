@@ -80,6 +80,7 @@ class _UsersSystemManager():
         administrators_args_list = []
         clients_args_list = []
         
+        logger.info("[create-users-in-bulk] Validating data")
         for form in forms:
             validate_user_creation(form)
             usernames.append(form.username)
@@ -100,10 +101,11 @@ class _UsersSystemManager():
             verify_permissions(logged_in_user, PERMISSIONS.MANAGE_ADMIN_USERS)
         if len(clients_args_list):
             verify_permissions(logged_in_user, PERMISSIONS.MANAGE_CLIENT_USERS)
-            
+        logger.info(f"[create-users-in-bulk] Validation complete. Found {len(administrators_args_list)} administrators and {len(clients_args_list)} clients.")
         async with async_pool.connection() as connection:
             async with connection.cursor() as cursor:
                 async with connection.transaction():
+                    logger.info("[create-users-in-bulk] Connected to the DB")
                     try:
                         if administrators_args_list:
                             await AdministratorLibrary.create_records(administrators_args_list, logged_in_user, cursor)
@@ -113,6 +115,7 @@ class _UsersSystemManager():
                         logger.exception("Error creating users in bulk")
                         raise HTTPException(500, "An error occurred while creating users in bulk.")
 
+        logger.info("[create-users-in-bulk] Creation completed")
      
     def delete_user(self, uuid: UUID, logged_in_user: Administrator):
         user = self.get_user(uuid)

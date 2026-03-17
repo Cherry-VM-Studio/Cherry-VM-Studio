@@ -161,9 +161,9 @@ class _AdministratorTableManager(SimpleTableManager):
             ON CONFLICT DO NOTHING
         """).format(values=sql.SQL(", ").join(assigned_roles_values_sql))
         
-        logging.info("Creating administrative users in bulk.")
+        logger.info("[create-users-in-bulk] Creating administrative users in bulk.")
         await cursor.executemany(query, data)
-        logging.info("Assigning roles to newly created administrators.")
+        logger.info("[create-users-in-bulk] Assigning roles to newly created administrators.")
         if assigned_roles_params:
             await cursor.execute(assign_roles_query, assigned_roles_params)
     
