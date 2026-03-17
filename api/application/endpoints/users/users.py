@@ -57,8 +57,8 @@ async def __create_user__(form: CreateAnyUserForm, current_user: DependsOnAdmini
 
 @router.post("/create-in-bulk", response_model=list[UUID])
 async def __create_users_in_bulk__(forms: list[CreateAnyUserForm], current_user: DependsOnAdministrativeAuthentication):
-    if len(forms) > 256:
-        raise HTTPException(413, "Bulk creation request exceeds allowed limit of 256 users.")
+    if len(forms) > 4096:
+        raise HTTPException(413, "Bulk creation request exceeds allowed limit of 4096 users.")
     return UsersManager.create_users(forms, current_user)
 
 
