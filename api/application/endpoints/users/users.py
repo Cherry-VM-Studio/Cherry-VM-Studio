@@ -67,16 +67,21 @@ async def __create_users_in_bulk__(forms: list[CreateAnyUserForm], current_user:
     job_uuid = uuid4()
     jobs[job_uuid] = "pending"
     
-    loop = asyncio.get_running_loop()
+    loop = asyncio.new_event_loop()
 
-    async def task():
+    def task_in_thread():
         try:
-            await UsersManager.create_users(forms, current_user)
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(UsersManager.create_users(forms, current_user))
             jobs[job_uuid] = "success"
-        except Exception:
+        except Exception as e:
+            print("Background task error:", e)
             jobs[job_uuid] = "error"
+        finally:
+            loop.close()
 
-    executor.submit(lambda: asyncio.run_coroutine_threadsafe(task(), loop))
+    # schedule the task in the thread pool
+    executor.submit(task_in_thread)
     
     return {"job_uuid": job_uuid, "status": "pending"}
 
