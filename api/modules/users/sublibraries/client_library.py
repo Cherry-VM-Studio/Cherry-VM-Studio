@@ -110,6 +110,7 @@ class _ClientTableManager(SimpleTableManager):
         
         groups_query_data = []
         
+        logging.info("[create-users-in-bulk] Started parsing data for the database.")
         for args in args_list:
             args.username = args.username.lower()
             args.password = hash_password(args.password)
@@ -119,6 +120,8 @@ class _ClientTableManager(SimpleTableManager):
                     raise HTTPException(400, f"The following group does not exist in the system: {group_uuid}")
                 
                 groups_query_data.append({"client_uuid": args.uuid, "group_uuid": group_uuid})
+                
+        logging.info("[create-users-in-bulk] Completed parsing data for the database.")
         
         data = [args.model_dump() for args in args_list]
         
