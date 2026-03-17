@@ -84,8 +84,10 @@ class _UsersSystemManager():
         for form in forms:
             validate_user_creation(form)
             usernames.append(form.username)
-            emails.append(form.email)
             
+            if form.email is not None:
+                emails.append(form.email)
+
             if form.account_type == "administrative":
                 administrators_args_list.append(CreateAdministratorArgs.model_validate(form.model_dump()))
             elif form.account_type == "client":
