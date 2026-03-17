@@ -61,7 +61,7 @@ async def __create_users_in_bulk__(forms: list[CreateAnyUserForm], current_user:
         raise HTTPException(413, "Bulk creation request exceeds allowed limit of 4096 users.")
     
     def schedule_create_users():
-        asyncio.create_task(UsersManager.create_users(forms, current_user))
+        asyncio.run(UsersManager.create_users(forms, current_user))
 
     background_tasks.add_task(schedule_create_users)
 
