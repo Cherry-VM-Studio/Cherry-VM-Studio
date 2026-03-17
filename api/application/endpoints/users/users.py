@@ -1,6 +1,7 @@
 import asyncio
 import logging
-from uuid import UUID
+from typing import Literal
+from uuid import UUID, uuid4
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
@@ -12,6 +13,7 @@ from modules.authentication.validation import DependsOnAdministrativeAuthenticat
 
 logger = logging.getLogger(__name__)
 
+jobs: dict[UUID, Literal["pending", "success", "error"]] = {}
 
 router = APIRouter(
     prefix='/users',
@@ -60,10 +62,26 @@ async def __create_users_in_bulk__(forms: list[CreateAnyUserForm], current_user:
     if len(forms) > 4096:
         raise HTTPException(413, "Bulk creation request exceeds allowed limit of 4096 users.")
     
-    def schedule_create_users():
-        asyncio.run(UsersManager.create_users(forms, current_user))
+    job_uuid = uuid4()
+    jobs[job_uuid] = "pending"
+    
+    async def task_wrapper():
+        try:
+            await UsersManager.create_users(forms, current_user)
+            jobs[job_uuid] = "success"
+        except Exception:
+            jobs[job_uuid] = "error"
 
-    background_tasks.add_task(schedule_create_users)
+    background_tasks.add_task(task_wrapper)
+    
+    return {"job_uuid": job_uuid, "status": "pending"}
+
+@router.get("/create-in-bulk/job-status/{job_id}")
+async def __get_create_users_in_bulk_job_status__(job_uuid: UUID):
+    status = jobs.get(job_uuid)
+    if status is None:
+        raise HTTPException(404, "Job not found")
+    return {"job_uuid": job_uuid, "status": status}
 
 
 @router.put("/change-password/{uuid}", response_model=None)
