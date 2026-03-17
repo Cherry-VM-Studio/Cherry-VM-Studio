@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
@@ -54,6 +55,12 @@ async def __read_users__(
 async def __create_user__(form: CreateAnyUserForm, current_user: DependsOnAdministrativeAuthentication) -> UUID:   
     return UsersManager.create_user(form, current_user)
 
+@router.post("/create-in-bulk", response_model=list[UUID])
+async def __create_users_in_bulk__(forms: list[CreateAnyUserForm], current_user: DependsOnAdministrativeAuthentication):
+    if len(forms) > 256:
+        raise HTTPException(413, "Bulk creation request exceeds allowed limit of 256 users.")
+    return UsersManager.create_users(forms, current_user)
+
 
 @router.put("/change-password/{uuid}", response_model=None)
 async def __change_password__(uuid: UUID, body: ChangePasswordBody, current_user: DependsOnAdministrativeAuthentication) -> None:
@@ -65,20 +72,25 @@ async def __modify_user__(uuid: UUID, form: ModifyUserForm, current_user: Depend
     user = UsersManager.modify_user(uuid, form, current_user)
     
     if user is None:
-        await GlobalWebSocketManager.disconnect_user(uuid, 4403, "Could not retrieve user account.")
+        asyncio.create_task(GlobalWebSocketManager.disconnect_user(uuid, 4403, "Could not retrieve user account."))
         
         logger.error(f"Could not retrieve user account after its modification! uuid={uuid}")
         raise HTTPException(500, "Internal error occured during modification. Could not find modified user.")
     
     if user.disabled:
-        await GlobalWebSocketManager.disconnect_user(uuid, 4403, "User account got disabled")
+        asyncio.create_task(GlobalWebSocketManager.disconnect_user(uuid, 4403, "User account got disabled."))
         
     return UsersManager.extend_user_model(user)
     
     
 @router.delete("/delete/{uuid}", response_model=None )
 async def __delete_user__(uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> None:
-    UsersManager.delete_user(uuid)
-    await GlobalWebSocketManager.disconnect_user(uuid, 4403, "User account got deleted.")
+    UsersManager.delete_user(uuid, current_user)
+    asyncio.create_task(GlobalWebSocketManager.disconnect_user(uuid, 4403, "User account got deleted."))
     
         
+@router.delete("/delete-many", response_model=None)
+async def __delete_multiple_users__(uuids: list[UUID], current_user: DependsOnAdministrativeAuthentication) -> None:
+    UsersManager.delete_users(uuids, current_user)
+    for uuid in uuids:
+        asyncio.create_task(GlobalWebSocketManager.disconnect_user(uuid, 4403, "User account got deleted."))

@@ -139,6 +139,13 @@ class CreateAdministratorForm(StrippedModel):
     account_type: Literal["administrative"] = "administrative"
     roles: list[UUID] = []
     
+    @field_validator("email", mode="before")
+    @classmethod
+    def fix_email(cls, value):
+        if value is not None and not len(value):
+            return None
+        return value
+    
 class CreateClientForm(StrippedModel):
     password: str
     username: str
@@ -148,6 +155,13 @@ class CreateClientForm(StrippedModel):
     disabled: bool = False
     account_type: Literal["client"] = "client"
     groups: list[UUID] = []
+    
+    @field_validator("email", mode="before")
+    @classmethod
+    def fix_email(cls, value):
+        if value is not None and not len(value):
+            return None
+        return value
     
 class CreateGroupForm(StrippedModel):
     name: str

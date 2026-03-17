@@ -1,13 +1,16 @@
 
+import logging
 import re
 from typing import Any, Optional
 from uuid import UUID
 
 from fastapi import HTTPException
 
+from modules.postgresql import pool
 from config.permissions_config import PERMISSIONS
 from config.regex_config import REGEX_CONFIG
 from modules.authentication.passwords import hash_password
+from modules.postgresql.simple_select import select_single_field
 from modules.users.permissions import verify_can_change_password, verify_permissions
 from modules.users.sublibraries.roles_library import RoleLibrary
 from modules.users.sublibraries.group_library import GroupLibrary
@@ -16,6 +19,7 @@ from modules.users.sublibraries.administrator_library import AdministratorLibrar
 from modules.users.validation import validate_group_creation, validate_user_creation, validate_user_modification
 from .models import Administrator, AnyUser, AnyUserExtended, CreateAdministratorArgs, CreateAnyUserForm, CreateClientArgs, CreateGroupArgs, CreateGroupForm, GetUsersFilters, ModifyUserArgs, ModifyUserForm
 
+logger = logging.getLogger(__name__)
 
 class _UsersSystemManager():
     
@@ -57,10 +61,7 @@ class _UsersSystemManager():
         if user.account_type == 'client':
             return ClientLibrary.extend_model(user)
     
-    def create_user(self, form: CreateAnyUserForm, logged_in_user: Administrator) -> UUID:        
-        if form.email and not len(form.email):
-            form.email = None
-               
+    def create_user(self, form: CreateAnyUserForm, logged_in_user: Administrator) -> UUID:                      
         validate_user_creation(form)
         
         if form.account_type == 'administrative':
@@ -73,16 +74,92 @@ class _UsersSystemManager():
         if form.account_type == 'client':
             return ClientLibrary.create_record(CreateClientArgs.model_validate(form.model_dump()))
         
-    def delete_user(self, uuid: UUID):
+    def create_users(self, forms: list[CreateAnyUserForm], logged_in_user: Administrator) -> list[UUID]:
+        usernames = []
+        emails = []
+        administrators_args_list = []
+        clients_args_list = []
+        output_uuids = []
+        
+        for form in forms:
+            validate_user_creation(form)
+            usernames.append(form.username)
+            emails.append(form.email)
+            
+            if form.account_type == "administrative":
+                administrators_args_list.append(CreateAdministratorArgs.model_validate(form.model_dump()))
+            elif form.account_type == "client":
+                clients_args_list.append(CreateClientArgs.model_validate(form.model_dump()))
+            
+        if len(usernames) != len(set(usernames)):
+            raise HTTPException(409, f"Request contains duplicate usernames.") 
+        if len(emails) != len(set(emails)):
+            raise HTTPException(409, f"Request contains duplicate emails.") 
+        if len(administrators_args_list):
+            verify_permissions(logged_in_user, PERMISSIONS.MANAGE_ADMIN_USERS)
+        if len(clients_args_list):
+            verify_permissions(logged_in_user, PERMISSIONS.MANAGE_CLIENT_USERS)
+            
+        with pool.connection() as connection:
+            with connection.cursor() as cursor:
+                with connection.transaction():
+                    try:
+                        with connection.transaction(): 
+                            if administrators_args_list:
+                                output_uuids.extend(AdministratorLibrary.create_records(administrators_args_list, logged_in_user, cursor))
+                            if clients_args_list:
+                                output_uuids.extend(ClientLibrary.create_records(clients_args_list, cursor))
+                    except Exception as e:
+                        logger.exception("Error creating users in bulk")
+                        raise HTTPException(500, "An error occurred while creating users in bulk.")
+                        
+            
+        return output_uuids
+     
+    def delete_user(self, uuid: UUID, logged_in_user: Administrator):
         user = self.get_user(uuid)
         
         if user is None:
             raise HTTPException(400, f"User with UUID={uuid} does not exist.")
         
         if user.account_type == 'administrative':
+            verify_permissions(logged_in_user, PERMISSIONS.MANAGE_ADMIN_USERS)
             return AdministratorLibrary.remove_record(uuid)
         if user.account_type == 'client':
+            verify_permissions(logged_in_user, PERMISSIONS.MANAGE_CLIENT_USERS)
             return ClientLibrary.remove_record(uuid)
+        
+    def delete_users(self, uuids: list[UUID],  logged_in_user: Administrator):
+        all_administrator_uuids = set(select_single_field("uuid", "SELECT uuid FROM administrators"))
+        all_client_uuids = set(select_single_field("uuid", "SELECT uuid FROM clients"))
+        
+        uuids_to_delete = set(uuids)
+        administrator_uuids_to_delete = list(uuids_to_delete & all_administrator_uuids)
+        client_uuids_to_delete = list(uuids_to_delete & all_client_uuids)
+     
+        with pool.connection() as connection:
+            with connection.cursor() as cursor:
+                with connection.transaction():
+                    try: 
+                        if administrator_uuids_to_delete:
+                            verify_permissions(logged_in_user, PERMISSIONS.MANAGE_ADMIN_USERS)
+                            
+                            AdministratorLibrary.remove_records(administrator_uuids_to_delete, cursor)
+                            if not RoleLibrary.verify_role_integrity(cursor):
+                                connection.rollback()
+                                raise HTTPException(
+                                    400,
+                                    "Cannot remove selected users, as it would leave at least one permission unassigned. "
+                                    "Please assign the affected permission to another user before proceeding."
+                                )
+
+                        if client_uuids_to_delete:
+                            verify_permissions(logged_in_user, PERMISSIONS.MANAGE_CLIENT_USERS)
+                            ClientLibrary.remove_records(client_uuids_to_delete, cursor)
+                    except Exception:
+                        logger.exception("Error occurred during bulk removal of users.")
+                        raise HTTPException(500, "Error occurred during bulk removal of users.")
+        
         
     def modify_user(self, uuid: UUID, form: ModifyUserForm, logged_in_user: Administrator) -> AnyUser | None:
         user = self.get_user(uuid)

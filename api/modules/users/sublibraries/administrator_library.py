@@ -1,12 +1,12 @@
 import logging
-from typing import Type, override
+from typing import Any, Type, override
 from uuid import UUID
 
 from fastapi import HTTPException
-from psycopg import sql
+from psycopg import Cursor, sql
 from modules.users.permissions import has_permissions
 from modules.postgresql import pool
-from ..models import Administrator, AdministratorExtended, AdministratorInDB, CreateAdministratorArgs, ModifyUserArgs
+from ..models import Administrator, AdministratorExtended, AdministratorInDB, CreateAdministratorArgs, ModifyUserArgs, Role
 from modules.postgresql.simple_select import select_one, select_rows, select_single_field
 from modules.users.guacamole_synchronization import create_entity, delete_entity
 from modules.postgresql.simple_table_manager import SimpleTableManager
@@ -120,6 +120,51 @@ class _AdministratorTableManager(SimpleTableManager):
         
         return args.uuid
     
+    def create_records(self, args_list: list[CreateAdministratorArgs], logged_in_user: Administrator, cursor: Cursor[Any]) -> list[UUID]:
+        from .roles_library import RoleLibrary
+        
+        all_roles: dict[UUID, Role] = RoleLibrary.get_all_records()
+        all_role_uuids = set(all_roles.keys())
+        
+        required_permissions = 0
+        
+        assigned_roles_values_sql = []
+        assigned_roles_params = []
+        assigned_roles_values_template = sql.SQL("({}, {})").format(sql.Placeholder(),sql.Placeholder())
+        
+        for args in args_list:
+            args.username = args.username.lower()
+            args.password = hash_password(args.password)
+         
+            for role_uuid in args.roles:
+                if not role_uuid in all_role_uuids:
+                    raise HTTPException(400, f"The following role does not exist in the system: {role_uuid}")
+                required_permissions |= all_roles[role_uuid].permissions
+                assigned_roles_values_sql.append(assigned_roles_values_template)
+                assigned_roles_params.extend([args.uuid, role_uuid])
+                
+        if not has_permissions(logged_in_user, required_permissions):
+            raise HTTPException(403, "You do not have necessary permissions to assign the attached set of roles to another user.")
+        
+        fields = ["uuid", "username", "password", "email", "name", "surname", "disabled"]
+
+        query = sql.SQL("INSERT INTO administrators ({fields}) VALUES ({placeholders})").format(
+            fields=sql.SQL(', ').join(map(sql.Identifier, fields)),
+            placeholders=sql.SQL(', ').join(sql.Placeholder(k) for k in fields)
+        )
+        data = [args.model_dump() for args in args_list]
+        
+        assign_roles_query = sql.SQL("""
+            INSERT INTO administrators_roles (administrator_uuid, role_uuid)
+            VALUES {values}
+            ON CONFLICT DO NOTHING
+        """).format(values=sql.SQL(", ").join(assigned_roles_values_sql))
+        
+        cursor.executemany(query, data)
+        cursor.execute(assign_roles_query, assigned_roles_params)
+        
+        return [args.uuid for args in args_list]
+    
     @override
     def remove_record(self, uuid: UUID):
         from .roles_library import RoleLibrary
@@ -130,10 +175,23 @@ class _AdministratorTableManager(SimpleTableManager):
                 
                 if not RoleLibrary.verify_role_integrity(cursor):
                     connection.rollback()
-                    raise HTTPException(400, f"Cannot remove user with UUID={uuid}, as it would leave at least one permission unassigned. Please assign the affected permission to another user before proceeding.")
+                    raise HTTPException(
+                        400, f"""
+                        Cannot remove user with UUID={uuid}, as it would leave at least one permission unassigned.
+                        Please assign the affected permission to another user before proceeding."""
+                    )
                 
                 delete_entity(cursor, uuid)
                 connection.commit()
+                
+    def remove_records(self, uuids: list[UUID], cursor: Cursor[Any]):
+        from .roles_library import RoleLibrary
+       
+        cursor.execute("DELETE FROM administrators WHERE uuid = ANY(%s)",(uuids,))
+        
+        for uuid in uuids:
+            delete_entity(cursor, uuid)
+
     
     def modify_record(self, uuid: UUID, form: ModifyUserArgs):
         

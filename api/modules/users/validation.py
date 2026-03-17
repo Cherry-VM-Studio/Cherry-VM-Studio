@@ -8,10 +8,10 @@ def validate_user_creation(user_data: CreateAnyUserForm):
     from .users import UsersManager
      
     if UsersManager.get_user_by_username(user_data.username) is not None:
-        raise HTTPException(status_code=409, detail="User with this username already exists.")
+        raise HTTPException(status_code=409, detail=f"User with username \"{user_data.username}\" already exists.")
     
     if user_data.email is not None and UsersManager.get_user_by_email(user_data.email) is not None:
-        raise HTTPException(status_code=409, detail="User with this email already exists.")
+        raise HTTPException(status_code=409, detail=f"User with email \"{user_data.email}\" already exists.")
     
     if not re.match(REGEX_CONFIG.username, user_data.username):
         raise HTTPException(status_code=400, detail="Invalid username. Username must be between 3 and 24 characters in length, start with a letter and only contain alphanumeric characters, underscores, hyphens and periods.")
