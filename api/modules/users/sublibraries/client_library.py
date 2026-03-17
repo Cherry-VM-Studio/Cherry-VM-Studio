@@ -137,7 +137,8 @@ class _ClientTableManager(SimpleTableManager):
         """).format(values=sql.SQL(", ").join(assigned_groups_values_sql))
         
         cursor.executemany(query, data)
-        cursor.execute(assign_roles_query, assigned_groups_params)
+        if assigned_groups_params:
+            cursor.execute(assign_roles_query, assigned_groups_params)
         
         return [args.uuid for args in args_list]
     

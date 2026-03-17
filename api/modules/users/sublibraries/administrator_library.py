@@ -161,7 +161,8 @@ class _AdministratorTableManager(SimpleTableManager):
         """).format(values=sql.SQL(", ").join(assigned_roles_values_sql))
         
         cursor.executemany(query, data)
-        cursor.execute(assign_roles_query, assigned_roles_params)
+        if assigned_roles_params:
+            cursor.execute(assign_roles_query, assigned_roles_params)
         
         return [args.uuid for args in args_list]
     
