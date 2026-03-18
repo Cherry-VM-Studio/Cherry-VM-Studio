@@ -142,9 +142,9 @@ class CreateAdministratorForm(StrippedModel):
     @field_validator("email", mode="before")
     @classmethod
     def fix_email(cls, value):
-        if value is not None and not len(value):
-            return None
-        return value.lower()
+        if value is not None and len(value):
+            return value.lower()
+        return None
     
 class CreateClientForm(StrippedModel):
     password: str
