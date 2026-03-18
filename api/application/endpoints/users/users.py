@@ -1,7 +1,8 @@
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
 import logging
-from typing import Literal
+from typing import Dict, Literal, Tuple
 from uuid import UUID, uuid4
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
@@ -14,7 +15,9 @@ from modules.authentication.validation import DependsOnAdministrativeAuthenticat
 
 logger = logging.getLogger(__name__)
 
-jobs: dict[UUID, Literal["pending", "success", "error"]] = {}
+jobs: Dict[UUID, Tuple[Literal["pending", "success", "error"], datetime]] = {}
+
+JOB_EXPIRY_SECONDS = 300
 
 router = APIRouter(
     prefix='/users',
@@ -64,15 +67,22 @@ async def __create_users_in_bulk__(forms: list[CreateAnyUserForm], current_user:
         raise HTTPException(413, "Bulk creation request exceeds allowed limit of 4096 users.")
     
     job_uuid = uuid4()
-    jobs[job_uuid] = "pending"
+    jobs[job_uuid] = ("pending", datetime.now())
+
+    async def cleanup_job():
+        await asyncio.sleep(JOB_EXPIRY_SECONDS)
+        jobs.pop(job_uuid, None)
+        logger.info(f"Cleaned up create users in bulk job {job_uuid}")
 
     async def run_task():
         try:
             await UsersManager.create_users(forms, current_user)
-            jobs[job_uuid] = "success"
+            jobs[job_uuid] = ("success", datetime.now())
         except Exception as e:
-            print("Background task error:", e)
-            jobs[job_uuid] = "error"
+            logger.exception("Creating users in bulk background task error.")
+            jobs[job_uuid] = ("error", datetime.now())
+        finally:
+            asyncio.create_task(cleanup_job())
     
     asyncio.create_task(asyncio.to_thread(asyncio.run, run_task()))
     
@@ -80,9 +90,13 @@ async def __create_users_in_bulk__(forms: list[CreateAnyUserForm], current_user:
 
 @router.get("/create-in-bulk/job-status/{job_uuid}")
 async def __get_create_users_in_bulk_job_status__(job_uuid: UUID):
-    status = jobs.get(job_uuid)
-    if status is None:
+    job_data  = jobs.get(job_uuid)
+    
+    if job_data  is None:
         raise HTTPException(404, "Job not found")
+    
+    status, _ = job_data
+    
     return {"job_uuid": job_uuid, "status": status}
 
 
