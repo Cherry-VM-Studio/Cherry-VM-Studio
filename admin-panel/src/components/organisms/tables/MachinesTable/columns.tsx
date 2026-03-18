@@ -119,8 +119,7 @@ export const getColumns = (global: boolean, viewMode: boolean) =>
             accessorKey: "disks",
             header: t("machines.table.headers.disks", { ns: "pages" }),
             cell: MachineDisksCell,
-            minSize: 200,
-            maxSize: 400,
+            minSize: 100,
             enableSorting: false,
         },
         {

@@ -157,6 +157,7 @@ const MachineDisksFieldset = <T extends Record<string, any> = {}>({
                                         input: "borderless",
                                     }}
                                     readOnly={disabled || (i === form.values.os_disk && osDiskReadonly)}
+                                    allowDeselect={false}
                                 />
                             </>
                         )}
