@@ -72,14 +72,14 @@ async def __create_users_in_bulk__(forms: list[CreateAnyUserForm], current_user:
     async def cleanup_job():
         await asyncio.sleep(JOB_EXPIRY_SECONDS)
         jobs.pop(job_uuid, None)
-        logger.info(f"Cleaned up create users in bulk job {job_uuid}")
+        logger.info(f"Cleaned up /users/create-in-bulk job with UUID={job_uuid}")
 
     async def run_task():
         try:
             await UsersManager.create_users(forms, current_user)
             jobs[job_uuid] = ("success", datetime.now())
         except Exception as e:
-            logger.exception("Creating users in bulk background task error.")
+            logger.exception("/users/create-in-bulk background task error.")
             jobs[job_uuid] = ("error", datetime.now())
         finally:
             asyncio.create_task(cleanup_job())
