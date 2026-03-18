@@ -26,6 +26,11 @@ def get_machine_state_payload(machine_uuid: UUID, skip_membership_check: bool = 
     
     is_active: bool = machine.state()[0] == libvirt.VIR_DOMAIN_RUNNING
     
+    ras_port = None
+    
+    if machine.framebuffer is not None and machine.framebuffer.port is not None:
+        ras_port = int(machine.framebuffer.port)
+    
     return MachineStatePayload(
         uuid = machine_uuid,
         active = is_active,
@@ -34,7 +39,7 @@ def get_machine_state_payload(machine_uuid: UUID, skip_membership_check: bool = 
         ram_max = (machine.info()[1]/1024),
         ram_used = (machine.info()[2]/1024) if is_active else 0,
         boot_timestamp = get_machine_boot_timestamp(machine_uuid),
-        ras_port = int(machine.framebuffer.port) if machine.framebuffer.port else None,
+        ras_port = ras_port,
     )
     
 
