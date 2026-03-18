@@ -32,7 +32,7 @@ def get_machine_properties_payload(machine_uuid: UUID, skip_membership_check: bo
         description = machine.description,
         owner = get_machine_owner(machine_uuid),
         assigned_clients = get_machine_assigned_clients(machine_uuid),
-        ras_port = int(machine.framebuffer.port) if machine.framebuffer.port else None,
+        
         disks = machine_disks,
         connections = get_machine_connections(machine_uuid)
     )

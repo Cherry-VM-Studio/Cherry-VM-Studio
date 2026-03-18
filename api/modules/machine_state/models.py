@@ -26,8 +26,6 @@ class MachinePropertiesPayload(BaseModel):
     description: str | None = None        
     owner: Administrator | None = None          
     assigned_clients: dict[UUID, Client] = {}
-    ras_ip: str | None = None   
-    ras_port: int | None = None
     connections: dict[Literal["ssh", "rdp", "vnc"], str] | None = None
     disks: list[StaticDiskInfo] | None = None   
 
@@ -40,6 +38,8 @@ class MachineStatePayload(BaseModel):
     ram_max: int | None = None                      
     ram_used: int | None = None                     
     boot_timestamp: datetime | None = None   
+    ras_ip: str | None = None   
+    ras_port: int | None = None
 
 
 class MachineDisksPayload(BaseModel):
