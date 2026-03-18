@@ -56,7 +56,7 @@ const ImportAccountsModal = ({ opened, onClose, onSubmit, accountType }: ImportA
         const notificationId = notifications.show({
             color: "yellow",
             title: tns("importing.title"),
-            message: tns("importing.description", { total: total }),
+            message: tns("importing.description", { count: total }),
             loading: true,
             autoClose: false,
             withCloseButton: true,
@@ -92,7 +92,7 @@ const ImportAccountsModal = ({ opened, onClose, onSubmit, accountType }: ImportA
                 loading: false,
                 color: "lime",
                 title: tns("importing-success.title"),
-                message: tns("importing-success.description", { total: total }),
+                message: tns("importing-success.description", { count: total }),
                 autoClose: 5000,
                 withCloseButton: false,
             });

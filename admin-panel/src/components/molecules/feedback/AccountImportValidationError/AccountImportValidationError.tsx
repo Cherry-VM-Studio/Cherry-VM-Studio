@@ -4,6 +4,8 @@ import { isUndefined } from "lodash";
 import { AutofixFunction, Validator } from "../../../organisms/forms/VerifySpreadsheetForm/VerifySpreadsheetForm";
 import { findFirstGreaterThan, findFirstLessThan } from "../../../../utils/arrays";
 import classes from "./AccountImportValidationError.module.css";
+import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
+import { t } from "i18next";
 
 export interface AccountImportValidationErrorProps {
     validator: Validator;
@@ -22,17 +24,25 @@ const AccountImportValidationError = ({
     currentFocusedRow,
     setCurrentFocusedRow,
 }: AccountImportValidationErrorProps): React.JSX.Element => {
+    const { tns } = useNamespaceTranslation("modals", "import-accounts.validation");
+
     return (
         <Group className={classes.container}>
             <Stack className={classes.textContainer}>
                 <Text className={classes.topText}>
                     <b>{`${property}: `}</b>
-                    {`${validator.message}`}
+                    {`${tns(`${property}.${validator.key}.message`)}`}
                 </Text>
-                <Text className={classes.bottomText}>{`Affected rows: ${rows
-                    .slice(0, 10)
-                    .map((e) => e + 1)
-                    .join(", ")}${rows.length > 10 ? ", ..." : ""} (${rows.length} in total)`}</Text>
+                <Text className={classes.bottomText}>
+                    {tns("affected-rows", {
+                        count: rows.length,
+                        rows: `${rows
+                            .slice(0, 10)
+                            .map((e) => e + 1)
+                            .join(", ")}
+                            ${rows.length > 10 ? ", ..." : ""}`,
+                    })}
+                </Text>
             </Stack>
             <Group gap="8">
                 <ActionIcon
@@ -57,13 +67,13 @@ const AccountImportValidationError = ({
                     <IconArrowDown />
                 </ActionIcon>
 
-                <Tooltip label={validator?.autofixMessage ?? ""}>
+                <Tooltip label={tns(`${property}.${validator.key}.autofixMessage`) ?? ""}>
                     <Button
                         variant="default"
                         classNames={{ label: classes.nextButtonLabel }}
                         onClick={() => onAutofix(rows, property, validator.autofix)}
                     >
-                        Autofix
+                        {t("autofix")}
                     </Button>
                 </Tooltip>
             </Group>

@@ -101,5 +101,6 @@
     "logged-in-as": "Logged in as",
     "view-profile": "View profile",
     "change-password": "Change password",
-    "admin": "Admin"
+    "admin": "Admin",
+    "autofix": "Autofix"
 }

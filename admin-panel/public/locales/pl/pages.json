@@ -41,7 +41,9 @@
             "filters": "Filtruj",
             "import": "Zaimportuj",
             "create-machine": "Stwórz maszynę",
-            "create-multiple": "Hurtowe tworzenie"
+            "create-multiple": "Hurtowe tworzenie",
+            "selected-machines": "Wybrane maszyny",
+            "delete-selected": "Usuń zaznaczone"
         },
         "table": {
             "headers": {
@@ -56,7 +58,11 @@
                 "ip-address-port": "Adres IP : Port",
                 "domain-path": "Domena",
                 "uuid": "Unikalny identyfikator",
-                "description": "Opis maszyny"
+                "description": "Opis maszyny",
+                "vcpu": "Rdzenie vCPU",
+                "connected-users": "Połączeni użytkownicy",
+                "port": "Port",
+                "disks": "Dyski"
             }
         }
     },
@@ -193,7 +199,6 @@
             "manage-system-resources": "ustawiać globalne, systemowe ograniczenia korzystania z zasobów dla administratorów"
         }
     },
-
     "snapshots": {
         "controls": {
             "all-snapshots": "Wszystkie migawki",
@@ -225,7 +230,7 @@
             "filtered-results": "Przefiltrowane wyniki",
             "filters": "Filtruj",
             "import": "Zaimportuj",
-            "delete-selected": "Usuń wybrane",
+            "delete-selected": "Usuń zaznaczone",
             "delete": "Usuń",
             "add-iso-file": "Dodaj plik ISO",
             "view-and-edit": "Podgląd/Edycja"
@@ -240,8 +245,8 @@
                 "last-used": "Ostatnio użyte",
                 "imported-at": "Zaimportowane",
                 "imported-by": "Zaimportowane przez",
-                "last-modifed-at": "Ostatnio zmodyfikowane",
-                "last-modifed-by": "Ostatnio zmodyfikowane przez"
+                "last-modified-at": "Ostatnio zmodyfikowane",
+                "last-modified-by": "Ostatnio zmodyfikowane przez"
             }
         }
     },
@@ -252,7 +257,7 @@
             "filtered-results": "Przefiltrowane wyniki",
             "filters": "Filtry",
             "import": "Importuj",
-            "delete-selected": "Usuń wybrane",
+            "delete-selected": "Usuń zaznaczone",
             "delete": "Usuń",
             "create-template": "Utwórz szablon"
         },
@@ -269,6 +274,23 @@
             "vcpu-unit_one": "rdzeń",
             "vcpu-unit_few": "rdzenie",
             "vcpu-unit_many": "rdzeni"
+        }
+    },
+    "contributors": {
+        "title-developers": "Programiści",
+        "title-helpers": "Wsparcie projektu",
+        "contributions": {
+            "virtualization": "Wirtualizacja",
+            "networking": "Sieci komputerowe",
+            "cybersecurity": "Cyberbezpieczeństwo",
+            "api-layer": "Warstwa API",
+            "web-applications": "Aplikacje webowe",
+            "ui-ux": "UI/UX",
+            "ui-design": "Projektowanie UI",
+            "auth-system": "System uwierzytelniania",
+            "branding": "Branding",
+            "graphics": "Grafika",
+            "pr": "Public relations"
         }
     }
 }

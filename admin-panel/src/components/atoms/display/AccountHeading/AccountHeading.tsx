@@ -1,6 +1,7 @@
 import { Avatar, Badge, Box, Group, Stack, Text, Title } from "@mantine/core";
 import classes from "./AccountHeading.module.css";
 import { useTranslation } from "react-i18next";
+import { getFullUserName } from "../../../../utils/users";
 
 const AccountHeading = ({ user }): React.JSX.Element => {
     const { t } = useTranslation();
@@ -9,7 +10,7 @@ const AccountHeading = ({ user }): React.JSX.Element => {
         <>
             <Group className={classes.group}>
                 <Avatar
-                    name={user?.name || user?.surname ? `${user?.name} ${user?.surname}` : user?.username}
+                    name={getFullUserName(user)}
                     color="initials"
                     size="96"
                     className={classes.avatar}
@@ -19,7 +20,7 @@ const AccountHeading = ({ user }): React.JSX.Element => {
                         order={2}
                         className={classes.title}
                     >
-                        {user?.name || user?.surname ? `${user?.name} ${user?.surname}` : `@${user?.username}`}
+                        {getFullUserName(user)}
                     </Title>
                     <Text className={classes.username}>{`@${user?.username}`}</Text>
                 </Stack>

@@ -101,8 +101,8 @@ const ParseSpreadsheetForm = ({ file, onCancel, onSubmit, resetTrigger }: ParseS
                     <TextInput
                         w="150"
                         maxLength={4}
-                        label="Delimiter"
-                        description="Seperates the fields."
+                        label={tns("parse-options.delimiter.label")}
+                        description={tns("parse-options.delimiter.description")}
                         classNames={{ input: "borderless" }}
                         value={encodeCharacters(options.delimiter as string)}
                         onChange={(event) => setOptions((prev) => ({ ...prev, delimiter: decodeCharacters(event.currentTarget.value) }) as ParseConfig)}
@@ -110,19 +110,18 @@ const ParseSpreadsheetForm = ({ file, onCancel, onSubmit, resetTrigger }: ParseS
                     <Select
                         w="150"
                         maxLength={4}
-                        label="Line break"
-                        description="The newline sequence."
+                        label={tns("parse-options.newline.label")}
+                        description={tns("parse-options.newline.description")}
                         classNames={{ input: "borderless" }}
                         value={encodeCharacters(options.newline as string)}
                         data={["\\r", "\\n", "\\r\\n"]}
                         onChange={(value) => setOptions((prev) => ({ ...prev, newline: decodeCharacters(value) }) as ParseConfig)}
                     />
-
                     <TextInput
                         w="150"
                         maxLength={4}
-                        label="Quote character"
-                        description="Used to quote fields."
+                        label={tns("parse-options.quote-character.label")}
+                        description={tns("parse-options.quote-character.description")}
                         classNames={{ input: "borderless" }}
                         value={encodeCharacters(options.quoteChar as string)}
                         onChange={(event) => setOptions((prev) => ({ ...prev, quoteChar: decodeCharacters(event.currentTarget.value) }) as ParseConfig)}
@@ -130,8 +129,8 @@ const ParseSpreadsheetForm = ({ file, onCancel, onSubmit, resetTrigger }: ParseS
                     <TextInput
                         w="150"
                         maxLength={4}
-                        label="Escape character"
-                        description="Escapes quote in fields."
+                        label={tns("parse-options.escape-character.label")}
+                        description={tns("parse-options.escape-character.description")}
                         classNames={{ input: "borderless" }}
                         value={encodeCharacters(options.escapeChar as string)}
                         onChange={(event) => setOptions((prev) => ({ ...prev, escapeChar: decodeCharacters(event.currentTarget.value) }) as ParseConfig)}
@@ -150,6 +149,7 @@ const ParseSpreadsheetForm = ({ file, onCancel, onSubmit, resetTrigger }: ParseS
                                 setData(null);
                                 parseFile();
                             }}
+                            w="fit-content"
                         >
                             <Group gap="6">
                                 <IconRepeat

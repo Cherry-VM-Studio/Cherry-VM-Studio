@@ -56,7 +56,7 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }: Accoun
                           : val.length > 24
                             ? tns("validation.username-too-long")
                             : null,
-            email: isEmail(tns("validation.email-invalid")),
+            email: (val)=> val?.length && !/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,})+$/.test(val) ? tns("validation.email-invalid") : null,
         },
         onValuesChange: (values) => {
             form.setFieldValue("username", values.username.toLowerCase());

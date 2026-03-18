@@ -80,8 +80,6 @@ const VALIDATION = {
     name: [
         {
             key: "too-long",
-            message: "Name length cannot exceed 50 characters.",
-            autofixMessage: "Truncates the name to fit the length limits.",
             validate: (val) => val?.length > 50,
             autofix: (val) => {
                 return val.slice(0, 50);
@@ -91,8 +89,6 @@ const VALIDATION = {
     surname: [
         {
             key: "too-long",
-            message: "Surname length cannot exceed 50 characters.",
-            autofixMessage: "Truncates the name to fit the length limits.",
             validate: (val) => val?.length > 50,
             autofix: (val) => {
                 return val.slice(0, 50);
@@ -102,8 +98,6 @@ const VALIDATION = {
     username: [
         {
             key: "missing",
-            message: "Username field missing.",
-            autofixMessage: "Generates a username automatically from other properties such as name, surname, or email.",
             validate: (val) => _.isUndefined(val) || !val?.length,
             autofix: (_, target, values) => {
                 return generateUsername(target, values);
@@ -111,8 +105,6 @@ const VALIDATION = {
         },
         {
             key: "invalid-chars",
-            message: "Username contains invalid characters. It may only contain lowercase letters, digits, underscores, periods and hyphens.",
-            autofixMessage: "Generates a username automatically from other properties such as name, surname, or email.",
             validate: (val) => val && !/^[a-z0-9_\.-]*$/.test(val),
             autofix: (_, target, values) => {
                 return generateUsername(target, values);
@@ -120,8 +112,6 @@ const VALIDATION = {
         },
         {
             key: "invalid-first-char",
-            message: "Username starts with a character other than a letter.",
-            autofixMessage: "Generates a username automatically from other properties such as name, surname, or email.",
             validate: (val) => val && !/^[a-zA-Z]$/g.test(val?.charAt(0)),
             autofix: (_, target, values) => {
                 return generateUsername(target, values);
@@ -129,8 +119,6 @@ const VALIDATION = {
         },
         {
             key: "duplicate",
-            message: "Duplicate username found.",
-            autofixMessage: "Appends a tag to the end of the username. The username may be truncated to fit length limits.",
             validate: (val, _, values) => {
                 return val && moreThanOnce(values, val);
             },
@@ -140,8 +128,6 @@ const VALIDATION = {
         },
         {
             key: "too-short",
-            message: "Username must be at least 3 characters long.",
-            autofixMessage: "Appends a tag to the end of the username.",
             validate: (val) => val && val?.length < 3,
             autofix: (val, _, values) => {
                 return resolveDuplicate(val, 24, values);
@@ -149,8 +135,6 @@ const VALIDATION = {
         },
         {
             key: "too-long",
-            message: "Username length cannot exceed 24 characters.",
-            autofixMessage: "Truncates the username to fit the length limits. Might append a tag to the end of the username in case of a duplicate.",
             validate: (val) => val && val?.length > 24,
             autofix: (val, _, values) => {
                 let trimmed = val.slice(0, 24);
@@ -162,29 +146,21 @@ const VALIDATION = {
     password: [
         {
             key: "too-short",
-            message: "Password must be at least 12 characters long.",
-            autofixMessage: "Generate a secure password.",
             validate: (val) => !val || val?.length < 12,
             autofix: () => generatePassword(16),
         },
         {
             key: "too-long",
-            message: "Password length cannot exceed 256 characters.",
-            autofixMessage: "Generate a secure password.",
             validate: (val) => val?.length > 256,
             autofix: () => generatePassword(16),
         },
         {
             key: "invalid-chars",
-            message: "Password contains invalid characters",
-            autofixMessage: "Generate a secure password.",
             validate: (val) => val && !/^[A-Za-z0-9$&+,:;=?@#|'<>.^*()%!_-]+$/.test(val),
             autofix: () => generatePassword(16),
         },
         {
             key: "not-safe",
-            message: "Password must contain at least one digit, lowercase letter, upercase letter and one of the special characters.",
-            autofixMessage: "Generate a secure password.",
             validate: (val) => val?.length > 256,
             autofix: () => generatePassword(16),
         },
@@ -192,15 +168,11 @@ const VALIDATION = {
     email: [
         {
             key: "invalid",
-            message: "Provided email is invalid.",
-            autofixMessage: "Erase invalid emails.",
             validate: (val) => val?.length && !/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,})+$/.test(val),
             autofix: () => "",
         },
         {
             key: "duplicate",
-            message: "Duplicate email found.",
-            autofixMessage: "Erase duplicate emails.",
             validate: (val, _, values) =>
                 val &&
                 moreThanOnce(

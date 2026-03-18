@@ -10,12 +10,11 @@ import _, { isString, isUndefined, keys } from "lodash";
 import { useThrottledCallback } from "@mantine/hooks";
 import AccountImportValidationError from "../../../molecules/feedback/AccountImportValidationError/AccountImportValidationError";
 import Papa from "papaparse";
+import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 
 export type AutofixFunction = (val: string | undefined, target: Record<string, string>, values: string[], ...props: any[]) => string;
 export interface Validator {
     key: string;
-    message: string;
-    autofixMessage?: string;
     validate: (val: string | undefined, target: Record<string, string>, values: string[]) => boolean;
     autofix?: AutofixFunction;
 }
@@ -37,7 +36,7 @@ const VerifySpreadsheetForm = ({ properties, data, setData, onSubmit, onCancel, 
     const getEmptyErrors = () => _.mapValues(validationConfig, (validators) => _.fromPairs(validators.map((v) => [v.key, []])));
 
     const [firstLoad, setFirstLoad] = useState(true);
-    const { t } = useTranslation();
+    const { t, tns } = useNamespaceTranslation("modals", "import-accounts");
     const { data: users, loading, error } = useFetch<UserExtended>("/users/all");
     const [errors, setErrors] = useState<ValidationErrors>(getEmptyErrors());
     const [currentFocusedRow, setCurrentFocusedRow] = useState(0);
@@ -63,7 +62,7 @@ const VerifySpreadsheetForm = ({ properties, data, setData, onSubmit, onCancel, 
     const rowErrors = useMemo(
         () =>
             _.flatMap(errors, (inner, property) =>
-                _.flatMap(inner, (rows, key) => _.flatMap(rows, (row) => ({ row, message: validationConfig[property].find((e) => e.key === key).message }))),
+                _.flatMap(inner, (rows, key) => _.flatMap(rows, (row) => ({ row, message: tns(`validation.${property}.${key}.message`) }))),
             ),
 
         [errors],

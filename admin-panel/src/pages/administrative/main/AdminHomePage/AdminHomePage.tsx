@@ -96,7 +96,7 @@ function AdminHomePage() {
                                 </List>
                                 <Button
                                     component={Link}
-                                    to="/machines"
+                                    to="/admin/machines"
                                     color="cherry.11"
                                     radius="md"
                                     mt="md"

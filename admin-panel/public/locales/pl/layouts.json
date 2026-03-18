@@ -1,26 +1,26 @@
 {
-    "footer": {
-        "home": "Strona główna",
-        "documentation": "Dokumentacja",
-        "credits": "Twórcy",
-        "copyright": "Prawa autorskie"
-    },
-    "navbar": {
-        "home": "Strona główna",
-        "machines": "Maszyny wirtualne",
-        "desktops": "Desktopy",
-        "network-panel": "Panel Konfiguracji Sieci",
-        "accounts": "Zarządzanie kontami",
-        "users": "Użytkownicy",
-        "administrators": "Administratorzy",
-        "clients": "Konta klienckie",
-        "groups": "Grupy klientów",
-        "your-library": "Twoja biblioteka",
-        "all-machines": "Wszystkie maszyny",
-        "snapshots": "Twoje migawki",
-        "iso": "Globalne pliki ISO",
-        "templates": "Twoje szablony",
-        "credits": "Prawa autorskie",
-        "contributors": "Kontrybutorzy"
-    }
+  "footer": {
+    "home": "Strona główna",
+    "documentation": "Dokumentacja",
+    "credits": "Twórcy",
+    "copyright": "Prawa autorskie"
+  },
+  "navbar": {
+    "home": "Strona główna",
+    "machines": "Maszyny wirtualne",
+    "desktops": "Desktopy",
+    "network-panel": "Panel Konfiguracji Sieci",
+    "accounts": "Zarządzanie kontami",
+    "users": "Użytkownicy",
+    "administrators": "Administratorzy",
+    "clients": "Konta klienckie",
+    "groups": "Grupy klientów",
+    "your-library": "Twoja biblioteka",
+    "all-machines": "Wszystkie maszyny",
+    "snapshots": "Twoje migawki",
+    "iso": "Globalne pliki ISO",
+    "templates": "Twoje szablony",
+    "copyright": "Prawa autorskie",
+    "contributors": "Kontrybutorzy"
+  }
 }

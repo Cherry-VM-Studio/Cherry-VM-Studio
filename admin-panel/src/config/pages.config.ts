@@ -101,8 +101,8 @@ export const CLIENT_PANEL_PAGES: Page[] = [
 
 export const ADMIN_PANEL_BOTTOM_PAGES: Page[] = [
     {
-        key: "credits",
-        path: "/admin/credits",
+        key: "copyright",
+        path: "/admin/copyright",
         icon: IconCopyright,
     },
     {
@@ -114,8 +114,8 @@ export const ADMIN_PANEL_BOTTOM_PAGES: Page[] = [
 
 export const CLIENT_PANEL_BOTTOM_PAGES: Page[] = [
     {
-        key: "credits",
-        path: "/client/credits",
+        key: "copyright",
+        path: "/client/copyright",
         icon: IconCopyright,
     },
     {

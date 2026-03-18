@@ -21,7 +21,8 @@
         "warning_few": "{{count}} migawki zostaną usunięte!",
         "warning_many": "{{count}} migawek zostanie usunięte!",
         "name-input-placeholder": "Wpisz nazwę migawki",
-        "delete-snapshot-label": "Usuń migawkę"
+        "delete-snapshot-label": "Usuń migawkę",
+        "warning_other": null
     },
     "account": {
         "title-create": "Stwórz nowe konto",
@@ -293,6 +294,160 @@
             "description_one": "{{count}} maszyna została pomyślnie utworzona.",
             "description_few": "{{count}} maszyny zostały pomyślnie utworzone.",
             "description_many": "{{count}} maszyn zostało pomyślnie utworzonych."
+        }
+    },
+    "import-accounts": {
+        "title": "Import kont",
+        "header": {
+            "steps": {
+                "1": {
+                    "label": "Krok 1:",
+                    "description": "Prześlij plik",
+                    "title": "Prześlij plik",
+                    "subtitle": "Upewnij się, że plik jest w formacie CSV."
+                },
+                "1_info": {
+                    "title": "Oczekiwane dane",
+                    "subtitle": "W kolejnych krokach będzie możliwość zmiany nazw i kolejności kolumn."
+                },
+                "2": {
+                    "label": "Krok 2:",
+                    "description": "Wybierz opcje przetwarzania",
+                    "title": "Konfiguruj przetwarzanie",
+                    "subtitle": "Zdefiniuj konfigurację przetwarzania i kliknij przycisk \"Dalej\", aby zastosować zmiany."
+                },
+                "3": {
+                    "label": "Krok 3:",
+                    "description": "Przypisz kolumny do parametrów",
+                    "title": "Przypisz kolumny",
+                    "subtitle": "Dopasuj kolumny do parametrów tworzenia kont."
+                },
+                "4": {
+                    "label": "Krok 4:",
+                    "description": "Zweryfikuj i zatwierdź",
+                    "title": "Weryfikacja danych",
+                    "subtitle": "Sprawdź dane kont i rozwiąż ewentualne problemy walidacyjne. Kliknij \"zatwierdź i utwórz\", aby zakończyć import."
+                }
+            }
+        },
+        "upload-file": {
+            "title": "Przeciągnij tutaj swój arkusz CSV",
+            "description": "Plik nie może przekraczać 5MB",
+            "button": "Prześlij plik"
+        },
+        "assigned": "Przypisano {{count}} z {{total}} właściwości.",
+        "parse-options": {
+            "delimiter": {
+                "label": "Separator",
+                "description": "Oddziela pola."
+            },
+            "newline": {
+                "label": "Znak nowej linii",
+                "description": "Sekwencja końca linii."
+            },
+            "quote-character": {
+                "label": "Znak cytowania",
+                "description": "Używany do ujmowania pól w cudzysłów."
+            },
+            "escape-character": {
+                "label": "Znak ucieczki",
+                "description": "Służy do ucieczki znaków cytowania w polach."
+            }
+        },
+        "parsing": {
+            "completed": "Przetwarzanie zakończone: ",
+            "error-critical": "Wykryto krytyczny błąd.",
+            "errors_zero": "Nie wykryto błędów.",
+            "errors_one": "Wykryto 1 błąd w wierszu.",
+            "errors_few": "Wykryto {{count}} błędów w wierszach.",
+            "errors_many": "Wykryto {{count}} błędy w wierszach."
+        },
+        "validation": {
+            "affected-rows": "Wiersze dotknięte: {{rows}} (łącznie {{count}})",
+            "name": {
+                "too-long": {
+                    "message": "Imię nie może mieć więcej niż 50 znaków.",
+                    "autofixMessage": "Przycina imię, aby zmieściło się w limitach długości."
+                }
+            },
+            "surname": {
+                "too-long": {
+                    "message": "Nazwisko nie może mieć więcej niż 50 znaków.",
+                    "autofixMessage": "Przycina nazwisko, aby zmieściło się w limitach długości."
+                }
+            },
+            "username": {
+                "missing": {
+                    "message": "Pole nazwy użytkownika jest puste.",
+                    "autofixMessage": "Generuje nazwę użytkownika automatycznie na podstawie innych pól, takich jak imię, nazwisko lub e-mail."
+                },
+                "invalid-chars": {
+                    "message": "Nazwa użytkownika zawiera niedozwolone znaki. Może zawierać tylko małe litery, cyfry, podkreślenia, kropki i myślniki.",
+                    "autofixMessage": "Generuje nazwę użytkownika automatycznie na podstawie innych pól, takich jak imię, nazwisko lub e-mail."
+                },
+                "invalid-first-char": {
+                    "message": "Nazwa użytkownika zaczyna się od znaku innego niż litera.",
+                    "autofixMessage": "Generuje nazwę użytkownika automatycznie na podstawie innych pól, takich jak imię, nazwisko lub e-mail."
+                },
+                "duplicate": {
+                    "message": "Znaleziono duplikat nazwy użytkownika.",
+                    "autofixMessage": "Dodaje tag na końcu nazwy użytkownika. Nazwa może zostać przycięta, aby zmieścić się w limitach długości."
+                },
+                "too-short": {
+                    "message": "Nazwa użytkownika musi mieć co najmniej 3 znaki.",
+                    "autofixMessage": "Dodaje tag na końcu nazwy użytkownika."
+                },
+                "too-long": {
+                    "message": "Nazwa użytkownika nie może mieć więcej niż 24 znaki.",
+                    "autofixMessage": "Przycina nazwę użytkownika, aby zmieściła się w limitach długości. Może dodać tag w przypadku duplikatu."
+                }
+            },
+            "password": {
+                "too-short": {
+                    "message": "Hasło musi mieć co najmniej 12 znaków.",
+                    "autofixMessage": "Generuje bezpieczne hasło."
+                },
+                "too-long": {
+                    "message": "Hasło nie może mieć więcej niż 256 znaków.",
+                    "autofixMessage": "Generuje bezpieczne hasło."
+                },
+                "invalid-chars": {
+                    "message": "Hasło zawiera niedozwolone znaki.",
+                    "autofixMessage": "Generuje bezpieczne hasło."
+                },
+                "not-safe": {
+                    "message": "Hasło musi zawierać co najmniej jedną cyfrę, małą literę, dużą literę oraz jeden znak specjalny.",
+                    "autofixMessage": "Generuje bezpieczne hasło."
+                }
+            },
+            "email": {
+                "invalid": {
+                    "message": "Podany adres e-mail jest nieprawidłowy.",
+                    "autofixMessage": "Usuwa nieprawidłowe adresy e-mail."
+                },
+                "duplicate": {
+                    "message": "Znaleziono duplikat adresu e-mail.",
+                    "autofixMessage": "Usuwa zduplikowane adresy e-mail."
+                }
+            }
+        },
+        "importing": {
+            "title": "Importowanie użytkowników",
+            "description_one": "Tworzenie 1 użytkownika w środowisku.",
+            "description_other": "Tworzenie {{count}} użytkowników w środowisku."
+        },
+        "importing-success": {
+            "title": "Użytkownicy zaimportowani",
+            "description_one": "Pomyślnie utworzono 1 użytkownika.",
+            "description_other": "Pomyślnie utworzono {{count}} użytkowników."
+        },
+        "importing-error": {
+            "title": "Błąd importu",
+            "description": "Wystąpił błąd podczas importowania użytkowników."
+        },
+        "importing-error-too-many": {
+            "title": "Przekroczono limit importu",
+            "description": "Nie można utworzyć więcej niż 4096 użytkowników jednocześnie!"
         }
     }
 }

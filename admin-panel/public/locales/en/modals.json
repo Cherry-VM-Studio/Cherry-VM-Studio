@@ -88,7 +88,6 @@
     },
     "import-accounts": {
         "title": "Import accounts",
-
         "header": {
             "steps": {
                 "1": {
@@ -105,7 +104,7 @@
                     "label": "Step 2:",
                     "description": "Choose parsing options",
                     "title": "Configure parsing",
-                    "subtitle": "Define the parsing configuration and click the reparse button to submit changes."
+                    "subtitle": "Define the parsing configuration and click the \"next\" button to submit changes."
                 },
                 "3": {
                     "label": "Step 3:",
@@ -121,8 +120,30 @@
                 }
             }
         },
-
+        "upload-file": {
+            "title": "Drag your CSV spreadsheet here",
+            "description": "File should not exceed 5MB",
+            "button": "Upload file"
+        },
         "assigned": "Assigned {{count}} of {{total}} properties.",
+        "parse-options": {
+            "delimiter": {
+                "label": "Delimeter",
+                "description": "Seperates the fields."
+            },
+            "newline": {
+                "label": "Line break",
+                "description": "The newline sequence."
+            },
+            "quote-character": {
+                "label": "Quote character",
+                "description": "Used to quote fields."
+            },
+            "escape-character": {
+                "label": "Escape character",
+                "description": "Escapes quote in fields."
+            }
+        },
         "parsing": {
             "completed": "Parsing completed: ",
             "error-critical": "Critical error detected.",
@@ -130,13 +151,84 @@
             "errors_one": "1 row error detected.",
             "errors_other": "{{count}} row errors detected."
         },
+        "validation": {
+            "affected-rows": "Affected rows: {{rows}} ({{count}} in total)",
+            "name": {
+                "too-long": {
+                    "message": "Name length cannot exceed 50 characters.",
+                    "autofixMessage": "Truncates the name to fit the length limits."
+                }
+            },
+            "surname": {
+                "too-long": {
+                    "message": "Surname length cannot exceed 50 characters.",
+                    "autofixMessage": "Truncates the name to fit the length limits."
+                }
+            },
+            "username": {
+                "missing": {
+                    "message": "Username field missing.",
+                    "autofixMessage": "Generates a username automatically from other properties such as name, surname, or email."
+                },
+                "invalid-chars": {
+                    "message": "Username contains invalid characters. It may only contain lowercase letters, digits, underscores, periods and hyphens.",
+                    "autofixMessage": "Generates a username automatically from other properties such as name, surname, or email."
+                },
+                "invalid-first-char": {
+                    "message": "Username starts with a character other than a letter.",
+                    "autofixMessage": "Generates a username automatically from other properties such as name, surname, or email."
+                },
+                "duplicate": {
+                    "message": "Duplicate username found.",
+                    "autofixMessage": "Appends a tag to the end of the username. The username may be truncated to fit length limits."
+                },
+                "too-short": {
+                    "message": "Username must be at least 3 characters long.",
+                    "autofixMessage": "Appends a tag to the end of the username."
+                },
+                "too-long": {
+                    "message": "Username length cannot exceed 24 characters.",
+                    "autofixMessage": "Truncates the username to fit the length limits. Might append a tag to the end of the username in case of a duplicate."
+                }
+            },
+            "password": {
+                "too-short": {
+                    "message": "Password must be at least 12 characters long.",
+                    "autofixMessage": "Generate a secure password."
+                },
+                "too-long": {
+                    "message": "Password length cannot exceed 256 characters.",
+                    "autofixMessage": "Generate a secure password."
+                },
+                "invalid-chars": {
+                    "message": "Password contains invalid characters",
+                    "autofixMessage": "Generate a secure password."
+                },
+                "not-safe": {
+                    "message": "Password must contain at least one digit, lowercase letter, uppercase letter and one of the special characters.",
+                    "autofixMessage": "Generate a secure password."
+                }
+            },
+            "email": {
+                "invalid": {
+                    "message": "Provided email is invalid.",
+                    "autofixMessage": "Erase invalid emails."
+                },
+                "duplicate": {
+                    "message": "Duplicate email found.",
+                    "autofixMessage": "Erase duplicate emails."
+                }
+            }
+        },
         "importing": {
             "title": "Importing users",
-            "description": "Creating {{total}} users in the environment."
+            "description_one": "Creating 1 user in the environment",
+            "description_other": "Creating {{count}} users in the environment."
         },
         "importing-success": {
             "title": "Users imported",
-            "description": "Successfully created {{total}} users."
+            "description_one": "Successfully created 1 user.",
+            "description_other": "Successfully created {{count}} users."
         },
         "importing-error": {
             "title": "Import error",

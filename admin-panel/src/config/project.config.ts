@@ -2,8 +2,8 @@ import { IconBrandGithub, IconBrandInstagram, IconBrandLinkedin, IconMailOpened,
 import { Contributor, Dependencies, Dependency } from "../types/config.types";
 
 export const projectLinks = {
-    github: "https://github.com/Krzysztoff27/Cherry-VM-Studio",
-    documentation: "https://github.com/Krzysztoff27/Cherry-VM-Studio/wiki",
+    github: "https://github.com/Cherry-VM-Studio/Cherry-VM-Studio",
+    documentation: "https://cherry-vm-studio.github.io/Cherry-VM-Studio/",
 };
 
 export const contributors: Contributor[] = [

@@ -5,6 +5,7 @@ import { useRef } from "react";
 import SpreadsheetImportTable from "../../tables/SpreadsheetImportTable/SpreadsheetImportTable";
 import dummyUsersSpreadsheet from "./dummyUsersSpreadsheet";
 import classes from "./UploadSpreadsheetForm.module.css";
+import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 
 export interface UploadSpreadsheetFormProps {
     onUpload: (file: FileWithPath) => void;
@@ -15,6 +16,7 @@ export interface UploadSpreadsheetFormProps {
 const MAX_CSV_SIZE = 5 * 1024 * 1024; // 5MiB
 
 const UploadSpreadsheetForm = ({ onUpload, onReject, properties }: UploadSpreadsheetFormProps): React.JSX.Element => {
+    const { tns } = useNamespaceTranslation("modals", "import-accounts");
     const openRef = useRef<() => void>(null);
 
     return (
@@ -61,7 +63,7 @@ const UploadSpreadsheetForm = ({ onUpload, onReject, properties }: UploadSpreads
                                 inline
                                 c="white"
                             >
-                                Drag your CSV spreadsheet here
+                                {tns("upload-file.title")}
                             </Text>
                             <Text
                                 size="sm"
@@ -69,7 +71,7 @@ const UploadSpreadsheetForm = ({ onUpload, onReject, properties }: UploadSpreads
                                 mt={7}
                                 c="dark.1"
                             >
-                                File should not exceed 5MB
+                                {tns("upload-file.description")}
                             </Text>
                         </div>
                     </Group>
@@ -77,7 +79,7 @@ const UploadSpreadsheetForm = ({ onUpload, onReject, properties }: UploadSpreads
                         className={classes.dropzoneButton}
                         onClick={() => openRef.current?.()}
                     >
-                        Upload file
+                        {tns("upload-file.button")}
                     </Button>
                 </Dropzone>
             </Flex>

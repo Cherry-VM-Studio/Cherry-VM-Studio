@@ -6,16 +6,40 @@ import { Trans } from "react-i18next";
 import AsciiArt from "../../../../components/atoms/display/AsciiArt/AsciiArt";
 import { CC_BY_NC_ND_4_0 } from "../Licenses";
 import hey_cvms from "../../../../assets/images/hey cvms hows it going.png";
+import pet_the_cvms from "../../../../assets/images/pet the cvms.gif";
 import confused_cat from "../../../../assets/ascii/confused_cat";
 import pointing from "../../../../assets/ascii/pointing";
-import { random } from "lodash";
+import _, { random } from "lodash";
 
 const ProjectSlide = ({ slide, setSlide, ...props }: CopyrightPageSlideProps): React.JSX.Element => {
     const { tns, t } = useNamespaceTranslation("pages", "credits");
 
-    const imageNumber = random(0, 100);
+    const imageNumber = random(0, 50);
 
-    console.log(imageNumber)
+    const easterEgg =
+        imageNumber === 0 ? (
+            <img
+                src={hey_cvms}
+                height="480px"
+            />
+        ) : imageNumber === 1 ? (
+            <img
+                src={pet_the_cvms}
+                height="300px"
+            />
+        ) : _.inRange(imageNumber, 2, 15) ? (
+            <AsciiArt
+                text={pointing}
+                label="Image of a shocked soyjak character pointing behind him."
+                style={{ lineHeight: 1.25, transform: "translateY(-20%) scale(0.9)" }}
+            />
+        ) : (
+            <AsciiArt
+                text={confused_cat}
+                label="Image of a confused cat"
+                style={{ lineHeight: 1.25 }}
+            />
+        );
 
     return (
         <Stack
@@ -56,20 +80,7 @@ const ProjectSlide = ({ slide, setSlide, ...props }: CopyrightPageSlideProps): R
                 mt="auto"
                 justify="end"
             >
-                {imageNumber === 0 ? 
-                    <img src={hey_cvms} height="480px"/> : 
-                    imageNumber > 90 ? 
-                    <AsciiArt
-                        text={pointing}
-                        label="Image of a shocked soyjak character pointing behind him."
-                        style={{lineHeight: 1.25, transform: "translateY(-20%) scale(0.9)"}}
-                    /> :
-                    <AsciiArt
-                        text={confused_cat}
-                        label="Image of a confused cat"
-                        style={{lineHeight: 1.25}}
-                    />
-                }
+                {easterEgg}
             </Flex>
         </Stack>
     );

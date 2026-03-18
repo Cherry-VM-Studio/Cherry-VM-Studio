@@ -34,7 +34,7 @@ const router = createBrowserRouter(
                     <Route element={<PanelLayout accountType="administrative"/>}>
                         <Route path='home'                      element={<AdminHomePage/>}/>
                         <Route path='contributors'                  element={<ContributorsPage/>}/>
-                        <Route path='credits'                       element={<CopyrightPage/>}/>
+                        <Route path='copyright'                       element={<CopyrightPage/>}/>
                         {/* <Route path='network-panel'             element={<NetworkPanelPage/>}/>     */}
                     </Route>
                     <Route element={<PanelLayout accountType="administrative" doubleNavbar/>}>

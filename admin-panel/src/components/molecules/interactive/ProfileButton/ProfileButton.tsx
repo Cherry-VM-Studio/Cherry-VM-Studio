@@ -129,7 +129,7 @@ const ProfileButton = ({ targetProps, popoverProps }: ProfileButtonProps): React
                                     name={user ? getFullUserName(user) : ""}
                                     comment={`@${user?.username}`}
                                     size="sm"
-                                    gap="sm"
+                                    gap="xs"
                                 />
                             </Box>
                             <Badge

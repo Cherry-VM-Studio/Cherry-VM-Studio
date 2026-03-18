@@ -1,77 +1,82 @@
 {
-    "ETIMEDOUT": {
-        "code": 504,
-        "title": "Usługa niedostępna",
-        "message": "Usługa API nie odpowiada lub jest nieosiągalna. Upewnij się, że połączenie z usługą API jest prawidłowe."
-    },
-    "400": {
-        "code": 400,
-        "title": "Nieprawidłowe żądanie",
-        "message": "Serwer nie mógł przetworzyć żądania z powodu błędu po stronie klienta. Sprawdź wprowadzone dane i spróbuj ponownie."
-    },
-    "401": {
-        "code": 401,
-        "title": "Brak autoryzacji",
-        "message": "Nie masz uprawnień do uzyskania dostępu do tego zasobu. Jeśli byłeś wcześniej zalogowany, Twoja sesja mogła wygasnąć. Zaloguj się ponownie, aby kontynuować."
-    },
-    "403": {
-        "code": 403,
-        "title": "Odmowa dostępu",
-        "message": "Twoje konto nie posiada wymaganych uprawnień do uzyskania dostępu do tego zasobu. Sprawdź role przypisane do Twojego profilu."
-    },
-    "404": {
-        "code": 404,
-        "title": "Nie znaleziono strony",
-        "message": "Strona, do której próbujesz uzyskać dostęp, nie istnieje. Sprawdź adres URL lub skontaktuj się z zespołem deweloperskim, jeśli uważasz, że to błąd."
-    },
-    "408": {
-        "code": 408,
-        "title": "Limit czasu żądania",
-        "message": "Serwer przekroczył limit czasu podczas oczekiwania na Twoje żądanie."
-    },
-    "409": {
-        "code": 409,
-        "title": "Błąd duplikatu",
-        "message": "Wystąpił konflikt, ponieważ zasób o tej samej nazwie już istnieje."
-    },
-    "410": {
-        "code": 410,
-        "title": "Zasób usunięty",
-        "message": "Zasób, do którego próbujesz uzyskać dostęp, został trwale usunięty. Skontaktuj się z zespołem deweloperskim, jeśli potrzebujesz dalszej pomocy."
-    },
-    "418": {
-        "code": 418,
-        "title": "Jestem czajnikiem",
-        "message": "Ten serwer jest czajnikiem, a nie ekspresem do kawy. Skieruj swoje żądanie do serwera obsługującego kawę."
-    },
-    "429": {
-        "code": 429,
-        "title": "Zbyt wiele żądań",
-        "message": "Wysłałeś zbyt wiele żądań w krótkim czasie. Odczekaj chwilę przed ponowną próbą."
-    },
-    "500": {
-        "code": 500,
-        "title": "Wystąpił błąd",
-        "message": "Usługa API napotkała problem i nie mogła ukończyć żądania. Spróbuj odświeżyć stronę."
-    },
-    "502": {
-        "code": 502,
-        "title": "Błędna brama",
-        "message": "Serwer otrzymał nieprawidłową odpowiedź z serwera nadrzędnego podczas przetwarzania żądania. Spróbuj ponownie później lub skontaktuj się z zespołem deweloperskim, jeśli problem będzie się powtarzał."
-    },
-    "503": {
-        "code": 503,
-        "title": "Usługa niedostępna",
-        "message": "Usługa API nie odpowiada lub jest nieosiągalna. Upewnij się, że połączenie z usługą API jest prawidłowe."
-    },
-    "600": {
-        "code": 600,
-        "title": "Wystąpił błąd",
-        "message": "Wystąpił wewnętrzny problem w aplikacji webowej. Skontaktuj się z zespołem deweloperskim w celu jego rozwiązania."
-    },
-    "601": {
-        "code": 601,
-        "title": "Nieprawidłowa konfiguracja panelu",
-        "message": ""
-    }
+  "ERR_NETWORK": {
+    "code": 504,
+    "title": "Usługa niedostępna",
+    "message": "Usługa API nie odpowiada lub jest nieosiągalna. Upewnij się, że połączenie z usługą API jest prawidłowe."
+  },
+  "ETIMEDOUT": {
+    "code": 504,
+    "title": "Usługa niedostępna",
+    "message": "Usługa API nie odpowiada lub jest nieosiągalna. Upewnij się, że połączenie z usługą API jest prawidłowe."
+  },
+  "400": {
+    "code": 400,
+    "title": "Nieprawidłowe żądanie",
+    "message": "Serwer nie mógł przetworzyć żądania z powodu błędu po stronie klienta. Sprawdź wprowadzone dane i spróbuj ponownie."
+  },
+  "401": {
+    "code": 401,
+    "title": "Brak autoryzacji",
+    "message": "Nie masz uprawnień do uzyskania dostępu do tego zasobu. Jeśli byłeś wcześniej zalogowany, Twoja sesja mogła wygasnąć. Zaloguj się ponownie, aby kontynuować."
+  },
+  "403": {
+    "code": 403,
+    "title": "Odmowa dostępu",
+    "message": "Twoje konto nie posiada wymaganych uprawnień do uzyskania dostępu do tego zasobu. Sprawdź role przypisane do Twojego profilu."
+  },
+  "404": {
+    "code": 404,
+    "title": "Nie znaleziono strony",
+    "message": "Strona, do której próbujesz uzyskać dostęp, nie istnieje. Sprawdź adres URL lub skontaktuj się z zespołem deweloperskim, jeśli uważasz, że to błąd."
+  },
+  "408": {
+    "code": 408,
+    "title": "Limit czasu żądania",
+    "message": "Serwer przekroczył limit czasu podczas oczekiwania na Twoje żądanie."
+  },
+  "409": {
+    "code": 409,
+    "title": "Błąd duplikatu",
+    "message": "Wystąpił konflikt, ponieważ zasób o tej samej nazwie już istnieje."
+  },
+  "410": {
+    "code": 410,
+    "title": "Zasób usunięty",
+    "message": "Zasób, do którego próbujesz uzyskać dostęp, został trwale usunięty. Skontaktuj się z zespołem deweloperskim, jeśli potrzebujesz dalszej pomocy."
+  },
+  "418": {
+    "code": 418,
+    "title": "Jestem czajnikiem",
+    "message": "Ten serwer jest czajnikiem, a nie ekspresem do kawy. Skieruj swoje żądanie do serwera obsługującego kawę."
+  },
+  "429": {
+    "code": 429,
+    "title": "Zbyt wiele żądań",
+    "message": "Wysłałeś zbyt wiele żądań w krótkim czasie. Odczekaj chwilę przed ponowną próbą."
+  },
+  "500": {
+    "code": 500,
+    "title": "Wystąpił błąd",
+    "message": "Usługa API napotkała problem i nie mogła ukończyć żądania. Spróbuj odświeżyć stronę."
+  },
+  "502": {
+    "code": 502,
+    "title": "Błędna brama",
+    "message": "Serwer otrzymał nieprawidłową odpowiedź z serwera nadrzędnego podczas przetwarzania żądania. Spróbuj ponownie później lub skontaktuj się z zespołem deweloperskim, jeśli problem będzie się powtarzał."
+  },
+  "503": {
+    "code": 503,
+    "title": "Usługa niedostępna",
+    "message": "Usługa API nie odpowiada lub jest nieosiągalna. Upewnij się, że połączenie z usługą API jest prawidłowe."
+  },
+  "600": {
+    "code": 600,
+    "title": "Wystąpił błąd",
+    "message": "Wystąpił wewnętrzny problem w aplikacji webowej. Skontaktuj się z zespołem deweloperskim w celu jego rozwiązania."
+  },
+  "601": {
+    "code": 601,
+    "title": "Nieprawidłowa konfiguracja panelu",
+    "message": ""
+  }
 }
