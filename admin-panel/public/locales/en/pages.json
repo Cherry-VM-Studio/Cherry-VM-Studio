@@ -50,15 +50,17 @@
                 "name": "Name",
                 "state": "State",
                 "ram": "RAM",
-                "cpu": "CPU",
+                "vcpu": "vCPU Cores",
                 "assigned-clients": "Assigned Clients",
                 "assignees": "Assignees",
+                "connected-users": "Connected Users",
                 "controls": "Controls",
                 "owner": "Owner",
-                "ip-address-port": "IP Address : Port",
+                "port": "Port",
                 "domain-path": "Domain",
                 "uuid": "Unique Identifier",
-                "description": "Machine Description"
+                "description": "Machine Description",
+                "disks": "Disks"
             }
         }
     },

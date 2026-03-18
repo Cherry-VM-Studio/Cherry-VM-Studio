@@ -54,6 +54,7 @@ const MachinesTable = ({ machines, loading, error, global, mode }: MachinesTable
                 columns={columns}
                 loading={loading}
                 error={error}
+                defaultHiddenColumns={["port", global ? "ram" : "owner", "connected_users", "disks"]}
                 headingProps={{
                     translations: {
                         all: tns(global ? "all-machines" : "your-machines"),

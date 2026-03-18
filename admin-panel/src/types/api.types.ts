@@ -141,8 +141,6 @@ export interface MachinePropertiesPayload {
     description?: string | null;
     owner?: Administrator | null;
     assigned_clients: Record<string, Client>;
-    ras_ip?: string | null;
-    ras_port?: number | null;
     connections?: {
         ssh?: string;
         rdp?: string;
@@ -159,6 +157,8 @@ export interface MachineStatePayload {
     ram_max?: number | null;
     ram_used?: number | null;
     boot_timestamp?: string | null;
+    ras_ip?: string | null;
+    ras_port?: number | null;
 }
 
 export interface MachineDisksPayload {

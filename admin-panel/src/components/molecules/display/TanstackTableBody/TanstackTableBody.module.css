@@ -5,15 +5,14 @@
     flex: 1;
     overflow: auto;
     max-height: 100%;
-    width: 100%;
     padding-right: var(--mantine-spacing-xs);
 }
 
 .tr {
     display: flex;
     border-bottom: 1px solid var(--mantine-color-dark-6);
-    min-width: 100%;
     width: 100%;
+    min-width: fit-content !important;
 }
 
 .tr:has(.th) {

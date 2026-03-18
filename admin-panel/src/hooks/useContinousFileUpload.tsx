@@ -2,7 +2,7 @@ import { isNull } from "lodash";
 import axios, { AxiosHeaders } from "axios";
 import useApi from "./useApi";
 import { notifications } from "@mantine/notifications";
-import { formatBytesToUnit, getRelevantUnit } from "../utils/files";
+import { formatBytesToUnitStringify, getRelevantUnit } from "../utils/files";
 import { Text } from "@mantine/core";
 import useNamespaceTranslation from "./useNamespaceTranslation";
 import { useAuthentication } from "../contexts/AuthenticationContext";
@@ -18,7 +18,7 @@ const useContinousFileUpload = (path: string) => {
         if (isNull(file)) return;
 
         const relevantSizeUnit = getRelevantUnit(file.size);
-        const fileSizeFormatted = formatBytesToUnit(file.size, relevantSizeUnit);
+        const fileSizeFormatted = formatBytesToUnitStringify(file.size, relevantSizeUnit);
 
         const getProgressMessageNode = (progressString: string) => {
             return (
@@ -75,7 +75,9 @@ const useContinousFileUpload = (path: string) => {
 
                         notifications.update({
                             id: notification,
-                            message: getProgressMessageNode(`${formatBytesToUnit(loaded, relevantSizeUnit)} / ${fileSizeFormatted} (${uploadProgress}%)`),
+                            message: getProgressMessageNode(
+                                `${formatBytesToUnitStringify(loaded, relevantSizeUnit)} / ${fileSizeFormatted} (${uploadProgress}%)`,
+                            ),
                             onClose: handleAbort,
                         });
                     },

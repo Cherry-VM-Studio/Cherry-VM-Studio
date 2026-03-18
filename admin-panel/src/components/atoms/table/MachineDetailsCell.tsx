@@ -11,6 +11,7 @@ const MachineDetailsCell = ({ getValue }): React.JSX.Element => {
             gap="lg"
             align="start"
             c="white"
+            wrap="nowrap"
         >
             <MachineActivityIndicator
                 state={state}
@@ -20,6 +21,7 @@ const MachineDetailsCell = ({ getValue }): React.JSX.Element => {
                 <Text
                     tt="capitalize"
                     size="lg"
+                    style={{ textWrap: "nowrap" }}
                 >
                     {name ?? "Unnamed Machine"}
                 </Text>

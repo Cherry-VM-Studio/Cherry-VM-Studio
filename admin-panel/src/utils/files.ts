@@ -12,10 +12,14 @@ export const formatBytesToUnit = (bytes: number, unit: ByteUnit, decimals = 2): 
     const units: ByteUnit[] = ["B", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB"];
     const index = units.indexOf(unit);
     const value = bytes / Math.pow(1024, index);
-    return `${value.toFixed(decimals)} ${unit}`;
+    return `${value.toFixed(decimals)}`;
 };
 
-export const formatBytesToRelevantUnit = (bytes: number) => formatBytesToUnit(bytes, getRelevantUnit(bytes));
+export const formatBytesToUnitStringify = (bytes: number, unit: ByteUnit, decimals = 2): string => {
+    return `${formatBytesToUnit(bytes, unit, decimals)} ${unit}`;
+};
+
+export const formatBytesToRelevantUnit = (bytes: number) => formatBytesToUnitStringify(bytes, getRelevantUnit(bytes));
 
 export function toBytes(value: number, unit: ByteUnit): number {
     const multipliers: Record<ByteUnit, number> = {
