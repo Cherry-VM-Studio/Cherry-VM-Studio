@@ -11,7 +11,7 @@ import { values } from "lodash";
 
 export interface AccountDisplayProps {
     onClose: () => void;
-    onEdit: () => void;
+    onEdit?: () => void;
     user: UserExtended;
 }
 
@@ -68,14 +68,18 @@ const AccountDisplay = ({ onClose, onEdit, user }: AccountDisplayProps) => {
                     />
                 )}
                 <Group className={classes.buttonGroup}>
-                    <Button
-                        className={classes.editButton}
-                        variant="white"
-                        onClick={onEdit}
-                        disabled={!canEdit}
-                    >
-                        {t("edit")}
-                    </Button>
+                    {onEdit ? (
+                        <Button
+                            className={classes.editButton}
+                            variant="white"
+                            onClick={onEdit}
+                            disabled={!canEdit}
+                        >
+                            {t("edit")}
+                        </Button>
+                    ) : (
+                        <></>
+                    )}
                     <Button
                         className={classes.closeButton}
                         onClick={onClose}

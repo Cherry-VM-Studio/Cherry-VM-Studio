@@ -5,12 +5,22 @@ import AccountEditForm from "../../../components/organisms/forms/AccountEditForm
 import AccountModalPlaceholder from "../../../components/organisms/display/AccountDisplay/AccountDisplayPlaceholder";
 import { UserExtended } from "../../../types/api.types";
 
+export interface AccountModalProps {
+    inEditMode: boolean;
+    setInEditMode: React.Dispatch<React.SetStateAction<boolean>>;
+    opened: boolean;
+    onClose: () => void;
+    uuid: string;
+    refreshTable?: () => void;
+    openPasswordModal: () => void;
+}
+
 const AccountModal = ({ inEditMode, setInEditMode, opened, onClose, uuid, refreshTable, openPasswordModal }): React.JSX.Element => {
     const { data, error, loading, refresh: refreshUser } = useFetch<UserExtended>(`/users/user/${uuid}`, undefined, true);
 
     const toggle = () => setInEditMode((prev) => !prev);
     const refresh = () => {
-        refreshTable();
+        refreshTable?.();
         refreshUser();
     };
 

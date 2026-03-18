@@ -22,12 +22,16 @@ export const getColumns = () => [
         enableSorting: true,
         header: t("iso.table.headers.name", { ns: "pages" }),
         cell: (props) => (
-            <Group gap="xs">
-                <IconDisc size="28" /> {props.getValue()}
+            <Group
+                gap="xs"
+                wrap="nowrap"
+            >
+                <IconDisc size="28" />
+                <Text style={{ textOverflow: "ellipsis", textWrap: "nowrap" }}>{props.getValue()}</Text>
             </Group>
         ),
-        minSize: 200,
-        maxSize: 350,
+        minSize: 250,
+        maxSize: 400,
         enableHiding: false,
     },
     {

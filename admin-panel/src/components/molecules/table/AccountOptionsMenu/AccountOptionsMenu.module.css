@@ -7,4 +7,9 @@
 
 .delete {
     color: var(--mantine-color-cherry-5);
+
+    &:disabled,
+    &[data-disabled] {
+        color: var(--mantine-color-dark-3);
+    }
 }

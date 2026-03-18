@@ -10,6 +10,7 @@ import { useAuthentication } from "../../../../contexts/AuthenticationContext.ts
 import { Page } from "../../../../types/config.types.ts";
 import NavButton from "../../../atoms/interactive/NavButton/NavButton.tsx";
 import { projectLinks } from "../../../../config/project.config.ts";
+import ProfileButton from "../../interactive/ProfileButton/ProfileButton.tsx";
 
 export interface NavbarProps {
     pages: Page[];
@@ -18,21 +19,17 @@ export interface NavbarProps {
 
 export default function Navbar({ pages, bottomPages = [] }: NavbarProps): React.ReactElement {
     const { t, tns } = useNamespaceTranslation("layouts");
-    const { logout } = useAuthentication();
-    const navigate = useNavigate();
     const location = useLocation();
     const [active, setActive] = useState<string>();
 
     useEffect(() => setActive(location.pathname), [location.pathname]);
 
-    const onClickLogout = () => {
-        logout();
-        navigate("/");
-    };
-
     return (
         <Stack className={classes.navbar}>
-            <Stack gap="md">
+            <Stack
+                align="center"
+                gap="md"
+            >
                 {pages.map((category, i) => (
                     <TooltipNavButton
                         key={i}
@@ -45,7 +42,7 @@ export default function Navbar({ pages, bottomPages = [] }: NavbarProps): React.
                     />
                 ))}
             </Stack>
-            <Stack>
+            <Stack align="center">
                 {bottomPages.map((category, i) => (
                     <TooltipNavButton
                         key={i}
@@ -75,11 +72,7 @@ export default function Navbar({ pages, bottomPages = [] }: NavbarProps): React.
                     icon={<IconBrandGithub />}
                 />
                 <LanguageSwitch />
-                <TooltipNavButton
-                    onClick={onClickLogout}
-                    label={t("log-out")}
-                    icon={<IconLogout stroke={1.5} />}
-                />
+                <ProfileButton />
             </Stack>
         </Stack>
     );

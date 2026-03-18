@@ -97,5 +97,9 @@
     "reparse": "Reparse",
     "jump-to-first": "Jump to first",
     "jump-to-next": "Jump to next",
-    "ignore-all": "Ignore all"
+    "ignore-all": "Ignore all",
+    "logged-in-as": "Logged in as",
+    "view-profile": "View profile",
+    "change-password": "Change password",
+    "admin": "Admin"
 }
