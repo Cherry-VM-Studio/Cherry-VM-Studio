@@ -18,21 +18,20 @@ def get_machine_properties_payload(machine_uuid: UUID, skip_membership_check: bo
         raise HTTPException(status_code=500, detail="Requested data of a machine that is not managed by Cherry VM Studio.")
     
     with LibvirtConnection("ro") as libvirt_connection:
-        machine = parse_machine_xml(libvirt_connection.lookupByUUID(machine_uuid.bytes).XMLDesc())
+        parsed_machine = parse_machine_xml(libvirt_connection.lookupByUUID(machine_uuid.bytes).XMLDesc())
 
-    machine_disks = [StaticDiskInfo(system=True, name=machine.system_disk.name, size_bytes=machine.system_disk.size, type=machine.system_disk.type)]
+    machine_disks = [StaticDiskInfo(system=True, name=parsed_machine.system_disk.name, size_bytes=parsed_machine.system_disk.size, type=parsed_machine.system_disk.type)]
     
-    if machine.additional_disks:
-        machine_disks.extend(StaticDiskInfo(system=False, name=disk.name, size_bytes=disk.size, type=disk.type) for disk in machine.additional_disks)
+    if parsed_machine.additional_disks:
+        machine_disks.extend(StaticDiskInfo(system=False, name=disk.name, size_bytes=disk.size, type=disk.type) for disk in parsed_machine.additional_disks)
         
     return MachinePropertiesPayload(
         uuid = machine_uuid,
-        title = machine.title,
-        tags = [machine_metadata.value for machine_metadata in machine.metadata] if machine.metadata is not None else None,
-        description = machine.description,
+        title = parsed_machine.title,
+        tags = [machine_metadata.value for machine_metadata in parsed_machine.metadata] if parsed_machine.metadata is not None else None,
+        description = parsed_machine.description,
         owner = get_machine_owner(machine_uuid),
         assigned_clients = get_machine_assigned_clients(machine_uuid),
-        
         disks = machine_disks,
         connections = get_machine_connections(machine_uuid)
     )

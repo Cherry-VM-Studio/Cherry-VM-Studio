@@ -6,6 +6,7 @@ from fastapi import HTTPException
 from uuid import UUID
 from devtools import pprint
 
+from modules.machine_lifecycle.xml_translator import parse_machine_xml
 from modules.machine_state.queries import check_machine_existence, check_machine_membership, get_all_machine_uuids, get_machine_boot_timestamp, get_user_machine_uuids
 from modules.machine_state.state_management import is_vm_loading
 from modules.machine_state.models import MachineStatePayload
@@ -23,13 +24,14 @@ def get_machine_state_payload(machine_uuid: UUID, skip_membership_check: bool = 
     
     with LibvirtConnection("ro") as libvirt_connection:
         machine = libvirt_connection.lookupByUUID(machine_uuid.bytes)
+        parsed_machine = parse_machine_xml(machine.XMLDesc())
     
     is_active: bool = machine.state()[0] == libvirt.VIR_DOMAIN_RUNNING
     
     ras_port = None
     
-    if machine.framebuffer is not None and machine.framebuffer.port is not None:
-        ras_port = int(machine.framebuffer.port)
+    if parsed_machine.framebuffer is not None and parsed_machine.framebuffer.port is not None:
+        ras_port = int(parsed_machine.framebuffer.port)
     
     return MachineStatePayload(
         uuid = machine_uuid,
