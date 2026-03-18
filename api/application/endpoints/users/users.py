@@ -105,7 +105,7 @@ async def __change_password__(uuid: UUID, body: ChangePasswordBody, current_user
     return UsersManager.change_password(uuid, body.password, current_user)
 
 
-@router.put("/modify/{uuid}", response_model=UUID)
+@router.put("/modify/{uuid}", response_model=AnyUserExtended)
 async def __modify_user__(uuid: UUID, form: ModifyUserForm, current_user: DependsOnAdministrativeAuthentication) -> AnyUserExtended:
     user = UsersManager.modify_user(uuid, form, current_user)
     
