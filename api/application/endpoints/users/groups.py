@@ -1,7 +1,8 @@
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
+from modules.postgresql.models import RecordNotFoundException
 from modules.users.users import UsersManager
-from modules.users.models import GroupExtended, CreateGroupForm
+from modules.users.models import GroupExtended, CreateGroupForm, RenameGroupBody
 from modules.users.sublibraries.group_library import GroupLibrary
 from modules.authentication.validation import DependsOnAdministrativeAuthentication, DependsOnAuthentication, get_authenticated_user
 
@@ -16,7 +17,7 @@ async def __read_group__(uuid: UUID,) -> GroupExtended:
     group = GroupLibrary.get_record_by_uuid(uuid)
     
     if group is None:
-        raise HTTPException(400, f"Group with UUID={uuid} does not exist.")
+        raise HTTPException(404, f"Group with UUID={uuid} does not exist.")
     
     return GroupLibrary.extend_model(group)    
 
@@ -53,6 +54,9 @@ async def __remove_user_from_group__(uuid: UUID, clients: list[UUID], current_us
         GroupLibrary.remove_client_from_group(uuid, client)
         
         
-# @app.patch("/group/rename/{uuid}", response_model=None, tags=['Client Groups'])
-# async def __rename_group__(uuid: UUID, form: RenameGroupBody, current_user: DependsOnAdministrativeAuthentication) -> None:
-#     rename_group(uuid, form.name)
+@router.patch("/rename/{uuid}", response_model=None, tags=['Client Groups'])
+async def __rename_group__(uuid: UUID, form: RenameGroupBody, current_user: DependsOnAdministrativeAuthentication) -> None:
+    try:
+        GroupLibrary.modify_record_field(uuid, "name", form.name)
+    except RecordNotFoundException:
+        raise HTTPException(404, f"Group with UUID={uuid} does not exist.")
