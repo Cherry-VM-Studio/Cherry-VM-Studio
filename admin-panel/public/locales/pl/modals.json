@@ -404,7 +404,7 @@
             },
             "password": {
                 "too-short": {
-                    "message": "Hasło musi mieć co najmniej 12 znaków.",
+                    "message": "Hasło musi mieć co najmniej 10 znaków.",
                     "autofixMessage": "Generuje bezpieczne hasło."
                 },
                 "too-long": {

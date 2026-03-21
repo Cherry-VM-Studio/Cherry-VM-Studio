@@ -146,7 +146,7 @@ const VALIDATION = {
     password: [
         {
             key: "too-short",
-            validate: (val) => !val || val?.length < 12,
+            validate: (val) => !val || val?.length < 10,
             autofix: () => generatePassword(16),
         },
         {

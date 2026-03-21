@@ -193,7 +193,7 @@
             },
             "password": {
                 "too-short": {
-                    "message": "Password must be at least 12 characters long.",
+                    "message": "Password must be at least 10 characters long.",
                     "autofixMessage": "Generate a secure password."
                 },
                 "too-long": {

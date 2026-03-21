@@ -18,6 +18,7 @@ const AUTO_ASSIGNMENTS = {
         "imie",
         "pierwszeimie",
         "imię",
+        "pierwszeimię",
     ],
     surname: [
         // English

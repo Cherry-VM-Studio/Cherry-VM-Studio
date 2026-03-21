@@ -90,7 +90,7 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
         const res = await sendRequest("POST", "users/create", { data: body }, onPostError);
         if (isAxiosError(res)) return;
 
-        sendNotification("account.created", undefined, { username: res.username });
+        sendNotification("account.created", undefined, { username: body.username });
         closeModal();
         onSubmit?.();
     });
