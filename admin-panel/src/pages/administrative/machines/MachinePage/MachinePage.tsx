@@ -6,6 +6,7 @@ import MachineStateChart from "../../../../components/molecules/display/MachineS
 import MachineEditForm from "../../../../components/organisms/forms/MachineEditForm/MachineEditForm";
 import MachineDataDisplay from "../../../../components/templates/MachineDataDisplay/MachineDataDisplay";
 import useMachineWebSocket from "../../../../hooks/useMachineWebSocket.ts";
+import _ from "lodash";
 
 function MachinePage() {
     const { uuid } = useParams();

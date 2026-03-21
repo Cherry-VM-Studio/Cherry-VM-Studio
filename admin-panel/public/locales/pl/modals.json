@@ -89,6 +89,7 @@
         }
     },
     "group": {
+        "client-count_zero": "Brak klientów",
         "client-count_one": "{{count}} klient",
         "client-count_few": "{{count}} klientów",
         "client-count_many": "{{count}} klientów",

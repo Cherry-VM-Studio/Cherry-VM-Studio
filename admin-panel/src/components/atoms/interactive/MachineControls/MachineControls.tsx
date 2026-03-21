@@ -1,6 +1,6 @@
-import { ActionIcon, Group, MantineSize } from "@mantine/core";
+import { ActionIcon, Group, Loader, MantineSize } from "@mantine/core";
 import { IconPlayerPlayFilled, IconPlayerStopFilled } from "@tabler/icons-react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { MachineState, UserExtended } from "../../../../types/api.types";
 import useApi from "../../../../hooks/useApi";
 import useFetch from "../../../../hooks/useFetch";
@@ -24,17 +24,28 @@ const MachineControls = ({ machine, size = "lg", gap = "sm", buttonProps, disabl
     const { sendRequest } = useApi();
     const { data: user, loading, error } = useFetch<UserExtended>("/users/me");
     const { canManageMachine } = usePermissions();
+    const [used, setUsed] = useState(false);
 
     const startMachine = useThrottledCallback(() => {
         sendRequest("POST", `/machines/start/${machine.uuid}`);
-    }, 2000);
+        setUsed(true);
+    }, 1000);
 
     const stopMachine = useThrottledCallback(() => {
         sendRequest("POST", `/machines/stop/${machine.uuid}`);
-    }, 2000);
+        setUsed(true);
+    }, 1000);
 
-    const disable =
-        disabled || isNull(machine) || loading || !isNull(error) || !canManageMachine(user, machine) || !["ACTIVE", "OFFLINE", "ERROR"].includes(machine.state);
+    useEffect(() => setUsed(false), [machine.state]);
+
+    const buttonDisabled =
+        used ||
+        disabled ||
+        loading ||
+        isNull(machine) ||
+        !isNull(error) ||
+        !canManageMachine(user, machine) ||
+        !["ACTIVE", "OFFLINE", "ERROR"].includes(machine.state);
 
     return (
         <Group
@@ -47,20 +58,36 @@ const MachineControls = ({ machine, size = "lg", gap = "sm", buttonProps, disabl
                 size={size}
                 color="suse-green.9"
                 {...buttonProps}
-                disabled={disable || machine.state === "ACTIVE"}
+                disabled={buttonDisabled || machine.state === "ACTIVE"}
                 onClick={startMachine}
             >
-                <IconPlayerPlayFilled size={"28"} />
+                {used ? (
+                    <Loader
+                        color="orange.6"
+                        size={16}
+                        type="bars"
+                    />
+                ) : (
+                    <IconPlayerPlayFilled size={"28"} />
+                )}
             </ActionIcon>
             <ActionIcon
                 variant="light"
                 size={size}
                 color="red.9"
                 {...buttonProps}
-                disabled={disable || ["OFFLINE", "ERROR"].includes(machine.state)}
+                disabled={buttonDisabled || ["OFFLINE", "ERROR"].includes(machine.state)}
                 onClick={stopMachine}
             >
-                <IconPlayerStopFilled size={"28"} />
+                {used ? (
+                    <Loader
+                        color="orange.6"
+                        size={16}
+                        type="bars"
+                    />
+                ) : (
+                    <IconPlayerStopFilled size={"28"} />
+                )}
             </ActionIcon>
         </Group>
     );

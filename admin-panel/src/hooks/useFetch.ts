@@ -10,7 +10,7 @@ export interface useFetchReturn<T = any> {
     refresh: () => void;
 }
 
-const useFetch = <T = any>(path?: string, config: AxiosRequestConfig = undefined, cleanBeforeRefresh = false): useFetchReturn => {
+const useFetch = <T = any>(path?: string, config: AxiosRequestConfig = undefined, cleanBeforeRefresh = false): useFetchReturn<T> => {
     const [data, setData] = useState<T | null>(null);
     const [error, setError] = useState<AxiosError | null>(null);
     const [loading, setLoading] = useState<boolean>(true);

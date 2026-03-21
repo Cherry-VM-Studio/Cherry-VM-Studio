@@ -5,14 +5,14 @@ import MembersTable from "../../../components/organisms/tables/MembersTable/Memb
 import classes from "./GroupModal.module.css";
 import useApi from "../../../hooks/useApi";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
-import { Client, Group as GroupType } from "../../../types/api.types";
+import { Client, GroupExtended } from "../../../types/api.types";
 import ModifiableText from "../../../components/atoms/interactive/ModifiableText/ModifiableText";
 import GroupModalPlaceholder from "./GroupModalPlaceholder";
-import { values } from "lodash";
+import _, { values } from "lodash";
 import AddClientsSelect from "../../../components/molecules/interactive/AddClientsSelect/AddClientsSelect";
 
 const GroupModal = ({ opened, onClose, uuid, refreshTable = () => undefined }): React.JSX.Element => {
-    const { data: group, loading, error, refresh: refreshModal } = useFetch<GroupType>(uuid ? `/groups/group/${uuid}` : undefined);
+    const { data: group, loading, error, refresh: refreshModal } = useFetch<GroupExtended>(uuid ? `/groups/group/${uuid}` : undefined);
     const { tns, t } = useNamespaceTranslation("modals", "group");
     const { sendRequest } = useApi();
 
@@ -71,7 +71,7 @@ const GroupModal = ({ opened, onClose, uuid, refreshTable = () => undefined }): 
                                     editContainerClassName={classes.titleEdit}
                                     onSave={renameGroup}
                                 />
-                                <Text c="dimmed">{tns("client-count", { count: group.users.length })}</Text>
+                                <Text c="dimmed">{tns("client-count", { count: _.size(group.users) })}</Text>
                             </Stack>
                         )}
                     </Group>

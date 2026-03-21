@@ -1,13 +1,13 @@
 import React, { createContext, useContext, useCallback, useEffect, useRef } from "react";
 import useFetch from "../hooks/useFetch";
 import { useAuthentication } from "./AuthenticationContext";
-import { MachineData, User } from "../types/api.types";
+import { Machine, User, UserExtended } from "../types/api.types";
 import PERMISSIONS from "../config/permissions.config";
 
 interface PermissionsContextValue {
     hasPermissions: (required: number) => boolean;
-    canManageMachine: (user: User, machine: Partial<MachineData>) => boolean;
-    canConnectToMachine: (user: User, machine: Partial<MachineData>) => boolean;
+    canManageMachine: (user: User | UserExtended, machine: Partial<Machine>) => boolean;
+    canConnectToMachine: (user: User | UserExtended, machine: Partial<Machine>) => boolean;
 }
 
 const PermissionsContext = createContext<PermissionsContextValue | undefined>(undefined);
@@ -31,10 +31,10 @@ export const PermissionsProvider: React.FC<{ children: React.ReactNode }> = ({ c
         [permissions],
     );
 
-    const canManageMachine = (user: User, machine: Partial<MachineData>) =>
+    const canManageMachine = (user: User | UserExtended, machine: Partial<Machine>) =>
         (user && machine.owner && user.uuid === machine.owner.uuid) || hasPermissions(PERMISSIONS.MANAGE_ALL_VMS);
 
-    const canConnectToMachine = (user: User, machine: Partial<MachineData>) =>
+    const canConnectToMachine = (user: User | UserExtended, machine: Partial<Machine>) =>
         user && (canManageMachine(user, machine) || machine.assigned_clients.hasOwnProperty(user.uuid));
 
     return <PermissionsContext.Provider value={{ hasPermissions, canManageMachine, canConnectToMachine }}>{children}</PermissionsContext.Provider>;

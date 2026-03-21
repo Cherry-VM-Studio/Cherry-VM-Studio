@@ -240,6 +240,7 @@
         }
     },
     "group": {
+        "client-count_zero": "No assigned clients",
         "client-count_one": "{{count}} client",
         "client-count_other": "{{count}} clients",
         "remove-user": "Remove user"
