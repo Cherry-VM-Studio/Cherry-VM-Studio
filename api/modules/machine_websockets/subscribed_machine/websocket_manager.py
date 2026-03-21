@@ -38,7 +38,7 @@ class SubscribedMachineWebsocketsManager:
     ):
         dead_subscriptions = []
 
-        for key, subscription in self.subscription_manager.subscriptions.items():
+        for key, subscription in list(self.subscription_manager.subscriptions.items()):
             ws: WebSocket = subscription.websocket
             machine_uuid = subscription.machine
 
