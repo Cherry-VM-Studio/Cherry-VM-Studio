@@ -53,24 +53,32 @@ class AllMachinesWebsocketHandler(WebSocketHandler):
         try:
             properties_payload = get_all_machine_properties_payloads()
             await machine_websocket_messanger.send_data_static(self.websocket, properties_payload)
+        except WebSocketDisconnect:
+            pass
         except Exception as e:
             logging.error("Failed to send STATIC PROPERTIES payload for machines accessed globaly by user %s over websocket: %s", self.user.uuid, e, exc_info=True)
 
         try:
             state_payload = get_all_machine_state_payloads()
             await machine_websocket_messanger.send_data_dynamic(self.websocket, state_payload)
+        except WebSocketDisconnect:
+            pass
         except Exception as e:
             logging.error("Failed to send DYNAMIC STATE payload for machines accessed globaly by user %s over websocket: %s", self.user.uuid, e, exc_info=True)
 
         try:
             disks_payload = get_all_machine_disks_payloads()
             await machine_websocket_messanger.send_data_dynamic_disks(self.websocket, disks_payload)
+        except WebSocketDisconnect:
+            pass
         except Exception as e:
             logging.error("Failed to send DYNAMIC DISKS payload for machines accessed globaly by user %s over websocket: %s", self.user.uuid, e,exc_info=True)
             
         try:
             connections_payload = get_all_machine_connections_payloads()
             await machine_websocket_messanger.send_data_dynamic_connections(self.websocket, connections_payload)
+        except WebSocketDisconnect:
+            pass
         except Exception as e:
             logging.error("Failed to send DYNAMIC CONNECTIONS payload for machines accessed globaly by user %s over websocket: %s", self.user.uuid, e,exc_info=True)
 

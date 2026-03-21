@@ -50,23 +50,31 @@ class SubscribedMachinesWebsocketHandler(WebSocketHandler):
         try:
             properties_payload = get_machine_properties_payload(machine_uuid)
             await machine_websocket_messanger.send_data_static(self.websocket, {machine_uuid: properties_payload})
+        except WebSocketDisconnect:
+            pass
         except Exception as e:
             logging.error("Failed to send STATIC PROPERTIES payload for machine %s over websocket: %s", machine_uuid, e, exc_info=True)
 
         try:
             state_payload = get_machine_state_payload(machine_uuid)
             await machine_websocket_messanger.send_data_dynamic(self.websocket, {machine_uuid: state_payload})
+        except WebSocketDisconnect:
+            pass
         except Exception as e:
             logging.error("Failed to send DYNAMIC STATE payload for machine %s over websocket: %s", machine_uuid, e, exc_info=True)
 
         try:
             disks_payload = get_machine_disks_payload(machine_uuid)
             await machine_websocket_messanger.send_data_dynamic_disks(self.websocket, {machine_uuid: disks_payload})
+        except WebSocketDisconnect:
+            pass
         except Exception as e:
             logging.error("Failed to send DYNAMIC DISKS payload for machine %s over websocket: %s", machine_uuid, e,exc_info=True)
             
         try:
             connections_payload = get_machine_connections_payload(machine_uuid)
             await machine_websocket_messanger.send_data_dynamic_connections(self.websocket, {machine_uuid: connections_payload})
+        except WebSocketDisconnect:
+            pass
         except Exception as e:
             logging.error("Failed to send DYNAMIC CONNECTIONS payload for machine %s over websocket: %s", machine_uuid, e,exc_info=True)
