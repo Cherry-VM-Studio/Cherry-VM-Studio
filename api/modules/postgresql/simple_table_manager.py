@@ -150,15 +150,13 @@ class SimpleTableManager(BaseModel, Generic[DBModel, MainModel, CreationModel]):
         if record is None:
             raise RecordNotFoundException(uuid=uuid)
         
-        query = sql.SQL("UPDATE {table} SET {field_name} = {new_value} WHERE uuid = {uuid}").format(
+        query = sql.SQL("UPDATE {table} SET {field_name} = %s WHERE uuid = %s").format(
             table=sql.Identifier(self.table_name),
             field_name=sql.Identifier(field_name),
-            new_value=sql.Identifier(new_value),
-            uuid=uuid
         )
         
         with pool.connection() as connection:
             with connection.cursor() as cursor: 
                 with connection.transaction():
-                    cursor.execute(query)
+                    cursor.execute(query, (new_value, uuid))
                     
