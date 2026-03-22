@@ -72,16 +72,6 @@ CREATE TABLE network_panel_states (
 	FOREIGN KEY(owner_uuid) REFERENCES administrators(uuid) ON DELETE CASCADE
 );
 
-CREATE TABLE network_snapshots (
-	uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-	owner_uuid UUID,
-	name VARCHAR(24) UNIQUE NOT NULL,
-	created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    intnets JSONB NOT NULL,
-	positions JSONB NOT NULL,
-	FOREIGN KEY(owner_uuid) REFERENCES administrators(uuid) ON DELETE CASCADE
-);
-
 CREATE TABLE iso_files (
     uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(24) UNIQUE NOT NULL,
@@ -135,7 +125,6 @@ CREATE INDEX clients_groups_idx ON clients_groups (client_uuid, group_uuid);
 CREATE INDEX deployed_machines_owner_idx ON deployed_machines_owners(machine_uuid, owner_uuid);
 CREATE INDEX deployed_machines_clients_idx ON deployed_machines_clients(machine_uuid, client_uuid);
 CREATE INDEX network_panel_states_idx ON network_panel_states(owner_uuid);
-CREATE INDEX network_snapshots_idx ON network_snapshots(uuid, owner_uuid);
 CREATE INDEX machine_snapshots_idx ON machine_snapshots(uuid, owner_uuid);
 CREATE INDEX machine_snapshots_shares_idx ON machine_snapshots_shares(snapshot_uuid, recipient_uuid);
 CREATE INDEX iso_files_idx ON iso_files (uuid, name);
