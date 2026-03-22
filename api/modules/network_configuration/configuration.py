@@ -1,8 +1,6 @@
 from uuid import UUID
 from fastapi.encoders import jsonable_encoder
 from psycopg.types.json import Jsonb
-
-from config import FILES_CONFIG
 from .models import IntnetConfiguration, Positions
 from modules.postgresql import pool, select_one
 
