@@ -11,6 +11,7 @@ from config.regex_config import REGEX_CONFIG
 from modules.postgresql.main import async_pool, pool
 from modules.authentication.passwords import hash_password
 from modules.postgresql.simple_select import select_single_field
+from modules.users.guacamole_synchronization import create_entity
 from modules.users.permissions import verify_can_change_password, verify_permissions
 from modules.users.sublibraries.roles_library import RoleLibrary
 from modules.users.sublibraries.group_library import GroupLibrary
@@ -101,7 +102,10 @@ class _UsersSystemManager():
             verify_permissions(logged_in_user, PERMISSIONS.MANAGE_ADMIN_USERS)
         if len(clients_args_list):
             verify_permissions(logged_in_user, PERMISSIONS.MANAGE_CLIENT_USERS)
+        
+        
         logger.info(f"[create-users-in-bulk] Validation complete. Found {len(administrators_args_list)} administrators and {len(clients_args_list)} clients.")
+        
         async with async_pool.connection() as connection:
             async with connection.cursor() as cursor:
                 async with connection.transaction():
@@ -111,9 +115,15 @@ class _UsersSystemManager():
                             await AdministratorLibrary.create_records(administrators_args_list, logged_in_user, cursor)
                         if clients_args_list:
                             await ClientLibrary.create_records(clients_args_list, cursor)
+                        
                     except Exception as e:
                         logger.exception("Error creating users in bulk")
                         raise HTTPException(500, "An error occurred while creating users in bulk.")
+
+        with pool.connection() as connection:
+            with connection.cursor() as cursor:
+                for args in [*administrators_args_list, *clients_args_list]:
+                    create_entity(cursor, args.uuid)
 
         logger.info("[create-users-in-bulk] Creation completed")
      
