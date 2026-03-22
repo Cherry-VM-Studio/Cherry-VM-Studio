@@ -67,6 +67,9 @@ attach_container(){
 
         log info "Addressing $container NS_RASBUS connector."
         log_runner "$container:" ip netns exec "$container" ip addr add "${PREFIX_NETWORK_RAS%.*}.${ip_suffix}/${NETWORK_RAS_NETMASK}" dev "$veth_connector"
+    
+        # Ensure that the bridge is up
+        log_runner "$container:" ip link set dev "$BR_RASBR" up
     else
         log info "Namespace ${container} seems to be already attached. Infrastructure was not modified."
     fi
@@ -98,6 +101,15 @@ start_container(){
         "$CONTAINER_API")
             attach_container "$CONTAINER_API" "$VETH_API_RASBUS" "$SUFFIX_VETH_API_RASBUS" ;;
         "$CONTAINER_GUACD")
+        
+            if [[ ! $(ip link show "$VETH_GUACD_RASBUS" 2>/dev/null) ]] || [[ ! $( ip link show "$VETH_RASBUS_GUACD" 2>/dev/null) ]]; then
+                log info "Creating veth pair."
+                log_runner "$container:" ip link add dev "$VETH_GUACD_RASBUS" type veth peer name "$VETH_RASBUS_GUACD"
+                log_runner "$container:" ip link set dev "$VETH_RASBUS_GUACD" up
+                log_runner "$container:" ip link set "$VETH_RASBUS_GUACD" master "$BR_RASBR"
+                log_runner "$container:" ip link set dev "$BR_RASBR" up
+            fi
+
             attach_container "$CONTAINER_GUACD" "$VETH_GUACD_RASBUS" "$SUFFIX_VETH_GUACD_RASBUS" ;;
         *)
             log error "Attempting to initialize unrecognized container: $container."
