@@ -3,22 +3,17 @@ from fastapi.encoders import jsonable_encoder
 from psycopg.types.json import Jsonb
 
 from config import FILES_CONFIG
-from utils.file import JSONHandler
 from .models import IntnetConfiguration, Positions
 from modules.postgresql import pool, select_one
 
-intnets_file = JSONHandler(FILES_CONFIG.network_config_presets)
 
 # intnets
 
 def get_current_intnet_state() -> IntnetConfiguration:
-    intnets = intnets_file.read()
-    if intnets:
-        return intnets
     return {}
 
 def set_intnets(intnets: IntnetConfiguration):
-    intnets_file.write(jsonable_encoder(intnets))
+    return
     
 # flow state
 
