@@ -25,7 +25,7 @@ def __get_current_network_configuration__(current_user: DependsOnAdministrativeA
 @router.get("/configuration/{uuid}", response_model=NetworkConfiguration, tags=['Network Configuration'])
 def __get_current_network_configuration_for_other_user__(uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> NetworkConfiguration:
     
-    if uuid != current_user.uuid and has_permissions(current_user, PERMISSIONS.VIEW_ALL_VMS):
+    if uuid != current_user.uuid and not has_permissions(current_user, PERMISSIONS.VIEW_ALL_VMS):
         raise HTTPException(403, "You do not have the necessary permissions to access this resource.")
     
     if not UsersManager.get_user(uuid):
@@ -45,10 +45,12 @@ def __apply_intnet_configuration_to_vms__(intnet_configuration: IntnetConfigurat
         for machine_uuid in intnet.machines:
             machine_uuids.add(machine_uuid)
             
+    can_manage_all = has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS)
+            
     for machine_uuid in machine_uuids:
         if not check_machine_existence(machine_uuid):
             raise HTTPException(404, f"Virtual machine of UUID={machine_uuid} could not be found.")
-        if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS) and not check_machine_access(machine_uuid, current_user):
+        if not can_manage_all and not check_machine_access(machine_uuid, current_user):
             raise HTTPException(403, f"You do not have the necessary permissions to manage machine with UUID={machine_uuid}.")
     
     apply_intnet_changes(intnet_configuration)
