@@ -56,5 +56,15 @@ def __apply_intnet_configuration_to_vms__(intnet_configuration: IntnetConfigurat
     apply_intnet_changes(intnet_configuration)
     
 @router.put("/configuration/positions", tags=['Network Configuration'])
-def __save_flow_state__(positions: Positions, current_user: DependsOnAdministrativeAuthentication) -> None:
+def __save_own_flow_state__(positions: Positions, current_user: DependsOnAdministrativeAuthentication) -> None:
     save_flow_node_positions(current_user.uuid, positions)
+
+@router.put("/configuration/positions/{uuid}", tags=['Network Configuration'])
+def __save_flow_state_for_user__(uuid: UUID, positions: Positions, current_user: DependsOnAdministrativeAuthentication) -> None:
+    if uuid != current_user.uuid and not has_permissions(current_user, PERMISSIONS.VIEW_ALL_VMS):
+        raise HTTPException(403, "You do not have the necessary permissions to access this resource.")
+    
+    if not UsersManager.get_user(uuid):
+        raise HTTPException(404, f"User with UUID={uuid} does not exist.")
+    
+    save_flow_node_positions(uuid, positions)
