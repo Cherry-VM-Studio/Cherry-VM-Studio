@@ -13,6 +13,7 @@ from modules.machine_lifecycle.machines import *
 from modules.machine_lifecycle.models import MachineParameters, MachineDisk, CreateMachineForm, MachineBulkSpec
 from modules.machine_lifecycle.disks import get_machine_disk_size
 from modules.machine_websockets.main_manager import MachineWebSocketManager
+from modules.users.users import UsersManager
 
 router = APIRouter(
     prefix='/machines',
@@ -40,6 +41,18 @@ async def __get_all_machines__(current_user: DependsOnAuthentication) -> dict[UU
 @router.get("/account", response_model=dict[UUID, MachinePropertiesPayload], tags=['Machine Data'])
 async def __get_user_machines__(current_user: DependsOnAuthentication) -> dict[UUID, MachinePropertiesPayload]:
     return get_user_machine_properties_payloads(current_user)
+
+@router.get("/account/{uuid}", response_model=dict[UUID, MachinePropertiesPayload], tags=['Machine Data'])
+async def __get_other_user_machines__(uuid: UUID, current_user: DependsOnAuthentication) -> dict[UUID, MachinePropertiesPayload]:
+    if not has_permissions(current_user, PERMISSIONS.VIEW_ALL_VMS) and not check_machine_access(uuid, current_user):
+        raise HTTPException(403, "You do not have the necessary permissions to access this resource.")
+    
+    user = UsersManager.get_user(uuid)
+    
+    if not user:
+        raise HTTPException(404, f"User with UUID={uuid} does not exist.")
+    
+    return get_user_machine_properties_payloads(user)
 
 
 @router.get("/machine/{uuid}", response_model=MachinePropertiesPayload | None, tags=['Machine Data'])

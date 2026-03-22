@@ -37,7 +37,7 @@ async def __read_logged_in_users_permissions__(current_user: DependsOnAuthentica
 async def __read_user__(uuid: UUID) -> AnyUserExtended:
     user = UsersManager.get_user(uuid)
     if user is None: 
-        raise HTTPException(400, f"User with UUID={uuid} does not exist.")
+        raise HTTPException(404, f"User with UUID={uuid} does not exist.")
     return UsersManager.extend_user_model(user)
 
 
