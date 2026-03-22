@@ -70,9 +70,7 @@ async def __get_machine__(uuid: UUID, current_user: DependsOnAuthentication) -> 
 
 @router.post("/start/{uuid}", response_model=None, tags=['Machine State'])
 async def __start_machine__(uuid: UUID, current_user: DependsOnAuthentication) -> None:
-    machine = get_machine_properties_payload(uuid)
-
-    if not machine:
+    if not check_machine_existence(uuid):
         raise HTTPException(404, f"Virtual machine of UUID={uuid} could not be found.")
 
     if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS) and not check_machine_access(uuid, current_user):
@@ -89,9 +87,7 @@ async def __start_machine__(uuid: UUID, current_user: DependsOnAuthentication) -
 
 @router.post("/stop/{uuid}", response_model=None, tags=['Machine State'])
 async def __stop_machine__(uuid: UUID, current_user: DependsOnAuthentication) -> None:
-    machine = get_machine_properties_payload(uuid)
-
-    if not machine:
+    if not check_machine_existence(uuid):
         raise HTTPException(404, f"Virtual machine of UUID={uuid} could not be found.")
 
     if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS) and not check_machine_access(uuid, current_user):

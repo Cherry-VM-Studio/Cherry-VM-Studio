@@ -7,10 +7,14 @@ from modules.postgresql import pool, select_one
 
 # intnets
 
-def get_current_intnet_state() -> IntnetConfiguration:
+def get_current_intnet_state(owner_uuid: UUID) -> IntnetConfiguration:
+    # should return only intnets for the owner's machines
     return {}
 
-def set_intnets(intnets: IntnetConfiguration):
+def apply_intnet_changes(intnets: IntnetConfiguration):
+    # should merge current intnet configuration with the new one
+    # provided intnets should be updated/created
+    # intnets that exist but are not provided in the intnets prop should stay unchanged 
     return
     
 # flow state
