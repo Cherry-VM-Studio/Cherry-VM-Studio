@@ -16,7 +16,7 @@ class Intnet(BaseModel):                        # * Contains all necessary intne
 
 IntnetConfiguration = dict[UUID, Intnet]        # * Form of the intnet data required by the frontend
     
-Positions = dict[UUID, Coordinates]
+Positions = dict[str, Coordinates]
 
 class NetworkConfiguration(BaseModel):         
     intnets: IntnetConfiguration | None = None   
