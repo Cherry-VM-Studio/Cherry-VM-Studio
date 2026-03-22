@@ -61,9 +61,14 @@ async def __forwardauth__(authorization: Annotated[str | None, Header()] = None,
                 
                 user_uuid = get_cached_uuid(token)
                 
-                headers = {"X-Guacamole-User": user_uuid}
+                # headers = {"X-Guacamole-User": user_uuid}
+                # return JSONResponse(status_code=200, content=headers, headers=headers)
                 
-                return JSONResponse(status_code=200, content=headers, headers=headers)
+                return Response(
+                    status_code=200,
+                    headers={"X-Guacamole-User": user_uuid}
+                )
+                
             except Exception:
                 logger.debug(f"Forwardauth failed: No user found for token {token}.")
                 # raise HTTPUnauthorizedException(detail="Invalid session token.")
