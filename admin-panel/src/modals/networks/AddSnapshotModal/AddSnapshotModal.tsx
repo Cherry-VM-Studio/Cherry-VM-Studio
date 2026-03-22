@@ -37,7 +37,6 @@ const AddSnapshotModal = ({ opened, close, postSnapshot, initiateSnapshotDataUpd
 
     const onConfirm = async (name: string) => {
         const errorCallback = (res: Response, body: object) => {
-            console.log("a", res);
             res?.status === 409 ? setError(tns("error-duplicate")) : parseAndHandleError(res, body);
         };
         const response = await postSnapshot(name, errorCallback);

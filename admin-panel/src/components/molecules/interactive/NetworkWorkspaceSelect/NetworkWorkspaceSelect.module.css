@@ -1,0 +1,6 @@
+.input {
+    &:disabled {
+        opacity: 1;
+        color: var(--mantine-color-text);
+    }
+}

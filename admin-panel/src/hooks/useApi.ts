@@ -53,7 +53,7 @@ export const useApi = (): useApiReturn => {
         config: AxiosRequestConfig = {},
         errorCallback: ((error: AxiosError) => void) | null = handleAxiosError,
     ): Promise<T> => {
-        const mergedConfig = merge(baseApiRequestConfig, config);
+        const mergedConfig = merge({}, baseApiRequestConfig, config);
 
         const sendFetch = async (): Promise<AxiosResponse> => await axios({ ...mergedConfig, method, url: getPath(path) });
 

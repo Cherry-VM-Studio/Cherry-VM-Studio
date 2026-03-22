@@ -116,7 +116,7 @@ const MachineDetailsFieldset = <T extends Record<string, any> = {}>({
                         <UserMultiselect
                             placeholder={form.values.assigned_clients.length ? "" : tns("assigned-clients-placeholder")}
                             description={tns("assigned-clients")}
-                            users={values(users) ?? ([] as Client[])}
+                            users={values(users)}
                             w={366}
                             key={form.key("assigned_clients")}
                             {...form.getInputProps("assigned_clients")}

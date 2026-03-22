@@ -102,5 +102,10 @@
   "view-profile": "Zobacz profil",
   "change-password": "Zmień hasło",
   "admin": "Admin",
-  "autofix": "Autonaprawa"
+  "autofix": "Autonaprawa",
+  "environment": "Środowisko",
+  "my-environment": "Moje środowisko",
+  "your-environment": "Twoje środowisko",
+  "load-more": "Wczytaj więcej",
+  "internet-gateway": "Brama internetowa"
 }

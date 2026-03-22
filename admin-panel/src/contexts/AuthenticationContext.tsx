@@ -1,7 +1,9 @@
-import { AxiosHeaders } from "axios";
-import { createContext, ReactNode, useContext, useMemo } from "react";
+import { AxiosHeaders, isAxiosError } from "axios";
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
+import { UserExtended } from "../types/api.types";
+import useApi from "../hooks/useApi";
 
 interface Tokens {
     access_token: string | null;
@@ -44,7 +46,7 @@ export const AuthenticationProvider = ({ children }: { children?: ReactNode }): 
             access_token: cookies.access_token,
             refresh_token: cookies.refresh_token,
         }),
-        [cookies.access_token, cookies.refresh_token]
+        [cookies.access_token, cookies.refresh_token],
     );
     const authHeaders = useMemo(
         () =>
@@ -53,7 +55,7 @@ export const AuthenticationProvider = ({ children }: { children?: ReactNode }): 
                 "Content-Type": "application/json",
                 Authorization: "Bearer " + cookies.access_token,
             }),
-        [cookies.access_token]
+        [cookies.access_token],
     );
 
     const refreshHeaders = useMemo(
@@ -63,7 +65,7 @@ export const AuthenticationProvider = ({ children }: { children?: ReactNode }): 
                 "Content-Type": "application/json",
                 Authorization: "Bearer " + cookies.refresh_token,
             }),
-        [cookies.refresh_token]
+        [cookies.refresh_token],
     );
 
     const value = {

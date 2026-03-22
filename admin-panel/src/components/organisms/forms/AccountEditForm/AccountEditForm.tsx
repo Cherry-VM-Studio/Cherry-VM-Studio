@@ -56,7 +56,7 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }: Accoun
                           : val.length > 24
                             ? tns("validation.username-too-long")
                             : null,
-            email: (val)=> val?.length && !/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,})+$/.test(val) ? tns("validation.email-invalid") : null,
+            email: (val) => (val?.length && !/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,})+$/.test(val) ? tns("validation.email-invalid") : null),
         },
         onValuesChange: (values) => {
             form.setFieldValue("username", values.username.toLowerCase());
@@ -103,7 +103,6 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }: Accoun
     };
 
     const onFormSubmit = form.onSubmit(async (values) => {
-        console.log(values);
         const res = await sendRequest("PUT", `users/modify/${user?.uuid}`, { data: values }, onPostError);
         if (!res) return;
 

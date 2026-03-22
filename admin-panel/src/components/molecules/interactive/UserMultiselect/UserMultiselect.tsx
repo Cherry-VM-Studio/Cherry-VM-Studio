@@ -4,10 +4,10 @@ import { useTranslation } from "react-i18next";
 import BusinessCard from "../../../atoms/display/BusinessCard/BusinessCard";
 import classes from "./UserMultiselect.module.css";
 import { useElementSize } from "@mantine/hooks";
-import { User } from "../../../../types/api.types";
+import { User, UserExtended } from "../../../../types/api.types";
 
 export interface UserMultiselectProps extends MultiSelectProps {
-    users: User[];
+    users: User[] | UserExtended[];
     classNames?: { [key: string]: any };
 }
 
@@ -54,6 +54,7 @@ const UserMultiselect = ({ users, classNames, onChange, value, ...props }: UserM
             comboboxProps={{
                 transitionProps: { transition: "pop", duration: 200 },
             }}
+            limit={20}
             {...props}
         />
     );

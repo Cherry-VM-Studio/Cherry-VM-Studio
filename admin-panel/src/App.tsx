@@ -17,61 +17,147 @@ import GroupsPage from "./pages/administrative/accounts/GroupsPage/GroupsPage.ts
 import ClientHomePage from "./pages/client/main/ClientHomePage/ClientHomePage.tsx";
 import ContributorsPage from "./pages/global/ContributorsPage/ContributorsPage.tsx";
 import MachinesPage from "./pages/global/MachinesPage/MachinesPage.tsx";
-
+import NetworkPanelPage from "./pages/administrative/networks/NetworkPanelPage/NetworkPanelPage.jsx";
+import { ProfileProvider } from "./contexts/ProfileContext.tsx";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
-        <Route element={
-            <AuthenticationProvider>
-                <PermissionsProvider>
-                    <Outlet/>
-                </PermissionsProvider>
-            </AuthenticationProvider>
-        }>
-            <Route errorElement={<ErrorBoundary/>} >
-                <Route path='/'                                 element={<Navigate to='/login'/>}/>
-                <Route path='/admin' element={<Protected accountType="administrative"/>}>
-                    <Route element={<PanelLayout accountType="administrative"/>}>
-                        <Route path='home'                      element={<AdminHomePage/>}/>
-                        <Route path='contributors'                  element={<ContributorsPage/>}/>
-                        <Route path='copyright'                       element={<CopyrightPage/>}/>
-                        {/* <Route path='network-panel'             element={<NetworkPanelPage/>}/>     */}
+        <Route
+            element={
+                <AuthenticationProvider>
+                    <PermissionsProvider>
+                        <ProfileProvider>
+                            <Outlet />
+                        </ProfileProvider>
+                    </PermissionsProvider>
+                </AuthenticationProvider>
+            }
+        >
+            <Route errorElement={<ErrorBoundary />}>
+                <Route
+                    path="/"
+                    element={<Navigate to="/login" />}
+                />
+                <Route
+                    path="/admin"
+                    element={<Protected accountType="administrative" />}
+                >
+                    <Route element={<PanelLayout accountType="administrative" />}>
+                        <Route
+                            path="home"
+                            element={<AdminHomePage />}
+                        />
+                        <Route
+                            path="contributors"
+                            element={<ContributorsPage />}
+                        />
+                        <Route
+                            path="copyright"
+                            element={<CopyrightPage />}
+                        />
+                        <Route
+                            path="network-panel"
+                            element={<NetworkPanelPage />}
+                        />
                     </Route>
-                    <Route element={<PanelLayout accountType="administrative" doubleNavbar/>}>
-                        <Route path='machines/templates'        element={<TemplatesLibraryPage/>}/>
+                    <Route
+                        element={
+                            <PanelLayout
+                                accountType="administrative"
+                                doubleNavbar
+                            />
+                        }
+                    >
+                        <Route
+                            path="machines/templates"
+                            element={<TemplatesLibraryPage />}
+                        />
                         {/* <Route path='machines/snapshots'       element={</>}/> */}
-                        <Route path='machines/iso'              element={<IsoLibraryPage/>}/>
-                        <Route path='machines/all'              element={<MachinesPage mode="administrative" global/>}/>
-                        <Route path='machines'                  element={<MachinesPage mode="administrative"/>}/>
-                        <Route path='machines/machine/:uuid'    element={<MachinePage/>}/>
-                        <Route path='accounts'                  element={<Navigate to='/admin/accounts/admins'/>}/>
-                        <Route path='accounts/admins'           element={<UsersPage accountType="administrative"/>}/>
-                        <Route path='accounts/clients'          element={<UsersPage accountType="client"/>}/>
-                        <Route path='accounts/groups'           element={<GroupsPage/>}/>
+                        <Route
+                            path="machines/iso"
+                            element={<IsoLibraryPage />}
+                        />
+                        <Route
+                            path="machines/all"
+                            element={
+                                <MachinesPage
+                                    mode="administrative"
+                                    global
+                                />
+                            }
+                        />
+                        <Route
+                            path="machines"
+                            element={<MachinesPage mode="administrative" />}
+                        />
+                        <Route
+                            path="machines/machine/:uuid"
+                            element={<MachinePage />}
+                        />
+                        <Route
+                            path="accounts"
+                            element={<Navigate to="/admin/accounts/admins" />}
+                        />
+                        <Route
+                            path="accounts/admins"
+                            element={<UsersPage accountType="administrative" />}
+                        />
+                        <Route
+                            path="accounts/clients"
+                            element={<UsersPage accountType="client" />}
+                        />
+                        <Route
+                            path="accounts/groups"
+                            element={<GroupsPage />}
+                        />
                     </Route>
                 </Route>
-                <Route path='/client' element={<Protected accountType="client"/>}>
-                    <Route element={<PanelLayout accountType="client"/>}>
-                        <Route path='home'                      element={<ClientHomePage/>}/>    
-                        <Route path='machines'                  element={<MachinesPage mode="client"/>}/>
-                        <Route path='contributors'                  element={<ContributorsPage/>}/>
-                        <Route path='credits'                       element={<CopyrightPage/>}/>
+                <Route
+                    path="/client"
+                    element={<Protected accountType="client" />}
+                >
+                    <Route element={<PanelLayout accountType="client" />}>
+                        <Route
+                            path="home"
+                            element={<ClientHomePage />}
+                        />
+                        <Route
+                            path="machines"
+                            element={<MachinesPage mode="client" />}
+                        />
+                        <Route
+                            path="contributors"
+                            element={<ContributorsPage />}
+                        />
+                        <Route
+                            path="credits"
+                            element={<CopyrightPage />}
+                        />
                     </Route>
                 </Route>
-                <Route element={<ReverseProtected/>}>
-                    <Route path='/login'                        element={<LoginPage/>}/>
+                <Route element={<ReverseProtected />}>
+                    <Route
+                        path="/login"
+                        element={<LoginPage />}
+                    />
                 </Route>
-                <Route path='/dobre'                            element={<DobrePage/>}/>
-                <Route path="*" loader={() => {throw new Response("Page not found", {status: 404})}} />
+                <Route
+                    path="/dobre"
+                    element={<DobrePage />}
+                />
+                <Route
+                    path="*"
+                    loader={() => {
+                        throw new Response("Page not found", { status: 404 });
+                    }}
+                />
             </Route>
-        </Route>
-    )
+        </Route>,
+    ),
 );
 
 function App() {
-    return (
-        <RouterProvider router={router} />
-    );
+    return <RouterProvider router={router} />;
 }
 
 export default App;

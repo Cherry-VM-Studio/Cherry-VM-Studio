@@ -7,15 +7,23 @@ import ChangePasswordModal from "../../../../modals/account/ChangePasswordModal/
 import { AccountType } from "../../../../types/config.types";
 import classes from "./UsersPage.module.css";
 import { UserExtended } from "../../../../types/api.types";
+import { useAuthentication } from "../../../../contexts/AuthenticationContext";
+import { useProfile } from "../../../../contexts/ProfileContext";
 
 const UsersPage = ({ accountType }: { accountType: AccountType }): React.JSX.Element => {
-    const { data, error, loading, refresh } = useFetch<Record<string, UserExtended>>(`/users/all?account_type=${accountType}`, undefined, true);
+    const { data, error, loading, refresh: refreshUsers } = useFetch<Record<string, UserExtended>>(`/users/all?account_type=${accountType}`, undefined, true);
+    const { updateProfile } = useProfile();
     const [currentUuid, setCurrentUuid] = useState<string>("");
     const [accountModalInEditMode, setAccountModalInEditMode] = useState<boolean>(false);
     const [modalsOpened, setModalsOpened] = useState({
         account: false,
         password: false,
     });
+
+    const refresh = () => {
+        updateProfile();
+        refreshUsers();
+    };
 
     const openPasswordModal = (uuid: string) => {
         setCurrentUuid(uuid);

@@ -1,65 +1,62 @@
-import Formula from 'fparser';
-import { v4 as uuidv4 } from 'uuid';
-import { isObject, safeObjectValues, zipToObject } from '../utils/misc';
-import { calcMiddlePosition, getNodeId, NODE_TYPES } from '../utils/reactFlow';
-import { createMachineNode } from '../pages/NetworkPanel/NetworkPanel';
-import { ERRORS } from '../config/errors.config';
-import useMantineNotifications from './useMantineNotifications';
-
+import Formula from "fparser";
+import { v4 as uuidv4 } from "uuid";
+import { isObject, safeObjectValues, zipToObject } from "../utils/misc";
+import { calcMiddlePosition, getNodeId, NODE_TYPES } from "../pages/administrative/networks/NetworkPanelPage/reactFlow";
+import { createMachineNode } from "../pages/NetworkPanel/NetworkPanel";
+import { ERRORS } from "../config/errors.config";
+import useMantineNotifications from "./useMantineNotifications";
 
 /**
-* @typedef {Object} RawVariables - non calculated, the values of the keys are uncalculated expressions
-* 
-* @typedef {Object} CalculatedVariables - with keys as the names of the variables used in other expressions
-* 
-* @typedef {Object} RawCustomFunction - function defined in a preset by the user
-* @property {string} expression - expression for the function
-* @property {Array} arguments - arguments the function should accept in order
-* 
-* @typedef {Object.<string, RawCustomFunction} RawCustomFunctions - object of custom functions defined in a preset by the user
-* 
-* @typedef {Object.<string, function>} CustomFunctions - preset custom functions turned into actuall javascript functions wrapping fparser calc methods.
-* 
-* @typedef {Object.<string, Formula>} CoreFunctions - necessary functions for calculating flow configuration
-*/
-
+ * @typedef {Object} RawVariables - non calculated, the values of the keys are uncalculated expressions
+ *
+ * @typedef {Object} CalculatedVariables - with keys as the names of the variables used in other expressions
+ *
+ * @typedef {Object} RawCustomFunction - function defined in a preset by the user
+ * @property {string} expression - expression for the function
+ * @property {Array} arguments - arguments the function should accept in order
+ *
+ * @typedef {Object.<string, RawCustomFunction} RawCustomFunctions - object of custom functions defined in a preset by the user
+ *
+ * @typedef {Object.<string, function>} CustomFunctions - preset custom functions turned into actuall javascript functions wrapping fparser calc methods.
+ *
+ * @typedef {Object.<string, Formula>} CoreFunctions - necessary functions for calculating flow configuration
+ */
 
 /**
  * Functions built into the interpreter
  */
 const builtInFunctions = {
     ifElse: (predicate, trueValue, falseValue) => (predicate ? trueValue : falseValue),
-    or: (...args) => args.some(e => e),
-    and: (...args) => args.every(e => e),
+    or: (...args) => args.some((e) => e),
+    and: (...args) => args.every((e) => e),
     mod: (dividend, divisor) => dividend % divisor,
     len: (string) => `${string}`.length,
-}
+};
 
 /**
  * Custom hook for using network panel's flow presets.
  * @returns {Object.<string,function>}
  */
 export default function useFlowPresets() {
-    const {sendErrorNotification} = useMantineNotifications();
+    const { sendErrorNotification } = useMantineNotifications();
 
     /**
      * Turns custom variable expressions into values. Calculates each variable as an executed formula and pushes it to the scope for the future variables.
      * Next variables can reference past variables as their values have already been calculated.
-     * 
+     *
      * VALID VARIABLES: {"a": "2 * 2", "b": "a * 8"}
-     * 
+     *
      * b can reference a, as a's value has already been calulated.
-     * 
+     *
      * INVALID VARIABLES:  {"a": "b * 2", "b": "2 * 8"}
-     * 
+     *
      * a cannot reference b since b is yet to be added to the scope.
-     * 
+     *
      * @param {RawVariables} variables - object where keys are the names of the variables and string values represent their expressions.
      * @param {CalculatedVariables} defaultScope - already calculated default variables
      * @returns {CalculatedVariables}
      */
     const calculateVariables = (variables, defaultScope = {}) => {
-
         let calculatedVariables = isObject(defaultScope) ? defaultScope : {};
         for (const [key, expression] of Object.entries(variables)) {
             try {
@@ -70,11 +67,11 @@ export default function useFlowPresets() {
             }
         }
         return calculatedVariables;
-    }
+    };
 
     /**
      * Accepts custom function object as input and turns every function object into javascript function calling fparser calc method.
-     * @param {RawCustomFunctions} customFunctions 
+     * @param {RawCustomFunctions} customFunctions
      * @param {CalculatedVariables} defaultScope - already calculated default variables
      * @returns {CustomFunctions}
      */
@@ -87,33 +84,32 @@ export default function useFlowPresets() {
             functions[key] = (...args) => {
                 try {
                     return Formula.calc(
-                        `${func.expression}`,                                       // formula's expression
-                        { ...zipToObject(func.arguments, args), ...defaultScope }   // formula's scope (CalculatedVariables)
+                        `${func.expression}`, // formula's expression
+                        { ...zipToObject(func.arguments, args), ...defaultScope }, // formula's scope (CalculatedVariables)
                     );
                 } catch (e) {
                     sendErrorNotification(ERRORS.CVMM_651_NETWORK_PRESET_CALC_FAILED_CUSTOM_FUNC, { key: key });
                 }
-            }
+            };
         }
         functions = { ...functions, ...builtInFunctions };
 
         return functions;
-    }
+    };
 
     /**
      * Loads a formula from the given core function and handles any syntax errors.
      *
      * @param {string} coreFunction - String form of core function to create the Formula instance.
      * @param {string} functionName - The name of the function, used for error notifications.
-     * @returns {Formula|undefined} The created Formula instance, or undefined if an error occurred. 
+     * @returns {Formula|undefined} The created Formula instance, or undefined if an error occurred.
      */
     const loadFormula = (coreFunction, functionName) => {
-
         try {
-            if (!coreFunction) throw new Error('not defined')
+            if (!coreFunction) throw new Error("not defined");
             return new Formula(coreFunction);
         } catch (e) {
-            if (e === 'not defined') sendErrorNotification(ERRORS.CVMM_651_NETWORK_PRESET_CALC_FAILED_UNDEFINED, { key: functionName });
+            if (e === "not defined") sendErrorNotification(ERRORS.CVMM_651_NETWORK_PRESET_CALC_FAILED_UNDEFINED, { key: functionName });
             else sendErrorNotification(ERRORS.CVMM_651_NETWORK_PRESET_CALC_FAILED_CORE_FUNC, { key: functionName });
         }
     };
@@ -125,25 +121,25 @@ export default function useFlowPresets() {
      * @returns {CoreFunctions}
      */
     const getCoreFunctions = (coreFunctions, customFunctions) => {
-        const getIntnet = loadFormula(coreFunctions.getIntnet, 'getIntnet');
-        const getPosX = loadFormula(coreFunctions.getPosX, 'getPosX');
-        const getPosY = loadFormula(coreFunctions.getPosY, 'getPosY');
+        const getIntnet = loadFormula(coreFunctions.getIntnet, "getIntnet");
+        const getPosX = loadFormula(coreFunctions.getPosX, "getPosX");
+        const getPosY = loadFormula(coreFunctions.getPosY, "getPosY");
 
-        const setFormulasFunctions = (formula) => Object.entries(customFunctions).forEach(([key, func]) => formula[key] = func);
+        const setFormulasFunctions = (formula) => Object.entries(customFunctions).forEach(([key, func]) => (formula[key] = func));
 
         setFormulasFunctions(getIntnet);
         setFormulasFunctions(getPosX);
         setFormulasFunctions(getPosY);
 
-        return { getIntnet, getPosX, getPosY }
-    }
+        return { getIntnet, getPosX, getPosY };
+    };
 
     /**
      * Calculates all necessary data for flow initialization based on the preset.
      * @param {Array} machines - machine's network data fetched by the Network Panel and used to create machine nodes
-     * @param {CoreFunctions} param - preset's core functions 
-     * @param {CalculatedVariables} variables - calculated variables to be used by core functions 
-     * @returns 
+     * @param {CoreFunctions} param - preset's core functions
+     * @param {CalculatedVariables} variables - calculated variables to be used by core functions
+     * @returns
      */
     const calculateConfig = (machines, { getIntnet, getPosX, getPosY }, variables) => {
         const nodes = [];
@@ -153,65 +149,65 @@ export default function useFlowPresets() {
         /**
          * Adds machine uuid to the machines array in the intnets object.
          * @param {number} intnetNumber
-         * @param {number} machineUuid 
+         * @param {number} machineUuid
          */
         const addMachineToIntnet = (intnetNumber, machineUuid) => {
-            const uuid = safeObjectValues(intnets).find(intnet => intnet.number === intnetNumber)?.uuid;
+            const uuid = safeObjectValues(intnets).find((intnet) => intnet.number === intnetNumber)?.uuid;
             if (uuid) return intnets[uuid].machines.push(machineUuid);
 
             const newUuid = uuidv4();
-            intnets[newUuid] = { number: intnetNumber, machines: [machineUuid], uuid: newUuid }
-        }
+            intnets[newUuid] = { number: intnetNumber, machines: [machineUuid], uuid: newUuid };
+        };
 
         /**
-         * Creates machine nodes based on the core functions. It takes the machines array and goes through it, 
+         * Creates machine nodes based on the core functions. It takes the machines array and goes through it,
          * adding each machine to the approperiate intnet and setting its coordinates.
          * It uses core function getIntnet to evaluate the intnet for the machine and passes all needed arguments.
          * It uses core functions getPosX and getPosY to evaluate the machine's position;
          */
-        const createMachineNodes = () => safeObjectValues(machines).forEach((machine, i) => {
-            const evalArguments = { ...machine, i: i, ...variables }; //combined arguments to be used in the core functions
-            try {
-                const intnet = getIntnet.evaluate(evalArguments);
-                const [x, y] = [getPosX.evaluate(evalArguments), getPosY.evaluate(evalArguments)]
+        const createMachineNodes = () =>
+            safeObjectValues(machines).forEach((machine, i) => {
+                const evalArguments = { ...machine, i: i, ...variables }; //combined arguments to be used in the core functions
+                try {
+                    const intnet = getIntnet.evaluate(evalArguments);
+                    const [x, y] = [getPosX.evaluate(evalArguments), getPosY.evaluate(evalArguments)];
 
-                if (isNaN(intnet) || isNaN(x) || isNaN(y)) throw new Error();
+                    if (isNaN(intnet) || isNaN(x) || isNaN(y)) throw new Error();
 
-                if (intnet) addMachineToIntnet(intnet, machine.uuid);
-                nodes.push(createMachineNode(machine, { x: x, y: y }));
-            } catch (e) {
-                if (e.message) sendErrorNotification(ERRORS.CVMM_651_NETWORK_PRESET_CALC_FAILED, {message: `${e.message}`});
-                return error = true;
-            }
-        });
+                    if (intnet) addMachineToIntnet(intnet, machine.uuid);
+                    nodes.push(createMachineNode(machine, { x: x, y: y }));
+                } catch (e) {
+                    if (e.message) sendErrorNotification(ERRORS.CVMM_651_NETWORK_PRESET_CALC_FAILED, { message: `${e.message}` });
+                    return (error = true);
+                }
+            });
 
         /**
          * Creates intnet nodes at the mean position of all machine nodes connected to intnet.
          */
         const createIntnetNodes = () => {
-            safeObjectValues(intnets).forEach(intnet => {
+            safeObjectValues(intnets).forEach((intnet) => {
                 nodes.push({
                     id: getNodeId(NODE_TYPES.intnet, intnet.uuid),
-                    position: calcMiddlePosition(...intnet.machines.map(machineUuid =>
-                        nodes.find(node => node.id === getNodeId(NODE_TYPES.machine, machineUuid)).position)
+                    position: calcMiddlePosition(
+                        ...intnet.machines.map((machineUuid) => nodes.find((node) => node.id === getNodeId(NODE_TYPES.machine, machineUuid)).position),
                     ),
-                })
-            })
-        }
+                });
+            });
+        };
 
         createMachineNodes();
         if (error) return null;
 
         createIntnetNodes();
         return { flow: { nodes }, intnets };
-    }
-
+    };
 
     /**
-     * 
+     *
      * @param {object} preset - json body returned from the GET method. It includes all preset data.
      * @param {array} machines - array of machines loaded to the network panel
-     * @returns 
+     * @returns
      */
     const generateConfigFromPreset = (preset, machines) => {
         const defaultScope = { machines: { length: safeObjectValues(machines).length } };
@@ -221,7 +217,7 @@ export default function useFlowPresets() {
         const coreFunctions = getCoreFunctions(preset.data.coreFunctions, customFunctions);
 
         return calculateConfig(machines, coreFunctions, variables);
-    }
+    };
 
-    return { generateConfigFromPreset }
+    return { generateConfigFromPreset };
 }

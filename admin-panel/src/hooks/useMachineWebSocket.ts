@@ -140,7 +140,6 @@ const useMachineWebSocket = (mode: MachineStateRetrievalModes, target?: string):
     };
 
     useEffect(() => {
-        console.log(lastJsonMessage);
         onNewMessage(lastJsonMessage);
     }, [lastJsonMessage]);
 

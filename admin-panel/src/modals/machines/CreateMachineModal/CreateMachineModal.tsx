@@ -75,6 +75,8 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
             os_disk: 0,
             connection_protocols: "vnc+ssh",
         },
+        validateInputOnChange: false,
+        validateInputOnBlur: true,
         validate: {
             title: (val) =>
                 !/^[\w\s.-]+$/.test(val)
@@ -110,10 +112,6 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
                                 : null,
             },
         },
-        transformValues: (values) => ({
-            ...values,
-            description: values.description.trim(),
-        }),
     });
 
     useEffect(() => {
@@ -126,7 +124,7 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
 
     useEffect(() => {
         setConfigTemplate("custom");
-    }, [JSON.stringify(form.values.config)]);
+    }, [form.values.config.ram, form.values.config.vcpu]);
 
     const resetSourcePage = () => {
         form.resetField("source_type");
@@ -154,7 +152,6 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
     };
 
     const validateDisksForm = () => {
-        console.log(form.values.disks);
         form.values.disks.forEach((disk, i) => keys(disk).forEach((key) => form.validateField(`disks.${i}.${key}`)));
         return form.values.disks.every((disk, i) => keys(disk).every((key) => form.isValid(`disks.${i}.${key}`)));
     };

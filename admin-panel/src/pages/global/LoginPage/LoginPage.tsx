@@ -10,12 +10,14 @@ import LanguageSwitch from "../../../components/molecules/interactive/LanguageSw
 import { projectLinks } from "../../../config/project.config.ts";
 import TooltipNavButton from "../../../components/molecules/interactive/TooltipNavButton/TooltipNavButton.tsx";
 import { IconBook2, IconBrandGithub } from "@tabler/icons-react";
+import { useCookies } from "react-cookie";
 
 export default function LoginPage() {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { sendRequest } = useApi();
     const { setAccessToken, setRefreshToken } = useAuthentication();
+    const [cookies, setCookie] = useCookies(["account-uuid"]);
 
     const form = useForm<TokenRequestForm>({
         mode: "uncontrolled",

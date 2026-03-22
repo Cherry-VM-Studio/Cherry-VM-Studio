@@ -1,7 +1,7 @@
-import { BaseEdge, EdgeLabelRenderer, getStraightPath, useInternalNode, useReactFlow } from '@xyflow/react';
-import { getEdgeParams } from '../utils.js';
-import { IconX } from '@tabler/icons-react'
-import classes from '../Floating.module.css';
+import { BaseEdge, EdgeLabelRenderer, getStraightPath, useInternalNode, useReactFlow } from "@xyflow/react";
+import { getEdgeParams } from "../utils.js";
+import { IconX } from "@tabler/icons-react";
+import classes from "../Floating.module.css";
 
 function FloatingEdge({ id, source, target, markerEnd, style }) {
     const { setEdges } = useReactFlow();
@@ -12,23 +12,18 @@ function FloatingEdge({ id, source, target, markerEnd, style }) {
         return null;
     }
 
-    const { sx, sy, tx, ty, sourcePos, targetPos } = getEdgeParams(
-        sourceNode,
-        targetNode,
-    );
+    const { sx, sy, tx, ty, sourcePos, targetPos } = getEdgeParams(sourceNode, targetNode);
 
     const [edgePath, labelX, labelY] = getStraightPath({
         sourceX: sx,
         sourceY: sy,
-        sourcePosition: sourcePos,
-        targetPosition: targetPos,
         targetX: tx,
         targetY: ty,
     });
 
     const removeEdge = () => {
-        setEdges((edges) => edges.filter(edge => edge.id !== id))
-    }
+        setEdges((edges) => edges.filter((edge) => edge.id !== id));
+    };
 
     return (
         <>
@@ -41,13 +36,16 @@ function FloatingEdge({ id, source, target, markerEnd, style }) {
             />
             <EdgeLabelRenderer>
                 <div
-                    style={{ 
-                        position: 'absolute',
+                    style={{
+                        position: "absolute",
                         transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
-                        pointerEvents: 'all',
+                        pointerEvents: "all",
                     }}
                 >
-                    <button className={classes.deleteButton} onClick={removeEdge}>
+                    <button
+                        className={classes.deleteButton}
+                        onClick={removeEdge}
+                    >
                         <IconX size={10} />
                     </button>
                 </div>

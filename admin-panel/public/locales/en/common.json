@@ -102,5 +102,10 @@
     "view-profile": "View profile",
     "change-password": "Change password",
     "admin": "Admin",
-    "autofix": "Autofix"
+    "autofix": "Autofix",
+    "environment": "Environment",
+    "my-environment": "My environment",
+    "your-environment": "Your environment",
+    "load-more": "Load more",
+    "internet-gateway": "Internet gateway"
 }

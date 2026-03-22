@@ -82,7 +82,6 @@ export const ADMIN_PANEL_PAGES: Page[] = [
         key: "network-panel",
         path: "/admin/network-panel",
         icon: IconTopologyStar,
-        disabled: true,
     },
 ];
 

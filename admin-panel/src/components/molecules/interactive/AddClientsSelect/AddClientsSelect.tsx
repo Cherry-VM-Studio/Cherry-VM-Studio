@@ -58,6 +58,7 @@ const AddClientsSelect = ({ onSubmit, excludedClients, classNames, ...props }: A
             comboboxProps={{
                 transitionProps: { transition: "pop", duration: 200 },
             }}
+            limit={20}
             {...props}
         />
     );
