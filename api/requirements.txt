@@ -13,3 +13,4 @@ psycopg[pool]<4.0.0
 streaming-form-data<2.0.0
 numpy>=2.3.0,<2.4.0
 devtools
+cachetools==7.0.5

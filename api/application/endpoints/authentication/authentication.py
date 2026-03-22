@@ -10,6 +10,7 @@ from modules.authentication.validation import DependsOnRefreshToken, authenticat
 from modules.authentication.tokens import create_access_token, get_user_tokens
 from modules.authentication.models import Tokens
 from modules.exceptions import HTTPUnauthorizedException
+from modules.authentication.cache import get_cached_uuid
 
 FormData = Annotated[OAuth2PasswordRequestForm, Depends()]
 
@@ -57,9 +58,10 @@ async def __forwardauth__(authorization: Annotated[str | None, Header()] = None,
         
         if token is not None:
             try:
-                user = get_authenticated_user(token)
                 
-                headers = {"X-Guacamole-User": str(user.uuid)}
+                user_uuid = get_cached_uuid(token)
+                
+                headers = {"X-Guacamole-User": user_uuid}
                 
                 return JSONResponse(status_code=200, content=headers, headers=headers)
             except Exception:
