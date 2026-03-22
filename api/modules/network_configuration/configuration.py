@@ -15,6 +15,9 @@ def apply_intnet_changes(intnets: IntnetConfiguration):
     # should merge current intnet configuration with the new one
     # provided intnets should be updated/created
     # intnets that exist but are not provided in the intnets prop should stay unchanged 
+    #
+    # intnet with UUID = 00000000-0000-0000-0000-000000000000 represents the **internet gateway**
+    #
     return
     
 # flow state
