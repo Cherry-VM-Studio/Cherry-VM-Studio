@@ -1,24 +1,30 @@
 from uuid import UUID
 from fastapi.encoders import jsonable_encoder
 from psycopg.types.json import Jsonb
-from .models import IntnetConfiguration, Positions
+from .models import NetworkConfiguration, NetworkConfiguration, Positions
 from modules.postgresql import pool, select_one
 
 
 # intnets
 
-def get_current_intnet_state(owner_uuid: UUID) -> IntnetConfiguration:
-    # should return only intnets for the owner's machines
-    return {}
+def get_current_network_configuration(owner_uuid: UUID) -> NetworkConfiguration:
+    # TODO
+    # should return network configuration for machines owned by owner_uuid
+    
+    return NetworkConfiguration(
+        internal_networks={},
+        machines_with_internet_access=[]
+    )
 
-def apply_intnet_changes(intnets: IntnetConfiguration):
-    # should merge current intnet configuration with the new one
-    # provided intnets should be updated/created
-    # intnets that exist but are not provided in the intnets prop should stay unchanged 
+def set_network_configuration(owner_uuid: UUID, configuration: NetworkConfiguration):
+    # TODO
+    # should save network configuration for the owner's workspace
+    # already existing intnets should be modified
+    # intnets that exist currently but in the new configuration aren't present should be removed
+    # intnets that dont exist but are provided in the new configuration should be created
     #
-    # intnet with UUID = 00000000-0000-0000-0000-000000000000 represents the **internet gateway**
     #
-    return
+    pass
     
 # flow state
 

@@ -9,15 +9,17 @@ class Coordinates(BaseModel):
 #  Network Panel Configuration  #
 #-------------------------------#
 
-class Intnet(BaseModel):                        # * Contains all necessary intnet information for the web panel
+class InternalNetwork(BaseModel):               # * Contains all necessary intnet information for the web panel
     uuid: UUID                                  # unique intnet identifier 
     machines: list[UUID] = []                   # machines added to the intnet
     number: int | None = None                   # number indentifing the intnet from the user's perspective
+    display_name: str = ""
 
-IntnetConfiguration = dict[UUID, Intnet]        # * Form of the intnet data required by the frontend
+class NetworkConfiguration(BaseModel):
+    internal_networks: dict[UUID, InternalNetwork]
+    machines_with_internet_access: list[UUID]
     
-Positions = dict[str, Coordinates]
-
-class NetworkConfiguration(BaseModel):         
-    intnets: IntnetConfiguration | None = None   
-    positions: Positions | None = None
+type Positions = dict[str, Coordinates]
+class NetworkWorkspace(BaseModel):         
+    configuration: NetworkConfiguration
+    positions: Positions = dict() # key: node id in the workspace
