@@ -16,15 +16,15 @@ router = APIRouter(
     dependencies=[Depends(get_authenticated_administrator)]
 )
 
-@router.get("/workspace", response_model=NetworkConfiguration, tags=['Network Configuration'])
-def __get_current_network_configuration__(current_user: DependsOnAdministrativeAuthentication) -> NetworkConfiguration:
+@router.get("/workspace", response_model=NetworkWorkspace, tags=['Network Configuration'])
+def __get_current_network_configuration__(current_user: DependsOnAdministrativeAuthentication) -> NetworkWorkspace:
     return jsonable_encoder(NetworkWorkspace(
         configuration=get_current_network_configuration(current_user.uuid),
         positions=get_flow_node_positions(current_user.uuid)
     ))
     
-@router.get("/workspace/{uuid}", response_model=NetworkConfiguration, tags=['Network Configuration'])
-def __get_current_network_configuration_for_other_user__(uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> NetworkConfiguration:
+@router.get("/workspace/{uuid}", response_model=NetworkWorkspace, tags=['Network Configuration'])
+def __get_current_network_configuration_for_other_user__(uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> NetworkWorkspace:
     
     if uuid != current_user.uuid and not has_permissions(current_user, PERMISSIONS.VIEW_ALL_VMS):
         raise HTTPException(403, "You do not have the necessary permissions to access this resource.")
