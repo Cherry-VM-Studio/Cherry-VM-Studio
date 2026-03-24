@@ -1,3 +1,5 @@
+import { Position } from "../pages/administrative/networks/NetworkPanelPage/reactFlow.types";
+
 export interface TokenRequestForm {
     username: string;
     password: string;
@@ -254,4 +256,23 @@ export interface MachineTemplate {
     vcpu: number;
     owner: Administrator;
     created_at: string;
+}
+
+// network configuration
+
+export interface InternalNetwork {
+    uuid: string;
+    machines: string[];
+    number: number | null;
+    display_name: string;
+}
+
+export interface NetworkConfiguration {
+    internal_networks: Record<string, InternalNetwork>;
+    machines_with_internet_access: string[];
+}
+
+export class NetworkWorkspace {
+    configuration: NetworkConfiguration;
+    positions: Record<string, Position>;
 }

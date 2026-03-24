@@ -27,7 +27,15 @@ import { safeObjectValues } from "../../../../utils/misc.js";
 import Prompt from "../../../../modals/base/Prompt/Prompt.jsx";
 import FlowPanel from "../../../../components/organisms/interactive/FlowPanel/FlowPanel.tsx";
 import FloatingConnectionLine from "../../../../components/atoms/flow-connections/Floating/FloatingConnectionLine/FloatingConnectionLine.jsx";
-import { calcMiddlePosition, generateCloudNodeObject, generateIntnetNodeObject, generateNodeObject, getNodeId, getResourceUuidFromNode } from "./reactFlow.ts";
+import {
+    calcMiddlePosition,
+    CLOUD_ID,
+    generateCloudNodeObject,
+    generateIntnetNodeObject,
+    generateNodeObject,
+    getNodeId,
+    getResourceUuidFromNode,
+} from "./reactFlow.ts";
 import { Intnet, IntnetNodeObject, Intnets, NodeDataMap, Position } from "./reactFlow.types.ts";
 import _ from "lodash";
 import MachineNode from "../../../../components/atoms/flow-nodes/MachineNode/MachineNode.tsx";
@@ -35,6 +43,7 @@ import IntnetNode from "../../../../components/atoms/flow-nodes/IntnetNode/Intne
 import { isAxiosError } from "axios";
 import { useProfile } from "../../../../contexts/ProfileContext.tsx";
 import CloudNode from "../../../../components/atoms/flow-nodes/CloudNode/CloudNode.tsx";
+import { NetworkConfiguration } from "../../../../types/api.types.ts";
 
 const NODE_TYPES = {
     machine: MachineNode,
@@ -84,9 +93,9 @@ const Flow = (): JSX.Element => {
 
     const paths = {
         machines: `/machines/account/${selectedAccountUuid ?? ""}`,
-        getConfiguration: `/network/configuration/${selectedAccountUuid ?? ""}`,
+        getWorkspace: `/network/workspace/${selectedAccountUuid ?? ""}`,
         putPositions: `/network/configuration/positions/${selectedAccountUuid ?? ""}`,
-        putIntnets: `/network/configuration/intnets`,
+        putConfiguration: `/network/configuration/networks/${selectedAccountUuid ?? ""}`,
     };
 
     const { error: machinesError, data: machines, refresh: refreshMachines } = useFetch(paths.machines);
@@ -147,26 +156,38 @@ const Flow = (): JSX.Element => {
 
     const getNodePositions = useCallback(() => rfInstance.getNodes().reduce((acc, node) => ({ ...acc, [node.id]: node.position }), {}), [rfInstance]);
 
-    const getIntnetConfig = () => {
-        const intnets = getEdges().reduce<Intnets>((acc, { source: machineId, target: intnetId }) => {
-            const intnetUuid = getResourceUuidFromNode(intnetId);
-            const machineUuid = getResourceUuidFromNode(machineId);
+    const getNetworksConfig = (): NetworkConfiguration => {
+        const edges = getEdges();
+        const intnets = {};
+        const machinesWithInternetAccess = [];
 
-            if ([intnetUuid, machineUuid].some(_.isNull)) return acc;
+        edges.forEach(({ source, target }) => {
+            const machineUuid = getResourceUuidFromNode(source);
 
-            if (!acc[intnetUuid]) {
-                acc[intnetUuid] = {
+            if (!source.startsWith("machine") || _.isNull(machineUuid)) return;
+
+            if (target.startsWith(CLOUD_ID)) return machinesWithInternetAccess.push(machineUuid);
+            if (!target.startsWith("intnet")) return;
+
+            const intnetUuid = getResourceUuidFromNode(target);
+            if (_.isNull(intnetUuid)) return;
+
+            if (!intnets[intnetUuid]) {
+                intnets[intnetUuid] = {
                     uuid: intnetUuid,
-                    number: (getNode(intnetId) as IntnetNodeObject).number,
+                    number: (getNode(intnetUuid) as IntnetNodeObject).number,
                     machines: [],
+                    display_name: "",
                 };
             }
 
-            acc[intnetUuid].machines.push(machineUuid);
-            return acc;
-        }, {});
-        console.log(intnets);
-        return intnets;
+            intnets[intnetUuid].machines.push(machineUuid);
+        });
+
+        return {
+            internal_networks: intnets,
+            machines_with_internet_access: machinesWithInternetAccess,
+        };
     };
 
     // Creates nodes of provided type and data.
@@ -188,24 +209,37 @@ const Flow = (): JSX.Element => {
 
     // Creates edges between machine nodes and intnet nodes based on the intnet configuration.
     const createIntnetEdges = (intnets: Intnet[]) => {
-        if (!intnets) return;
+        if (_.isEmpty(intnets)) return;
 
         intnets.forEach(({ uuid, machines }) =>
             machines?.forEach?.((machineUuid) => {
                 addEdgeToFlow({
                     source: getNodeId("machine", machineUuid),
-                    target: getNodeId(uuid === "00000000-0000-0000-0000-000000000000" ? "cloud" : "intnet", uuid),
+                    target: getNodeId("intnet", uuid),
                 });
             }),
         );
     };
 
-    // Loads flow based on the provided positions and intnets data.
-    const loadFlowWithIntnets = async (positions: Record<string, Position>, intnets: Intnets) => {
-        return new Promise<void>(async (resolve, reject) => {
-            if (!positions || !intnets) return reject("Either positions or intnets is undefined.");
+    // Creates edges between machine nodes and the cloud node
+    const createInternetEdges = (machineUuids: string[]) => {
+        if (_.isEmpty(machineUuids)) return;
 
-            const intnetsArray = _.values(intnets).filter((intnet) => intnet.machines.length > 1);
+        machineUuids.forEach((machineUuid) => {
+            addEdgeToFlow({
+                source: getNodeId("machine", machineUuid),
+                target: CLOUD_ID,
+            });
+        });
+    };
+
+    // Loads flow based on the provided positions and intnets data.
+    const loadFlowWithIntnets = async (positions: Record<string, Position>, configuration: NetworkConfiguration) => {
+        return new Promise<void>(async (resolve, reject) => {
+            if (!positions || !configuration) return reject("Either positions or intnets is undefined.");
+
+            const intnetsArray = _.values(configuration.internal_networks).filter((intnet) => intnet.machines.length > 1);
+            const internetArray = configuration.machines_with_internet_access;
 
             setNodes([]);
             setEdges([]);
@@ -214,6 +248,7 @@ const Flow = (): JSX.Element => {
             createMachineNodes(positions);
             createFlowNodes("intnet", intnetsArray, positions);
             createIntnetEdges(intnetsArray);
+            createInternetEdges(internetArray);
             intnetAllocator.setCurrent(Math.max(...intnetsArray.map((e) => e.number), 0));
             newPositionsAllocator.setCurrent(0);
             resolve();
@@ -222,8 +257,8 @@ const Flow = (): JSX.Element => {
 
     // Resets the flow to the current network configuration from the backend.
     const resetFlow = async () => {
-        const { intnets, positions } = await sendRequest("GET", paths.getConfiguration);
-        return loadFlowWithIntnets(positions, intnets);
+        const { configuration, positions } = await sendRequest("GET", paths.getWorkspace);
+        return loadFlowWithIntnets(positions, configuration);
     };
 
     // Initializes the flow by resetting it and loading the network configuration.
@@ -243,7 +278,7 @@ const Flow = (): JSX.Element => {
     const putNodePositions = () => sendRequest("PUT", paths.putPositions, { data: getNodePositions() });
 
     // Sends a PUT request to save the internal network (Intnet) configuration.
-    const putIntnetConfiguration = () => sendRequest("PUT", paths.putIntnets, { data: getIntnetConfig() });
+    const putIntnetConfiguration = () => sendRequest("PUT", paths.putConfiguration, { data: getNetworksConfig() });
 
     // Saves the current flow state and internal network (Intnet) configuration.
     const applyNetworkConfig = async () => {

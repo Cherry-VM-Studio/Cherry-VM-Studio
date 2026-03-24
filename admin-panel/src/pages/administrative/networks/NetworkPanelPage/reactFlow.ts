@@ -2,7 +2,8 @@ import { IconDeviceDesktop } from "@tabler/icons-react";
 import { CloudNodeObject, IntnetNodeObject, MachineNodeObject, NodeDataMap, NodeType, Position } from "./reactFlow.types";
 import _ from "lodash";
 
-const NODE_ID_SEPERATOR = ":::";
+export const NODE_ID_SEPERATOR = ":::";
+export const CLOUD_ID = "cloud:::";
 
 export const getNodeId = (type: NodeType, resourceUuid: string) => `${type}${NODE_ID_SEPERATOR}${resourceUuid}`;
 
@@ -66,7 +67,7 @@ export const generateIntnetNodeObject = (intnet: NodeDataMap["intnet"], position
 
 export const generateCloudNodeObject = (position: Position) =>
     ({
-        id: getNodeId("cloud", "00000000-0000-0000-0000-000000000000"),
+        id: CLOUD_ID,
         type: "cloud",
         position: position,
         deletable: false,
