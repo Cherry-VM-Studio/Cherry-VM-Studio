@@ -106,6 +106,7 @@
   "environment": "Środowisko",
   "my-environment": "Moje środowisko",
   "your-environment": "Twoje środowisko",
+  "select-environment": "Wybierz środowisko",
   "load-more": "Wczytaj więcej",
   "internet-gateway": "Brama internetowa"
 }

@@ -106,7 +106,6 @@
         "machine-details": "Machine Details",
         "config-template": "Configuration Templates",
         "machine-connection-types": "Connection types",
-
         "validation": {
             "name-spaces": "Name cannot contain spaces.",
             "name-too-long": "Name length cannot exceed 50 characters.",
@@ -153,8 +152,8 @@
             "pr": "Public Relations"
         },
         "descriptions": {
-            "kk": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam nec ante est. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin imperdiet eleifend diam nec rutrum. Sed elementum, velit sed consectetur tempus, metus turpis commodo tellus, vitae ullamcorper ipsum ligula eu sem. Morbi rhoncus eros nulla, ac auctor leo ultricies quis.",
-            "tk": "Main frontend developer responsible for creating the Cherry Web Panels, implementing responsive interfaces and interactive components, and building the Cherry API to translate backend sockets into accessible frontend endpoints. Additionally, overseeing project branding and graphic design."
+            "kk": "Main backend developer focused on low-level virtualization solutions, application security, virtual networking, proxies, certification, and building the Cherry API for connecting Linux daemons with higher-level code. ",
+            "tk": "Main frontend developer responsible for creating the Cherry Web Panels, implementing responsive interfaces and interactive components, and building the Cherry API to translate backend sockets into accessible endpoints. Additionally, overseeing project branding and graphic design."
         }
     },
     "credits": {

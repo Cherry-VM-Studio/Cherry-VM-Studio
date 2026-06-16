@@ -106,6 +106,7 @@
     "environment": "Environment",
     "my-environment": "My environment",
     "your-environment": "Your environment",
+    "select-environment": "Select environment",
     "load-more": "Load more",
     "internet-gateway": "Internet gateway"
 }

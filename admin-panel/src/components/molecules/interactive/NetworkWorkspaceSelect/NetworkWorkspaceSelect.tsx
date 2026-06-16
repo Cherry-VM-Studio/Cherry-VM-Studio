@@ -175,7 +175,7 @@ const NetworkWorkspaceSelect = ({ selectedAccountUuid, setSelectedAccountUuid, i
 
     const renderSelectedWorkspace = () => {
         if (!selectedOption) {
-            return <Input.Placeholder>{props.placeholder || t("select-workspace")}</Input.Placeholder>;
+            return <Input.Placeholder>{props.placeholder || t("select-environment")}</Input.Placeholder>;
         }
 
         const isCurrentWorkspace = selectedOption.isCurrentUser;
