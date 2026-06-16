@@ -1,0 +1,113 @@
+services:
+  admin-panel:
+    container_name: cherry-admin-panel
+    restart: always
+    image: "ghcr.io/krzysztoff27/cherry-admin-panel:latest"
+    networks:
+      cherry-internal:
+    user: "${SYSTEM_WORKER_UID:?error}:${SYSTEM_WORKER_GID:?error}"
+    depends_on:
+      api:
+        condition: service_started
+  api:
+    container_name: cherry-api
+    restart: always
+    image: "ghcr.io/krzysztoff27/cherry-api:latest"
+    environment:
+      - DB_HOSTNAME=${POSTGRESQL_HOSTNAME}
+      - DB_NAME=${POSTGRESQL_DATABASE}
+      - DB_USER=${POSTGRESQL_USER}
+      - DB_PASSWORD=${POSTGRESQL_PASSWORD}
+      - SYSTEM_WORKER_UID=${SYSTEM_WORKER_UID}
+      - SYSTEM_WORKER_GID=${SYSTEM_WORKER_GID}
+      - HOST_LIBVIRT_GID=${HOST_LIBVIRT_GID}
+      - NETWORK_RAS_NAME=${NETWORK_RAS_NAME}
+      - GUACD_HOSTNAME=${GUACD_HOSTNAME}
+    secrets:
+      - jwt_secret
+    volumes:
+      - "/var/run/libvirt/libvirt-sock:/var/run/libvirt/libvirt-sock:rw"
+      - "/var/run/libvirt/libvirt-sock-ro:/var/run/libvirt/libvirt-sock-ro:ro"
+    networks:
+      cherry-internal:
+    depends_on:
+      database:
+        condition: service_healthy
+        restart: true
+  database:
+    container_name: cherry-db
+    restart: always
+    image: postgres
+    environment:
+      - POSTGRES_USER=${POSTGRESQL_USER}
+      - POSTGRES_DB=${POSTGRESQL_DATABASE}
+      - POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}
+    volumes:
+      - ${DIR_DB}:/var/lib/postgresql/data:rw
+      - ./initdb:/docker-entrypoint-initdb.d/:ro
+    networks:
+      cherry-internal:
+    user: "${SYSTEM_WORKER_UID:?error}:${SYSTEM_WORKER_GID:?error}"
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}'"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+  guacamole:
+    container_name: cherry-guacamole
+    restart: always
+    image: guacamole/guacamole
+    environment:
+      - GUACD_HOSTNAME=${GUACD_HOSTNAME}
+      - POSTGRESQL_HOSTNAME=${POSTGRESQL_HOSTNAME}
+      - POSTGRESQL_USERNAME=${POSTGRESQL_USER}
+      - POSTGRESQL_DATABASE=${POSTGRESQL_DATABASE}
+      - POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}
+    networks:
+      cherry-internal:
+    user: "${SYSTEM_WORKER_UID:?error}:${SYSTEM_WORKER_GID:?error}"
+  guacd:
+    container_name: cherry-guacd
+    restart: always
+    image: guacamole/guacd
+    networks:
+      cherry-internal:
+    user: "${SYSTEM_WORKER_UID:?error}:${SYSTEM_WORKER_GID:?error}"
+  traefik:
+    container_name: cherry-proxy
+    restart: always
+    image: traefik
+    environment:
+      - DOMAIN_NAME=${DOMAIN_NAME}
+    command:
+      - "--log.level=DEBUG" # Delete before release
+      - "--api.dashboard=true"
+      - "--providers.file.directory=/dynamic-configuration"
+      - "--providers.file.watch=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      # - "/var/run/docker.sock:/var/run/docker.sock"
+      - ${DIR_TRAEFIK}:/dynamic-configuration
+    networks:
+      cherry-external:
+      cherry-internal:
+        aliases:
+          - ${DOMAIN_NAME}
+    user: "${SYSTEM_WORKER_UID:?error}:${SYSTEM_WORKER_GID:?error}"
+
+networks:
+  cherry-external:
+    name: cherry-external
+    external: false
+  cherry-internal:
+    name: cherry-internal
+    external: true
+
+secrets:
+  jwt_secret:
+    file: ./secrets/jwt_secret.txt

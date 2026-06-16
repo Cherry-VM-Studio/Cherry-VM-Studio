@@ -1,0 +1,64 @@
+http:
+  routers:
+    cherry-traefik-router:
+      rule: 'Host(`{{ printf "traefik.%s" (env "DOMAIN_NAME") }}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))'
+      service: api@internal
+      entryPoints: web
+      middlewares: auth
+    cherry-guacamole-router:
+      rule: 'Host(`{{ env "DOMAIN_NAME" }}`) && PathPrefix(`/guacamole`)'
+      service: cherry-guacamole-service
+      entryPoints: web
+      middlewares:
+        - strip-headers
+        - forward-auth
+    # The API is available from the outside only for development purposes
+    cherry-api-router:
+      rule: 'Host(`{{ env "DOMAIN_NAME" }}`) && PathPrefix(`/api`)'
+      service: cherry-api-service
+      entryPoints: web
+      middlewares: strip-api-prefix
+    cherry-admin-panel-router:
+      rule: 'Host(`{{ env "DOMAIN_NAME" }}`)'
+      service: cherry-admin-panel-service
+      entryPoints: web
+
+  middlewares:
+      strip-headers:
+        headers:
+          customRequestHeaders:
+            X-Guacamole-User: "/api"
+
+      forward-auth:
+        forwardAuth: 
+          address: "http://cherry-api:8000/api/forwardauth"
+          trustForwardHeader: true
+          authRequestHeaders:
+            - "Authorization"
+            - "Cookie"
+          authResponseHeaders:
+            - "X-Guacamole-User"
+
+      auth:
+        basicAuth:
+          users:
+            - "CherryAdmin:$apr1$kkyWSyHX$jnIlY32yAicV1IKaf4CfT/"
+
+      strip-api-prefix:
+        stripPrefix: 
+          prefixes:
+            - "/api"
+
+  services:
+    cherry-guacamole-service:
+      loadBalancer:
+        servers:
+          - url: "http://cherry-guacamole:8080/guacamole"
+    cherry-api-service:
+      loadBalancer:
+        servers:
+          - url: "http://cherry-api:8000"
+    cherry-admin-panel-service:
+      loadBalancer:
+        servers:
+          - url: "http://cherry-admin-panel:3000"

@@ -11,7 +11,6 @@
 *.njsproj
 *.sln
 *.sw?
-.venv
 
 ############################
 # MODULES + LOCAL
@@ -82,11 +81,10 @@ $RECYCLE.BIN/
 
 logs
 .tmp
-*.log
-*.sql
+#*.log
+#*.sql
 *.sqlite
 *.sqlite3
-*db.json
 
 npm-debug.log*
 yarn-debug.log*
@@ -105,8 +103,6 @@ nbproject
 public/uploads/*
 !public/uploads/.gitkeep
 
-__pycache__
-
 ############################
 # Node.js
 ############################
@@ -114,7 +110,8 @@ __pycache__
 lib-cov
 lcov.info
 pids
-logs
+admin-panel/logs
+admin-panel/*/logs
 results
 node_modules
 .node_history
@@ -124,7 +121,7 @@ node_modules
 ############################
 
 .env
-api/rebuild.sh
+backend/installer-files/settings.yaml
 
 ############################
 # DOCS

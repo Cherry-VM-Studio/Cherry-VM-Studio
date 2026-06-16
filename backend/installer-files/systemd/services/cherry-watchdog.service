@@ -1,0 +1,20 @@
+[Unit]
+Description=Cherry VM Studio Watchdog for Docker containers
+After=network.target docker.service cherry-vm-studio.service
+Wants=docker.service cherry-vm-studio.service
+
+[Service]
+User=CherryWorker
+Group=CherryWorker
+Type=simple
+ExecStart=+/opt/cherry-vm-studio/systemd/cherry-watchdog.sh
+RemainAfterExit=yes
+StandardOutput=journal
+StandardError=journal
+Restart=always
+
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
