@@ -11,6 +11,7 @@
 *.njsproj
 *.sln
 *.sw?
+.venv
 
 ############################
 # MODULES + LOCAL
@@ -104,6 +105,8 @@ nbproject
 public/uploads/*
 !public/uploads/.gitkeep
 
+__pycache__
+
 ############################
 # Node.js
 ############################
@@ -121,6 +124,7 @@ node_modules
 ############################
 
 .env
+api/rebuild.sh
 
 ############################
 # DOCS
