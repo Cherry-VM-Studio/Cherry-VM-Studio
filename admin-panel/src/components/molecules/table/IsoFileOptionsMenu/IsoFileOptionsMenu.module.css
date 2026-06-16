@@ -1,0 +1,10 @@
+.button {
+    font-weight: 400;
+    justify-content: right;
+    border: none !important;
+    width: 100%;
+}
+
+.delete {
+    color: var(--mantine-color-cherry-5);
+}

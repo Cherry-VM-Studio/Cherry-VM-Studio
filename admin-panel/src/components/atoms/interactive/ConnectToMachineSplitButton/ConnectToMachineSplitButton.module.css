@@ -1,0 +1,25 @@
+.connectButton[aria-expanded="true"] {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.connectButton[aria-expanded="true"] {
+    border-bottom-right-radius: 0;
+}
+
+.connectButtonMenu {
+    background-color: var(--mantine-color-dark-7) !important;
+    border-color: none !important;
+    border-width: 2px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border: none;
+}
+
+.menuButton {
+    font-weight: 600;
+    border: none !important;
+    border-top: none !important;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}

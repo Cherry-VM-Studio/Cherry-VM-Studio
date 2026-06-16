@@ -1,0 +1,18 @@
+.container {
+    justify-content: space-between;
+    padding: 0 var(--mantine-spacing-lg);
+    flex-wrap: nowrap;
+    width: 100% !important;
+}
+
+.leftGroup {
+    align-items: center;
+    flex-wrap: nowrap;
+    min-width: 0;
+}
+
+.title {
+    text-transform: capitalize;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

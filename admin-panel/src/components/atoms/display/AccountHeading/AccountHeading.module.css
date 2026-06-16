@@ -1,0 +1,34 @@
+.group {
+    margin-top: var(--mantine-spacing-xl);
+}
+
+.avatar {
+    z-index: 100;
+    background-color: var(--mantine-color-dark-6);
+    border: 5px solid var(--mantine-color-dark-8);
+}
+
+.userInfo {
+    gap: 4px;
+    margin-top: -4px;
+    flex: 1;
+}
+
+.title {
+    z-index: 100;
+    min-height: var(--mantine-h2-line-height);
+    width: 100%;
+}
+
+.username {
+    font-size: var(--mantine-font-size-lg);
+    color: var(--mantine-color-dimmed);
+    z-index: 100;
+}
+
+.badge {
+    z-index: 100;
+    margin-left: auto;
+    margin-right: var(--mantine-spacing-md);
+    background-color: var(--mantine-color-dark-7);
+}

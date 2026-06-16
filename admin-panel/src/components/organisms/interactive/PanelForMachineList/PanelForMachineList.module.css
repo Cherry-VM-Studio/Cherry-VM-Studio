@@ -1,0 +1,18 @@
+.buttonGroup {
+    justify-content: space-between;
+    padding-left: var(--mantine-spacing-md);
+    padding-right: var(--mantine-spacing-md);
+    height: 70px;
+}
+
+.groupByDropdown {
+    /* border: none; */
+    border-width: 2px;
+    border-top: none;
+    border-radius: 0 0 var(--mantine-radius-md) var(--mantine-radius-md);
+    background-color: var(--mantine-color-dark-5);
+}
+
+.radioLabel {
+    font-size: var(--mantine-font-size-md);
+}

@@ -1,0 +1,7 @@
+.button {
+    border-radius: 0;
+}
+
+.workspaceSelect {
+    border-radius: var(--mantine-radius-md) 0 0 var(--mantine-radius-md);
+}

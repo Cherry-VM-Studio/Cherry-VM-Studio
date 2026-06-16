@@ -1,0 +1,84 @@
+.topBox {
+    top: 0;
+    position: absolute;
+    background-color: var(--mantine-color-dark-8);
+    width: 100%;
+    height: 136px;
+}
+
+.stack {
+    padding: var(--mantine-spacing-lg);
+    gap: var(--mantine-spacing-lg);
+    height: 600px;
+}
+
+.buttonGroup {
+    width: 100%;
+    margin-top: auto;
+    justify-content: center;
+    padding-bottom: var(--mantine-spacing-sm);
+}
+
+.closeButton {
+    width: 100px;
+    background-color: var(--mantine-color-gray-light);
+    color: var(--mantine-color-gray);
+}
+
+.header {
+    margin-top: var(--mantine-spacing-xl);
+}
+
+.icon {
+    z-index: 100;
+}
+
+.headerText {
+    gap: 4px;
+    margin-top: -4px;
+    flex: 1;
+}
+
+.title {
+    z-index: 100;
+    min-height: var(--mantine-h2-line-height);
+    width: 100%;
+}
+
+.titleSmall {
+    font-size: var(--mantine-font-size-lg);
+    color: var(--mantine-color-dimmed);
+    z-index: 100;
+}
+
+.badge {
+    z-index: 100;
+    margin-left: auto;
+    margin-right: var(--mantine-spacing-md);
+    background-color: var(--mantine-color-dark-7);
+}
+
+.details {
+    margin-top: var(--mantine-spacing-xl);
+    padding-left: var(--mantine-spacing-md);
+    gap: var(--mantine-spacing-md);
+}
+
+.detailLabel {
+    font-size: var(--mantine-font-size-md);
+    font-weight: 500;
+}
+
+.detailValue {
+    color: var(--mantine-color-dimmed);
+    font-size: inherit;
+}
+
+.editTextButton {
+    color: var(--mantine-color-dimmed) !important;
+
+    &:hover,
+    &:focus {
+        color: var(--mantine-color-dark-1) !important;
+    }
+}

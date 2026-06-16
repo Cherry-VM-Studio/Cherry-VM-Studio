@@ -1,0 +1,26 @@
+{
+    "footer": {
+        "home": "Home",
+        "documentation": "Documentation",
+        "credits": "Credits",
+        "copyright": "Copyright"
+    },
+    "navbar": {
+        "home": "Homepage",
+        "machines": "Virtual Machines",
+        "desktops": "Desktops",
+        "network-panel": "Network Panel",
+        "accounts": "Account management",
+        "administrators": "Administrators",
+        "users": "Users",
+        "clients": "Clients",
+        "groups": "Client groups",
+        "your-library": "Your library",
+        "all-machines": "All machines",
+        "snapshots": "Your snapshots",
+        "iso": "Global ISO Library",
+        "templates": "Your templates",
+        "copyright": "Copyright",
+        "contributors": "Contributors"
+    }
+}

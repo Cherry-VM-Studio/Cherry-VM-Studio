@@ -1,0 +1,14 @@
+.container {
+    height: 100%;
+}
+
+.secondCol {
+    flex-direction: column;
+    padding: var(--mantine-spacing-lg);
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+
+    width: 150px;
+    border-right: solid var(--mantine-color-dark-6) 2px;
+}

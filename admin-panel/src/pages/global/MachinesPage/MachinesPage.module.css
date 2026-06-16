@@ -1,0 +1,30 @@
+.pagePaper {
+    display: flex;
+    overflow: hidden;
+    background-color: transparent;
+
+    flex: 1;
+    margin: var(--mantine-spacing-lg);
+    margin-top: 0;
+}
+
+.pageStack {
+    flex: 1;
+    gap: 0;
+}
+
+.scrollArea {
+    flex: 1;
+    padding-top: var(--mantine-spacing-md);
+    padding-bottom: 4;
+}
+
+.tablePaper {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    padding: var(--mantine-spacing-xl);
+    margin: var(--mantine-spacing-md);
+    background-color: var(--mantine-color-dark-8);
+    flex-direction: column;
+}

@@ -1,0 +1,24 @@
+.title {
+    font-size: var(--mantine-h2-font-size);
+    font-weight: var(--mantine-h2-font-weight);
+    line-height: var(--mantine-h2-line-height);
+}
+
+.titleEdit {
+    font-size: var(--mantine-font-size-md);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+}
+
+.container {
+    align-items: center;
+    height: 560px;
+    padding: var(--mantine-spacing-md);
+    padding-top: 0;
+}
+
+.header {
+    width: 100%;
+    margin-bottom: 40px;
+}
