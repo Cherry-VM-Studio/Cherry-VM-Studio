@@ -1,0 +1,44 @@
+.card {
+    height: 320px;
+    border: 2px solid var(--mantine-color-dark-6);
+    background-color: var(--mantine-color-dark-7);
+}
+
+.topSection {
+    display: flex;
+    background-color: var(--mantine-color-dark-6);
+    padding: var(--mantine-spacing-md);
+    align-items: center;
+}
+
+.topSectionGroup {
+    flex-wrap: nowrap;
+    gap: var(--mantine-spacing-md);
+    width: 100%;
+    height: 100%;
+    align-items: center;
+}
+
+.title {
+    text-wrap: nowrap;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0px;
+    flex: 1 1 auto;
+}
+
+.titleStack {
+    gap: 4px;
+    min-width: 0;
+    flex: 1;
+}
+
+.tagsContainer {
+    flex: 1;
+    height: fit-content !important;
+}
+
+.badgeGroup {
+    justify-content: end;
+}

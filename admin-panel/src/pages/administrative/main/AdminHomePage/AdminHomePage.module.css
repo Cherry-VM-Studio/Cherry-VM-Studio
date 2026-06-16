@@ -1,0 +1,44 @@
+.container {
+    padding: 96px;
+    padding-top: 64px;
+    gap: 48px;
+    align-items: center;
+    text-align: center;
+}
+
+.description {
+    text-align: center;
+    font-size: var(--mantine-font-size-lg);
+    white-space: pre-line;
+}
+
+.card {
+    padding: var(--mantine-spacing-lg);
+    border-radius: var(--mantine-radius-md);
+    text-align: left;
+    border-width: 2px;
+}
+
+.cardStack1 {
+    height: 100%;
+    justify-content: space-between;
+    gap: var(--mantine-spacing-md);
+}
+
+.cardStack2 {
+    gap: var(--mantine-spacing-sm);
+}
+
+.cardGroup {
+    justify-content: start;
+    gap: var(--mantine-spacing-sm);
+}
+
+.panelTitle {
+    font-size: var(--mantine-font-size-xl);
+    font-weight: 500;
+}
+
+.card .main {
+    width: 800px;
+}

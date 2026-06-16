@@ -20,6 +20,7 @@ node_modules
 dist
 dist-ssr
 *.local
+*.local.*
 
 ############################
 # OS X
@@ -84,6 +85,7 @@ logs
 *.sql
 *.sqlite
 *.sqlite3
+*db.json
 
 npm-debug.log*
 yarn-debug.log*

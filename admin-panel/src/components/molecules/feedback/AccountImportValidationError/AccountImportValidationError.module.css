@@ -1,0 +1,26 @@
+.button {
+    width: 100%;
+    justify-content: center;
+    flex: 1;
+}
+
+.container {
+    justify-content: space-between;
+    background: var(--mantine-color-dark-7);
+    border-radius: var(--mantine-radius-md);
+    padding: var(--mantine-spacing-xs);
+}
+
+.textContainer {
+    flex: 1;
+    gap: 4px;
+}
+
+.topText {
+    color: var(--mantine-color-red-7);
+    font-size: var(--mantine-font-size-sm);
+}
+
+.bottomText {
+    font-size: var(--mantine-font-size-sm);
+}

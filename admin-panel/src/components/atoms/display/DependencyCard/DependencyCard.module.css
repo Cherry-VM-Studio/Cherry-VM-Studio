@@ -1,0 +1,7 @@
+.dependencyCard {
+    border: 2px solid var(--mantine-color-dark-5);
+}
+
+.dependencyCard a {
+    color: var(--mantine-color-gray-5);
+}

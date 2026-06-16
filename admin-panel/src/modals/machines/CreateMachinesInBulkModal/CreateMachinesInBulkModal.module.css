@@ -1,0 +1,49 @@
+.title {
+    font-size: var(--mantine-font-size-xl);
+}
+
+.mainStack {
+    gap: var(--mantine-spacing-lg);
+}
+
+.description {
+    color: var(--mantine-color-dimmed);
+    font-size: var(--mantine-font-size-sm);
+    margin-bottom: var(--mantine-spacing-xs);
+}
+
+.formBorder {
+    border: var(--mantine-color-dark-6) solid 2px;
+    padding: var(--mantine-spacing-md);
+}
+
+.submitButton {
+    width: 100px;
+    color: black;
+}
+
+.closeButton {
+    width: 100px;
+    background-color: var(--mantine-color-gray-light);
+    color: var(--mantine-color-gray);
+}
+
+.rowGroup {
+    background-color: var(--mantine-color-dark-6);
+    padding: 0 var(--mantine-spacing-xs);
+    border-radius: var(--mantine-radius-md);
+    height: 36px;
+    align-items: center;
+    gap: 0;
+}
+
+.machineDetail {
+    width: 500px;
+    gap: var(--mantine-spacing-xs);
+}
+
+.warning {
+    gap: 6px;
+    margin-left: 2px;
+    color: orange;
+}

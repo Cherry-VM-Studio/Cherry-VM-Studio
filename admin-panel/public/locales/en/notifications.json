@@ -1,0 +1,194 @@
+{
+    "error": {
+        "default": {
+            "title": "Unknown error occured",
+            "message": "Please contact with the development team to resolve the issue."
+        },
+        "400": {
+            "title": "Bad Request",
+            "message": "Your request could not be processed due to an error. Please verify your input and try again.",
+            "variants": {
+                "CANNOT-REMOVE-USER": {
+                    "title": "Cannot Remove User",
+                    "message": "Cannot remove user as it would leave at least one permission unassigned. Please make sure to pass the permissions to another account first."
+                }
+            }
+        },
+        "401": {
+            "title": "Unauthorized",
+            "message": "You are not authorized to access this resource. Please log in to continue.",
+            "variants": {
+                "INVALID-CREDENTIALS": {
+                    "title": "Login failed",
+                    "message": "Incorrect username or password."
+                },
+                "SESSION-EXPIRED": {
+                    "title": "Session expired",
+                    "message": "Please log in to the panel again."
+                }
+            }
+        },
+        "403": {
+            "title": "Access Denied",
+            "message": "Your account doesn't have the necessary permissions to access this resource."
+        },
+        "404": {
+            "title": "{{resource, capitalize}} Not Found",
+            "message": "The {{resource, lowercase}} you are looking for could not be found",
+            "variants": {
+                "PAGE": {
+                    "title": "Page Not Found",
+                    "message": "The page you are looking for could not be found. Please check the URL or contact the development team."
+                },
+                "SNAPSHOT": {
+                    "title": "Snapshot Not Found",
+                    "message": "Selected snapshot no longer exists."
+                },
+                "PRESET": {
+                    "title": "Preset Not Found",
+                    "message": "Selected preset no longer exists."
+                }
+            }
+        },
+        "408": {
+            "title": "Request Timeout",
+            "message": "The server timed out while waiting for your request."
+        },
+        "409": {
+            "title": "Duplicate error",
+            "message": "Resource with this name already exists."
+        },
+        "410": {
+            "title": "Resource Gone",
+            "message": "The resource you are looking for is no longer available. Contact the development team if you need help."
+        },
+        "418": {
+            "title": "I'm a Teapot",
+            "message": "This server is a teapot, not equipped to handle your request. Try a different server."
+        },
+        "422": {
+            "title": "Unprocessable Request",
+            "message": "The data you submitted couldn’t be processed. Check the fields and try again."
+        },
+        "429": {
+            "title": "Too Many Requests",
+            "message": "You have exceeded the request limit. Please slow down and try again after a short wait."
+        },
+        "500": {
+            "title": "Something bad has happened",
+            "message": "API service could not handle the request because of an internal issue."
+        },
+        "503": {
+            "title": "Service unavailable",
+            "message": "API service is either down or unreachable."
+        },
+        "600": {
+            "title": "Something bad has happened",
+            "message": "An internal issue in the web application has occurred. Please contact with the development team to resolve it."
+        },
+        "601": {
+            "title": "Invalid Panel Configuration",
+            "message": ""
+        },
+        "650": {
+            "title": "Couldn't Load the Network Configuration",
+            "message": "Error occurred during load due to invalid configuration."
+        },
+        "651": {
+            "title": "Could Not Load The Preset",
+            "message": "{{message}}",
+            "variants": {
+                "NOT-DEFINED": {
+                    "title": "Could Not Load The Preset",
+                    "message": "{{key}} is either not defined or empty."
+                },
+                "CORE-FUNCTION": {
+                    "title": "Could Not Load The Preset",
+                    "message": "Syntax error occurred in the preset's {{key}} core function."
+                },
+                "VARIABLE": {
+                    "title": "Could Not Load The Preset",
+                    "message": "An error occured during calculation of the \"{{key}}\" variable."
+                },
+                "CUSTOM-FUNCTION": {
+                    "title": "Could Not Load The Preset",
+                    "message": "An error occured during calculation of the \"{{key}}\" custom function."
+                }
+            }
+        }
+    },
+    "account": {
+        "created": {
+            "title": "Account Created",
+            "message": "Successfully created user {{username}}."
+        },
+        "modified": {
+            "title": "Account Modified",
+            "message": "Successfully modified user {{username}}."
+        }
+    },
+    "group": {
+        "created": {
+            "title": "Group Created",
+            "message": "Successfully created client group {{name}}"
+        }
+    },
+    "network-panel": {
+        "flow-init": {
+            "title": "Network Configuration Loaded",
+            "message": "Successfully created a representation of the present configuration of internal networks."
+        },
+        "flow-resetting": {
+            "title": "Refreshing Network Configuration",
+            "message": "The machine data is currently being refreshed."
+        },
+        "flow-restore": {
+            "title": "Network configuration restored",
+            "message": "The network configuration was successfuly restored."
+        },
+        "state-saved": {
+            "title": "Saved current panel state",
+            "message": "Current positions of the nodes in the flow have been successfully saved."
+        },
+        "config-saved": {
+            "title": "Saved intnet configuration",
+            "message": "Network configuration has been successfully updated and saved."
+        },
+        "snapshot-create": {
+            "title": "New snapshot created - \"{{name}}\"",
+            "message": "Current configuration was successfuly saved to the snapshot \"{{name}}\""
+        },
+        "snapshot-modify": {
+            "title": "Snapshot Renaming Complete",
+            "message_one": "Successfully renamed {{count}} snapshot.",
+            "message_few": "Successfully renamed {{count}} snapshots.",
+            "message_other": "Successfully renamed {{count}} snapshots."
+        },
+        "snapshot-remove": {
+            "title": "Snapshot Removal Complete",
+            "message_one": "Successfully removed {{count}} snapshot.",
+            "message_few": "Successfully removed {{count}} snapshots.",
+            "message_other": "Successfully removed {{count}} snapshots."
+        },
+        "snapshot-loaded": {
+            "title": "Snapshot Loaded",
+            "message": "Successfully loaded network configuration from the snapshot data."
+        },
+        "preset-loaded": {
+            "title": "Preset Loaded",
+            "message": "Successfully generated appropriate network configuration."
+        }
+    },
+    "file": {
+        "uploading": {
+            "title": "Uploading File"
+        },
+        "upload-success": {
+            "title": "File Uploaded Successfully"
+        },
+        "upload-error": {
+            "title": "File Upload Error",
+            "message": "Could not upload file \"{{name}}\""
+        }
+    }
+}

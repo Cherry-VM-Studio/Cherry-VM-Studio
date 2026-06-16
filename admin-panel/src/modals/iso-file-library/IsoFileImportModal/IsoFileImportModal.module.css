@@ -1,0 +1,37 @@
+.description {
+    flex-wrap: nowrap;
+    gap: var(--mantine-spacing-sm);
+}
+
+.description * {
+    font-size: var(--mantine-font-size-sm);
+}
+
+.inputStack {
+    gap: var(--mantine-spacing-xs);
+    margin-bottom: var(--mantine-spacing-mb);
+}
+
+.fileButton {
+    margin-top: 4px;
+    justify-items: left;
+}
+
+.fileButton[aria-selected="true"] {
+    border-radius: var(--mantine-radius-md) 0 0 var(--mantine-radius-md);
+}
+
+.fileButton[aria-invalid="true"] > * {
+    color: var(--mantine-color-red-7);
+}
+
+.resetFileButton {
+    height: 36px;
+    width: 36px;
+    border-left: none !important;
+    border-radius: 0 var(--mantine-radius-md) var(--mantine-radius-md) 0;
+}
+
+.saveLocallyCheckbox {
+    margin-top: 4px;
+}

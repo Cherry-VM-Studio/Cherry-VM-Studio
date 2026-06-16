@@ -1,0 +1,27 @@
+.createMenuDropdown {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border: none;
+}
+
+.createButton {
+    border: none;
+    width: 180;
+}
+
+.createButton[aria-expanded="true"] {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.sideButton[aria-expanded="true"] {
+    border-bottom-right-radius: 0;
+}
+
+.menuButton {
+    font-weight: 600;
+    border: var(--mantine-color-dark-5) 2px solid !important;
+    border-top: none !important;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}

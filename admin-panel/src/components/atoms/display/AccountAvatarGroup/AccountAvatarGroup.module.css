@@ -1,0 +1,9 @@
+.dropdown {
+    min-width: 150px;
+    max-width: 300px;
+    border-width: 2px;
+}
+
+.scrollArea {
+    max-height: 200px;
+}
