@@ -1,0 +1,34 @@
+.formBorder {
+    border: var(--mantine-color-dark-6) solid 2px;
+    border-radius: var(--mantine-radius-md);
+    padding: var(--mantine-spacing-md);
+}
+
+.headerGroup {
+    margin-bottom: -4px;
+    gap: var(--mantine-spacing-sm);
+}
+
+.headerText {
+    font-size: var(--mantine-font-size-sm);
+    font-weight: 600;
+}
+
+.center {
+    justify-content: center;
+}
+
+.left {
+    justify-content: left;
+    padding-left: 2px;
+}
+
+.sizeInputLeft {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.sizeInputRight {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}

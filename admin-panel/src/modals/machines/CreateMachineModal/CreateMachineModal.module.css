@@ -1,0 +1,15 @@
+.nextButton {
+    width: 100px;
+    color: black;
+}
+
+.closeButton {
+    width: 100px;
+    background-color: var(--mantine-color-gray-light);
+    color: var(--mantine-color-gray);
+}
+
+.description {
+    color: var(--mantine-color-dimmed);
+    font-size: var(--mantine-font-size-sm);
+}

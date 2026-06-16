@@ -1,0 +1,52 @@
+name: api-image
+
+on:
+    release:
+        types:
+            - published
+
+jobs:
+    #Check for a release wtith the "target" property set to the API branch
+    build-and-push:
+        if: github.event.release.target_commitish == 'API'
+
+        runs-on: ubuntu-latest
+
+        permissions:
+          contents: read
+          packages: write
+
+        env:
+          OWNER: ${{ github.repository_owner }}
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+            
+            - name: Log in to GitHub Container Registry
+              uses: docker/login-action@v3
+              with:
+                registry: ghcr.io
+                username: ${{ github.actor }}
+                password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Extract Docker image metadata
+              id: meta
+              uses: docker/metadata-action@v5
+              with:
+                images: ghcr.io/${{ env.OWNER }}/cherry-api
+              
+            - name: Downcase repository owner name
+              run: |
+                echo "OWNER=${OWNER,,}" >> "${GITHUB_ENV}"
+
+            - name: Build and push Cherry-API Docker image
+              uses: docker/build-push-action@v4
+              with:
+                context: api
+                file: api/docker/dockerfile
+                push: true
+                tags: |
+                  ghcr.io/${{ env.OWNER }}/cherry-api:${{ github.ref_name }}
+                  ghcr.io/${{ env.OWNER }}/cherry-api:latest
+                labels: ${{ steps.meta.outputs.labels }}

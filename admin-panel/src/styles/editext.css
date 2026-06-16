@@ -1,0 +1,51 @@
+button[editext="edit-button"],
+button[editext="cancel-button"],
+button[editext="save-button"] {
+    background-color: transparent;
+    color: var(--mantine-color-dark-1);
+    border: none;
+    border-radius: var(--mantine-radius-md);
+    padding: 6px;
+    aspect-ratio: 1/1;
+
+    &:hover,
+    &:focus {
+        background-color: var(--mantine-color-dark-6);
+    }
+}
+
+button[editext="edit-button"] {
+    padding: 0px 6px;
+
+    &:hover,
+    &:focus {
+        background-color: transparent;
+        color: white;
+    }
+}
+
+button[editext="cancel-button"] {
+    color: var(--mantine-color-red-7);
+}
+
+button[editext="save-button"] {
+    color: var(--mantine-color-suse-green-6);
+}
+
+div[editext="edit-container"] > input {
+    /* border: solid var(--mantine-color-dark-5) 2px; */
+    border: none;
+    border-radius: var(--mantine-radius-md);
+    background-color: var(--mantine-color-dark-6);
+}
+
+div[editext="view"] {
+    max-width: 100% !important;
+    width: 100% !important;
+    overflow-x: hidden !important;
+    /* text-overflow: ellipsis; */
+    /* white-space: nowrap; */
+
+    overflow-wrap: break-word !important;
+    word-break: break-word !important;
+}

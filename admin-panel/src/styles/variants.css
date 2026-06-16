@@ -1,0 +1,81 @@
+.borderless {
+    border: none !important;
+}
+
+.border {
+    border: 2px solid var(--mantine-color-dark-5);
+}
+
+.mantine-Button-root[data-variant="default"],
+.mantine-ActionIcon-root[data-variant="default"] {
+    border: 2px solid var(--mantine-color-dark-5);
+    font-weight: 400;
+}
+
+.mantine-Input-input[data-variant="default"],
+.mantine-Checkbox-input:not(:checked) {
+    border: 2px solid var(--mantine-color-dark-5);
+}
+
+.auto-width {
+    width: fit-content;
+    min-width: 100%;
+}
+
+.full-height {
+    height: 100%;
+}
+
+button[data-variant="white"] {
+    color: black !important;
+
+    &[data-disabled] {
+        color: var(--mantine-color-dimmed) !important;
+    }
+}
+
+.customScroll {
+    overflow: auto;
+}
+
+/* Firefox */
+.customScroll {
+    scrollbar-width: thin;
+    scrollbar-color: var(--mantine-color-dark-2) transparent;
+}
+
+/* Firefox hover/active consistency */
+.customScroll:hover,
+.customScroll:active {
+    scrollbar-color: var(--mantine-color-dark-2) transparent;
+}
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+.customScroll::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+/* Remove arrows in WebKit */
+.customScroll::-webkit-scrollbar-button {
+    display: none;
+}
+
+/* Track */
+.customScroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* Thumb */
+.customScroll::-webkit-scrollbar-thumb {
+    background-color: var(--mantine-color-dark-2);
+    border-radius: 100px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+
+/* Hover/active thumb */
+.customScroll::-webkit-scrollbar-thumb:hover,
+.customScroll::-webkit-scrollbar-thumb:active {
+    background-color: var(--mantine-color-dark-2); /* keep same color */
+}

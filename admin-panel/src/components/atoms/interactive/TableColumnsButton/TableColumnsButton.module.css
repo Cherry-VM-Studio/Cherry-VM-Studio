@@ -1,0 +1,9 @@
+.dropdown {
+    min-width: 200px;
+    max-height: 250px;
+    border-width: 2px;
+    padding: 2px var(--mantine-spacing-sm) 6px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--mantine-spacing-sm);
+}

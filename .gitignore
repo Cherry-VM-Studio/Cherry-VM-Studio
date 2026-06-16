@@ -20,6 +20,7 @@ node_modules
 dist
 dist-ssr
 *.local
+*.local.*
 
 ############################
 # OS X
@@ -109,7 +110,8 @@ public/uploads/*
 lib-cov
 lcov.info
 pids
-#logs
+admin-panel/logs
+admin-panel/*/logs
 results
 node_modules
 .node_history
@@ -120,3 +122,8 @@ node_modules
 
 .env
 backend/installer-files/settings.yaml
+
+############################
+# DOCS
+############################
+docs/public/

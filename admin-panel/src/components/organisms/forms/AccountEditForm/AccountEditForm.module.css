@@ -1,0 +1,62 @@
+.topBox {
+    top: 0;
+    position: absolute;
+    background-color: var(--mantine-color-dark-8);
+    width: 100%;
+    height: 102px;
+}
+
+.container {
+    height: 600px;
+    padding: var(--mantine-spacing-lg);
+    gap: var(--mantine-spacing-xs);
+    flex: 1;
+}
+
+.title {
+    padding: var(--mantine-spacing-xs);
+    padding-left: 0;
+}
+
+.content {
+    gap: var(--mantine-spacing-xs);
+    padding-left: var(--mantine-spacing-md);
+    flex: 1;
+    min-height: 0;
+}
+
+.sectionTitle {
+    margin-top: var(--mantine-spacing-lg);
+}
+
+.inputGroup {
+    width: 100%;
+    gap: var(--mantine-spacing-xs);
+    flex-wrap: nowrap;
+}
+
+.input {
+    flex: 1;
+}
+
+.label {
+    width: 115px;
+    font-size: var(--mantine-font-size-sm);
+}
+
+.buttonGroup {
+    width: 100%;
+    margin-top: auto;
+    justify-content: center;
+    padding-bottom: var(--mantine-spacing-sm);
+}
+
+.cancelButton {
+    width: 100px;
+}
+
+.saveButton {
+    width: 100px;
+    background-color: white;
+    color: black;
+}

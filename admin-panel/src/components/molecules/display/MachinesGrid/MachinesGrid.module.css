@@ -1,0 +1,14 @@
+.scrollArea {
+    min-height: 0 !important;
+    flex: 1 !important;
+    padding-top: var(--mantine-spacing-lg);
+}
+
+.loaderContainer {
+    width: 100%;
+    height: 100%;
+    flex: 1;
+    min-height: 240px;
+    justify-content: center;
+    align-items: center;
+}

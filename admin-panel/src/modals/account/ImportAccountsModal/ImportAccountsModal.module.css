@@ -1,0 +1,35 @@
+.modalInner {
+    margin: 2rem;
+    width: calc(100vw - 64px);
+}
+
+.modalContent {
+    width: calc(100vw - 64px);
+    max-width: calc(100vw - 64px);
+    height: calc(100vh - 64px);
+    max-height: calc(100vh - 64px);
+    border-radius: var(--mantine-radius-lg);
+    display: flex;
+    flex-direction: column;
+}
+
+.modalBody {
+    padding: 0 var(--mantine-spacing-lg) var(--mantine-spacing-lg);
+    min-height: 0;
+    flex: 1;
+}
+
+.modalHeader {
+    align-items: start;
+    min-height: fit-content;
+}
+
+.modalTitle {
+    font-size: var(--mantine-h2-font-size);
+    flex: 1;
+}
+
+.modalStack {
+    height: 100%;
+    flex: 1;
+}
