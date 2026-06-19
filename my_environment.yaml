@@ -1,0 +1,20 @@
+type: environment.insomnia.rest/5.0
+schema_version: "5.1"
+name: Cherry API Testing Environment
+meta:
+  id: wrk_66935afc984a4f3a894e7e94731e4d8c
+  created: 1781876011546
+  modified: 1781877516023
+  description: ""
+environments:
+  name: Cherry Environment
+  meta:
+    id: env_c82031a0597ac2353c2ab3ea7709a535d24b70b6
+    created: 1781876011577
+    modified: 1781880207418
+    isPrivate: false
+  data:
+    "{{ 'access_token' }}": ""
+    "{{'refresh_token'}}": ""
+    "{{'username'}}": root
+    "{{'password'}}": novell

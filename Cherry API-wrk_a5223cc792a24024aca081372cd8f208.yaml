@@ -1,0 +1,864 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: Cherry API
+meta:
+  id: wrk_a5223cc792a24024aca081372cd8f208
+  created: 1781875987369
+  modified: 1781875987369
+  description: ""
+collection:
+  - name: Cherry API
+    meta:
+      id: fld_52049428eb0642b2977adda754797246
+      created: 1781875987371
+      modified: 1781875987371
+      sortKey: -1781875985336
+      description: ""
+    children:
+      - name: Debug
+        meta:
+          id: fld_c9078e9fc0204535858c85e2c83ee657
+          created: 1781875987371
+          modified: 1781875987371
+          sortKey: -1781875985335
+          description: ""
+        children:
+          - url: http://lenovo.lab/api/machine/create
+            name: async_create_machine
+            meta:
+              id: req_5d723293cac94dfdae60120d22cd4539
+              created: 1781875987372
+              modified: 1781876871120
+              isPrivate: false
+              description: ""
+              sortKey: -1781875985334
+            method: POST
+            body:
+              mimeType: application/json
+              text: "{\r
+
+                \    \"title\": \"Linus\",\r
+
+                \    \"description\": \"I am not sure how much more I can
+                handle\",\r
+
+                \    \"tags\": [\"linux\", \"desktop\"],\r
+
+                \    \"assigned_clients\":
+                [\"f30d8457-68d3-466c-8b3f-2f4cc73263f9\"],\r
+
+                \    \"source_type\": \"iso\",\r
+
+                \    \"source_uuid\":
+                \"1de60b0f-7321-471f-9a7e-6c411a9a8ca8\",\r
+
+                \    \"config\": {\r
+
+                \        \"ram\": 2000,\r
+
+                \        \"vcpu\": 2\r
+
+                \    },\r
+
+                \    \"disks\": [{\r
+
+                \        \"name\": \"system-disk\",\r
+
+                \        \"size_bytes\": 5000,\r
+
+                \        \"type\": \"qcow2\"\r
+
+                \    },\r
+
+                \    {\r
+
+                \        \"name\": \"hdd\",\r
+
+                \        \"size_bytes\": 3000,\r
+
+                \        \"type\": \"qcow2\"\r
+
+                \    }]\r
+
+                }"
+            headers:
+              - name: Authorization
+                value: Bearer {{access_token}}
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              disabled: false
+              token: "{{'access_token'}}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: http://lenovo.lab/api/machine/create/bulk
+            name: async_create_machine_bulk
+            meta:
+              id: req_b7bbdc135b094d0a93cb2de75a9ea351
+              created: 1781875987373
+              modified: 1781875987373
+              isPrivate: false
+              description: ""
+              sortKey: -1781875985333
+            method: POST
+            body:
+              mimeType: application/json
+              text: "[\r
+
+                \    {\r
+
+                \        \"machine_config\": {\r
+
+                \            \"title\": \"Blahaj\",\r
+
+                \            \"description\": \"I'm a fih\",\r
+
+                \            \"tags\": [],\r
+
+                \            \"assigned_clients\":
+                [\"f30d8457-68d3-466c-8b3f-2f4cc73263f9\",
+                \"23925441-800c-4864-a342-229a835825e5\"],\r
+
+                \            \"source_type\": \"iso\",\r
+
+                \            \"source_uuid\":
+                \"1de60b0f-7321-471f-9a7e-6c411a9a8ca8\",\r
+
+                \            \"config\": {\r
+
+                \                \"ram\": 2000,\r
+
+                \                \"vcpu\": 2\r
+
+                \            },\r
+
+                \            \"disks\": [{\r
+
+                \                \"name\": \"system-disk\",\r
+
+                \                \"size_bytes\": 5000,\r
+
+                \                \"type\": \"qcow2\"\r
+
+                \            }]\r
+
+                \        },\r
+
+                \        \"machine_count\": 1\r
+
+                \    }\r
+
+                ]"
+            headers:
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              disabled: false
+              token: "{{access_token}}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: http://lenovo.lab/api/debug/machine/disk/create
+            name: create_machine_disk
+            meta:
+              id: req_a699786dab8b4686a8262af1652b08a8
+              created: 1781875987374
+              modified: 1781875987374
+              isPrivate: false
+              description: ""
+              sortKey: -1781875985331
+            method: POST
+            body:
+              mimeType: application/json
+              text: "{\r
+
+                \    \"name\": \"Disk 2\",\r
+
+                \    \"size\": 5000,\r
+
+                \    \"type\": \"qcow2\",\r
+
+                \    \"pool\": \"cvms-disk-images\"\r
+
+                }"
+            headers:
+              - name: Authorization
+                value: Bearer {{access_token}}
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              disabled: false
+              token: "{{access_token}}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: http://lenovo.lab/api/machine/create/for-group
+            name: async_create_machine_for_group
+            meta:
+              id: req_eef7a767fcca49f68bed3d03cd417b45
+              created: 1781875987374
+              modified: 1781875987374
+              isPrivate: false
+              description: ""
+              sortKey: -1781875985332
+            method: POST
+            body:
+              mimeType: application/json
+              text: "[\r
+
+                \    {\r
+
+                \        \"machine_config\": {\r
+
+                \            \"title\": \"Tux\",\r
+
+                \            \"description\": \"Bulking\",\r
+
+                \            \"tags\": [\"linux\", \"desktop\"],\r
+
+                \            \"assigned_clients\":
+                [\"f30d8457-68d3-466c-8b3f-2f4cc73263f9\",
+                \"23925441-800c-4864-a342-229a835825e5\"],\r
+
+                \            \"source_type\": \"iso\",\r
+
+                \            \"source_uuid\":
+                \"1de60b0f-7321-471f-9a7e-6c411a9a8ca8\",\r
+
+                \            \"config\": {\r
+
+                \                \"ram\": 2000,\r
+
+                \                \"vcpu\": 2\r
+
+                \            },\r
+
+                \            \"disks\": [{\r
+
+                \                \"name\": \"system-disk\",\r
+
+                \                \"size_bytes\": 5000,\r
+
+                \                \"type\": \"qcow2\"\r
+
+                \            }]\r
+
+                \        },\r
+
+                \        \"machine_count\": 2\r
+
+                \    },\r
+
+                \    {\r
+
+                \        \"machine_config\": {\r
+
+                \            \"title\": \"Blahaj\",\r
+
+                \            \"description\": \"nya\",\r
+
+                \            \"tags\": [\"linux\", \"desktop\"],\r
+
+                \            \"assigned_clients\":
+                [\"f30d8457-68d3-466c-8b3f-2f4cc73263f9\",
+                \"23925441-800c-4864-a342-229a835825e5\"],\r
+
+                \            \"source_type\": \"iso\",\r
+
+                \            \"source_uuid\":
+                \"1de60b0f-7321-471f-9a7e-6c411a9a8ca8\",\r
+
+                \            \"config\": {\r
+
+                \                \"ram\": 3000,\r
+
+                \                \"vcpu\": 1\r
+
+                \            },\r
+
+                \            \"disks\": [{\r
+
+                \                \"name\": \"system-disk\",\r
+
+                \                \"size_bytes\": 4000,\r
+
+                \                \"type\": \"qcow2\"\r
+
+                \            }]\r
+
+                \        },\r
+
+                \        \"machine_count\": 1\r
+
+                \    }\r
+
+                ]"
+            parameters:
+              - name: group_uuid
+                value: f598f54e-b2f4-4689-bac5-dbc98eb375a4
+                disabled: false
+            headers:
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              disabled: false
+              token: "{{access_token}}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: http://lenovo.lab/api/debug/machine/xml/create
+            name: Create machine XML
+            meta:
+              id: req_a6c6472271e04e009fbe0a2aa11fca23
+              created: 1781875987375
+              modified: 1781875987375
+              isPrivate: false
+              description: ""
+              sortKey: -1781875985329
+            method: POST
+            body:
+              mimeType: application/json
+              text: "{\r
+
+                \    \"title\": \"XML Parser test\",\r
+
+                \    \"description\": \"I am not sure how much more I can
+                handle\",\r
+
+                \    \"metadata\": [\r
+
+                \        {\r
+
+                \            \"tag\": \"tags\",\r
+
+                \            \"value\": \"{'linux', 'desktop'}\"\r
+
+                \        }\r
+
+                \    ],\r
+
+                \    \"ram\": 2048,\r
+
+                \    \"vcpu\": 2,\r
+
+                \    \"system_disk\": {\r
+
+                \        \"uuid\": \"36e5441a-8e5b-45af-ab2e-992dbc111ab1\",\r
+
+                \        \"name\": \"system-disk\",\r
+
+                \        \"size\": 3000,\r
+
+                \        \"type\": \"qcow2\",\r
+
+                \        \"pool\": \"cvms-disk-images\"\r
+
+                \    },\r
+
+                \    \"additional_disks\": [\r
+
+                \        {\r
+
+                \            \"uuid\":
+                \"7de62924-c37b-4004-bb4c-400066745bd0\",\r
+
+                \            \"name\": \"additional-disk\",\r
+
+                \            \"size\": 2000,\r
+
+                \            \"type\": \"qcow2\",\r
+
+                \            \"pool\": \"cvms-disk-images\"\r
+
+                \        }\r
+
+                \    ],\r
+
+                \    \"iso_image\": {\r
+
+                \        \"pool\": \"cvms-iso-images\",\r
+
+                \        \"volume\":
+                \"1de60b0f-7321-471f-9a7e-6c411a9a8ca8.iso\"\r
+
+                \    },\r
+
+                \    \"framebuffer\": {\r
+
+                \        \"type\": \"vnc\",\r
+
+                \        \"port\": \"autoport\",\r
+
+                \        \"listen_type\": \"network\",\r
+
+                \        \"listen_network\": \"cherry-ras\"\r
+
+                \    },\r
+
+                \    \"assigned_clients\": [\r
+
+                \        \"2a618aeb-620a-4ceb-9d5f-9a5a8e7a1e1a\"\r
+
+                \    ]\r
+
+                \r
+
+                }"
+            parameters:
+              - name: machine_uuid
+                value: 1de60b0f-7321-471f-9a7e-6c411a9a8ca8
+                disabled: false
+            headers:
+              - name: Authorization
+                value: Bearer {{access_token}}
+              - name: Content-Type
+                value: application/json
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: http://lenovo.lab/api/debug/machine/disk/size/cvms-disk-images
+            name: get_machine_disk_size
+            meta:
+              id: req_d204ea00194a4ad89334522740afdfd5
+              created: 1781875987375
+              modified: 1781875987375
+              isPrivate: false
+              description: ""
+              sortKey: -1781875985330
+            method: GET
+            body:
+              mimeType: application/json
+              text: "{\r
+
+                \    \"disk_uuid\": \"eeaa6840-db55-49e1-945a-e843420abb2c\",\r
+
+                \    \"storage_pool\": \"cvms-disk-images\"\r
+
+                }"
+            parameters:
+              - name: disk_uuid
+                value: edc87ce0-8b9a-45d9-bfde-460f661abf64
+                disabled: false
+            headers:
+              - name: Authorization
+                value: Bearer {{access_token}}
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              disabled: false
+              token: "{{access_token}}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: http://lenovo.lab/api/debug/machine/disk/delete/cvms-disk-images
+            name: delete_machine_disk
+            meta:
+              id: req_3d74750ecc3c411b8c2c7109e1238a75
+              created: 1781875987376
+              modified: 1781875987376
+              isPrivate: false
+              description: ""
+              sortKey: -1781875985328
+            method: DELETE
+            parameters:
+              - name: disk_uuid
+                value: daa13101-5599-428a-8a58-16a41c6637a3
+                disabled: false
+            headers:
+              - name: Authorization
+                value: Bearer {{access_token}}
+            authentication:
+              type: bearer
+              disabled: false
+              token: "{{access_token}}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: http://lenovo.lab/api/machine/delete/
+            name: async_delete_machine
+            meta:
+              id: req_cde65f86e24745c6b648ba5fa56a337b
+              created: 1781875987376
+              modified: 1781875987376
+              isPrivate: false
+              description: ""
+              sortKey: -1781875985327
+            method: DELETE
+            headers:
+              - name: Authorization
+                value: Bearer {{access_token}}
+            authentication:
+              type: bearer
+              disabled: false
+              token: "{{access_token}}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: ""
+            name: remote_access
+            meta:
+              id: req_3560e68c57444233baabb187c4a88be5
+              created: 1781875987377
+              modified: 1781875987377
+              isPrivate: false
+              description: ""
+              sortKey: -1781875985324
+            method: GET
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: http://lenovo.lab/api/debug/machine/boot-timestamp
+            name: get_machine_boot_timestamp
+            meta:
+              id: req_51f322923f454458aa58a861a2c3fcd2
+              created: 1781875987377
+              modified: 1781875987377
+              isPrivate: false
+              description: ""
+              sortKey: -1781875985326
+            method: GET
+            parameters:
+              - name: machine_uuid
+                value: ""
+                disabled: false
+            authentication:
+              type: bearer
+              disabled: false
+              token: "{{access_token}}"
+              prefix: ""
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: ""
+            name: get_machine_disk_occupancy
+            meta:
+              id: req_eb1a3c8c0fee4e468d22bb825949f17f
+              created: 1781875987377
+              modified: 1781875987377
+              isPrivate: false
+              description: ""
+              sortKey: -1781875985325
+            method: GET
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: ""
+            name: New Request
+            meta:
+              id: req_f9f68089b2614e529fb30ff271f5381d
+              created: 1781875987378
+              modified: 1781875987378
+              isPrivate: false
+              description: ""
+              sortKey: -1781875985323
+            method: GET
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+  - name: Production
+    meta:
+      id: fld_2432fa3b53274a408539563d3dd5639c
+      created: 1781875987378
+      modified: 1781877020483
+      sortKey: -1781875985436
+      description: ""
+    children:
+      - url: http://lenovo.lab/api/iso/upload
+        name: iso_upload
+        meta:
+          id: req_0ed63d5479ba4e9fa3f558a3e0e5048f
+          created: 1781875987379
+          modified: 1781875987379
+          isPrivate: false
+          description: ""
+          sortKey: -1781875985320
+        method: POST
+        body:
+          mimeType: multipart/form-data
+          params:
+            - name: file
+              disabled: false
+              fileName: /C:/Users/krzys/Downloads/TinyCore-current.iso
+              type: file
+            - name: data
+              value: '{"name": "tinycore-linux"}'
+              disabled: false
+              type: text
+        headers:
+          - name: Authorization
+            value: Bearer {{access_token}}
+          - name: Filename
+            value: tinycore-linux.iso
+          - name: Content-Type
+            value: multipart/form-data
+        authentication:
+          type: bearer
+          disabled: false
+          token: "{{access_token}}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://lenovo.lab/api/machine/create
+        name: create_machine
+        meta:
+          id: req_56088f1103264da7892e4b89a50aca86
+          created: 1781875987379
+          modified: 1781875987379
+          isPrivate: false
+          description: ""
+          sortKey: -1781875985319
+        method: POST
+        body:
+          mimeType: application/json
+          text: "{\r
+
+            \  \"name\": \"test machine 2\",\r
+
+            \  \"description\": \"my machine\",\r
+
+            \  \"group\": \"desktop\",\r
+
+            \  \"tags\": [\"linux\", \"tinycore\"],\r
+
+            \  \"assigned_clients\": [],\r
+
+            \  \"source_type\": \"iso\",\r
+
+            \  \"source_uuid\": \"1de60b0f-7321-471f-9a7e-6c411a9a8ca8\",\r
+
+            \  \"config\": {\r
+
+            \    \"ram\": 4,\r
+
+            \    \"vcpu\": 2\r
+
+            \  },\r
+
+            \  \"disks\": [\r
+
+            \    {\r
+
+            \        \"is_system_disk\": true,\r
+
+            \        \"name\": \"disk1\",\r
+
+            \        \"size_bytes\": 500,\r
+
+            \        \"disk_type\": \"qcow2\"\r
+
+            \    },\r
+
+            \    {\r
+
+            \        \"is_system_disk\": false,\r
+
+            \        \"name\": \"disk2\",\r
+
+            \        \"size_bytes\": 200,\r
+
+            \        \"disk_type\": \"qcow2\"\r
+
+            \    }\r
+
+            \  ]\r
+
+            }"
+        headers:
+          - name: Authorization
+            value: Bearer {{access_token}}
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://lenovo.lab/api/forwardauth
+        name: forwardauth
+        meta:
+          id: req_a6c798b423314e5a82c2052ec3544678
+          created: 1781875987380
+          modified: 1781875987380
+          isPrivate: false
+          description: ""
+          sortKey: -1781875985317
+        method: GET
+        body:
+          mimeType: application/x-www-form-urlencoded
+        headers:
+          - name: user
+            value: ""
+            disabled: true
+          - name: Content-Type
+            value: application/x-www-form-urlencoded
+        authentication:
+          type: bearer
+          disabled: false
+          token: "{{access_token}}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://lenovo.lab/api/machines/global
+        name: get_machines
+        meta:
+          id: req_a80e75ba0ec44b78919026cdb837ecdb
+          created: 1781875987380
+          modified: 1781875987380
+          isPrivate: false
+          description: ""
+          sortKey: -1781875985318
+        method: GET
+        authentication:
+          type: bearer
+          disabled: false
+          token: "{{access_token}}"
+          prefix: ""
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Authentication
+    meta:
+      id: fld_e8182b93dfa84cc2a7be935fd3c8d251
+      created: 1781877167886
+      modified: 1781877167886
+      sortKey: -1781877167886
+      description: ""
+    children:
+      - url: http://lenovo.lab/api/token
+        name: token
+        meta:
+          id: req_a7a2ed1f22084ac28dfff0d7451c516b
+          created: 1781875987378
+          modified: 1781877842204
+          isPrivate: false
+          description: ""
+          sortKey: -1781877204889
+        method: POST
+        body:
+          mimeType: multipart/form-data
+          params:
+            - name: username
+              value: "{{ _['{{\\'username\\'}}'] }}"
+              description: ""
+              disabled: false
+            - name: password
+              value: "{{ _['{{\\'password\\'}}'] }}"
+              description: ""
+              disabled: false
+        headers:
+          - name: Content-Type
+            value: multipart/form-data
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_072df8df2ace59c7215f3bef82ee6bc938d9d2ac
+    created: 1781875987424
+    modified: 1781875987424
+environments:
+  name: Base Environment
+  meta:
+    id: env_072df8df2ace59c7215f3bef82ee6bc938d9d2ac
+    created: 1781875987382
+    modified: 1781875987382
+    isPrivate: false
