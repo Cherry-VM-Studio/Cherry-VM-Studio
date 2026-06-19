@@ -1,9 +1,0 @@
-.tablePaper {
-    display: flex;
-    flex: 1;
-    min-height: 0;
-    padding: var(--mantine-spacing-xl);
-    margin: var(--mantine-spacing-md);
-    background-color: var(--mantine-color-dark-8);
-    flex-direction: column;
-}

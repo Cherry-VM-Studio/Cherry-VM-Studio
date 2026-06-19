@@ -1,4 +1,0 @@
-.button:disabled,
-.button[data-disabled] {
-    background-color: var(--mantine-color-dark-7) !important;
-}
