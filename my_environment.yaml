@@ -11,10 +11,10 @@ environments:
   meta:
     id: env_c82031a0597ac2353c2ab3ea7709a535d24b70b6
     created: 1781876011577
-    modified: 1781880207418
+    modified: 1781880917846
     isPrivate: false
   data:
     "{{ 'access_token' }}": ""
     "{{'refresh_token'}}": ""
-    "{{'username'}}": root
-    "{{'password'}}": novell
+    "{{'username'}}": ""
+    "{{'password'}}": ""
