@@ -1,5 +1,4 @@
-import { Avatar, Button, Group, Modal, PasswordInput, rem, Select, SimpleGrid, Stack, TextInput } from "@mantine/core";
-import classes from "./CreateAccountModal.module.css";
+import { ActionIcon, Avatar, Box, Button, Group, Modal, PasswordInput, rem, Select, SimpleGrid, Stack, TextInput } from "@mantine/core";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
 import { hasLength, matchesField, useForm } from "@mantine/form";
 import { useState } from "react";
@@ -10,9 +9,22 @@ import useMantineNotifications from "../../../hooks/useMantineNotifications";
 import RoleMultiselect from "../../../components/atoms/interactive/RoleMultiselect/RoleMultiselect";
 import GroupMultiselect from "../../../components/atoms/interactive/GroupMultiselect/GroupMultiselect";
 import { AxiosError, isAxiosError } from "axios";
+import { IconHexagonAsterisk } from "@tabler/icons-react";
+import { AccountType } from "../../../types/config.types";
+import { useDisclosure } from "@mantine/hooks";
+import _ from "lodash";
+import { generatePassword } from "../../../utils/users";
 
-export default function CreateAccountModal({ opened, onClose, onSubmit, accountType }): React.JSX.Element {
+export interface CreateAccountModalProps {
+    opened: boolean;
+    onClose: () => void;
+    onSubmit: () => void;
+    accountType: AccountType;
+}
+
+export default function CreateAccountModal({ opened, onClose, onSubmit, accountType }: CreateAccountModalProps): React.JSX.Element {
     const [fullName, setFullName] = useState("");
+    const [passwordVisible, { toggle: togglePasswordVisible, open: viewPassword }] = useDisclosure(false);
     const { t, tns } = useNamespaceTranslation("modals", "account");
     const { sendRequest } = useApi();
     const { handleAxiosError } = useErrorHandler();
@@ -72,7 +84,7 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
     };
 
     const onPostError = (error: AxiosError) => {
-        if (error.response.status != 409) return handleAxiosError(error);
+        if (error.response?.status != 409) return handleAxiosError(error);
 
         const data = error.response?.data as Record<string, any>;
         const detail = data?.detail;
@@ -83,7 +95,7 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
     };
 
     const onFormSubmit = form.onSubmit(async ({ confirmPassword: _, ...values }) => {
-        const body = { account_type: accountType, ...values };
+        const body = { account_type: accountType, ...values } as any;
         if (accountType === "administrative") delete body.groups;
         else if (accountType === "client") delete body.roles;
 
@@ -95,6 +107,12 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
         onSubmit?.();
     });
 
+    const onGeneratePassword = () => {
+        const generatedPassword = generatePassword();
+        form.setValues((prev) => ({ ...prev, password: generatedPassword, confirmPassword: generatedPassword }));
+        viewPassword();
+    };
+
     return (
         <Modal
             opened={opened}
@@ -103,7 +121,7 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
             size="480"
         >
             <form onSubmit={onFormSubmit}>
-                <Stack className={classes.container}>
+                <Stack>
                     <Group
                         align="top"
                         justify="space-between"
@@ -141,17 +159,31 @@ export default function CreateAccountModal({ opened, onClose, onSubmit, accountT
                         <Avatar
                             name={fullName}
                             size={rem(128)}
-                            color={fullName.length > 1 && "initials"}
+                            color={fullName.length > 1 ? "initials" : undefined}
                         />
                     </Group>
-                    <PasswordInputWithStrength
-                        label={tns("account-password")}
-                        placeholder={tns("password-placeholder")}
-                        key={form.key("password")}
-                        {...form.getInputProps("password")}
-                        classNames={{ input: "borderless" }}
-                        flex="3"
-                    />
+                    <Group gap="xs">
+                        <Box flex={1}>
+                            <PasswordInputWithStrength
+                                label={tns("account-password")}
+                                placeholder={tns("password-placeholder")}
+                                key={form.key("password")}
+                                {...form.getInputProps("password")}
+                                classNames={{ input: "borderless" }}
+                                visible={passwordVisible}
+                                onVisibilityChange={togglePasswordVisible}
+                            />
+                        </Box>
+                        <ActionIcon
+                            mt="26px"
+                            size="lg"
+                            variant="default"
+                            className="borderless"
+                            onClick={onGeneratePassword}
+                        >
+                            <IconHexagonAsterisk size="24" />
+                        </ActionIcon>
+                    </Group>
                     <PasswordInput
                         label={tns("confirm-password")}
                         placeholder={tns("confirm-password-placeholder")}

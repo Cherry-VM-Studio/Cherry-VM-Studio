@@ -11,19 +11,18 @@ const passwordRequirements = [
 ];
 
 const getPasswordStrength = (password: string) =>
-    (passwordRequirements.filter(requirement => requirement.re.test(password)).length / passwordRequirements.length) * 100;
+    (passwordRequirements.filter((requirement) => requirement.re.test(password)).length / passwordRequirements.length) * 100;
 
-const PasswordInputWithStrength = ({ ...props }: PasswordInputProps): React.JSX.Element => {
+const PasswordInputWithStrength = ({ value, ...props }: PasswordInputProps): React.JSX.Element => {
     const [popoverOpened, setPopoverOpened] = useState<boolean>(false);
-    const [value, setValue] = useState("");
 
-    const strength = getPasswordStrength(value);
+    const strength = getPasswordStrength(value as string);
     const color = strength === 100 ? "suse-green" : strength > 50 ? "yellow" : "cherry";
     const checks = passwordRequirements.map(({ label, re }, i) => (
         <PasswordRequirement
             key={i}
             label={label}
-            meets={re.test(value)}
+            meets={re.test(value as string)}
         />
     ));
 
@@ -42,10 +41,6 @@ const PasswordInputWithStrength = ({ ...props }: PasswordInputProps): React.JSX.
                     <PasswordInput
                         {...props}
                         value={value}
-                        onChange={e => {
-                            setValue(e.currentTarget.value);
-                            props?.onChange?.(e);
-                        }}
                     />
                 </Box>
             </Popover.Target>
