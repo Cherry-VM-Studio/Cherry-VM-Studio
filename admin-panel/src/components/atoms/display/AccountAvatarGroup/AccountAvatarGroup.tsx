@@ -1,20 +1,22 @@
 import React from "react";
 import { Avatar, AvatarProps, HoverCard, HoverCardProps, ScrollArea, Stack, Text } from "@mantine/core";
-import { User } from "../../../../types/api.types";
+import { User, UserExtended } from "../../../../types/api.types";
 import { isEmpty } from "lodash";
 import BusinessCard from "../BusinessCard/BusinessCard";
 import { getFullUserName } from "../../../../utils/users";
 import classes from "./AccountAvatarGroup.module.css";
 
 export interface AccountAvatarGroup extends HoverCardProps {
-    users: User[];
+    users: User[] | UserExtended[];
     max?: number;
     avatarProps?: AvatarProps;
     dropdownLabel?: React.JSX.Element | string;
 }
 
 const AccountAvatarGroup = ({ users, max = 5, avatarProps, dropdownLabel, ...props }: AccountAvatarGroup): React.JSX.Element => {
-    if (isEmpty(users)) return;
+    if (isEmpty(users)) return <></>;
+
+    console.log(users);
 
     return (
         <HoverCard

@@ -11,8 +11,7 @@ import useFetch from "../../../hooks/useFetch";
 import { Group as GroupType } from "../../../types/api.types";
 import useApi from "../../../hooks/useApi";
 import { notifications } from "@mantine/notifications";
-import { AxiosError, isAxiosError } from "axios";
-import useErrorHandler from "../../../hooks/useErrorHandler";
+import { isAxiosError } from "axios";
 
 interface MachinesField {
     machine_config: CreateMachineFormSubmitValues;
@@ -73,7 +72,7 @@ const CreateMachinesInBulkModal = ({ opened, onSubmit, onClose }: CreateMachines
 
     const getNumberOfMachines = (values: CreateMachinesInBulkFormValues) =>
         values.machines.reduce((prev, curr) => prev + curr.machine_count, 0) *
-        (values.create_for_group_mode ? (keys(groups[values.group]?.users)?.length ?? 1) : 1);
+        (groups && values.group && values.create_for_group_mode ? (keys(groups[values.group]?.users)?.length ?? 1) : 1);
 
     const groupsInSelect = values(groups).map((group: GroupType) => ({ label: group.name, value: group.uuid }));
 

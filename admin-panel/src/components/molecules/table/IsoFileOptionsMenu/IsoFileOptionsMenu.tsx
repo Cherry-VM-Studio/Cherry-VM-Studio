@@ -3,8 +3,14 @@ import { ActionIcon, Button, Menu } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import classes from "./IsoFileOptionsMenu.module.css";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
+import { Row } from "@tanstack/react-table";
 
-const IsoFileOptionsMenu = ({ row, refreshData }): React.JSX.Element => {
+export interface IsoFileOptionsMenuProps {
+    row: Row<unknown>;
+    refreshData: () => void;
+}
+
+const IsoFileOptionsMenu = ({ row, refreshData }: IsoFileOptionsMenuProps): React.JSX.Element => {
     const uuid = row.id;
     const { tns } = useNamespaceTranslation("pages");
     const [menuOpened, { close: closeMenu, toggle: toggleMenu }] = useDisclosure(false);

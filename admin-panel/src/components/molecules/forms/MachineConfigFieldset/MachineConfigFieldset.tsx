@@ -1,5 +1,5 @@
 import { Divider, Fieldset, FieldsetProps, ScrollArea, ScrollAreaProps, Select, SelectProps, Stack, Text } from "@mantine/core";
-import { isNull, values } from "lodash";
+import _, { isNull, values } from "lodash";
 import React from "react";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 import EnhancedSlider, { EnhancedSliderProps } from "../../../atoms/interactive/EnhancedSlider/EnhancedSlider";
@@ -42,7 +42,9 @@ const MachineConfigFieldset = <T extends Record<string, any> = {}>({
     const { t, tns } = useNamespaceTranslation(i18nextNamespace ?? "pages", i18nextPrefix ?? "machine");
     const { data: templates, error, loading } = useFetch<Record<string, MachineTemplate>>("/machine-templates/all");
 
-    const onTemplateChange = (value: string | null) => {
+    const onTemplateChange = (value: string) => {
+        if (_.isNull(templates)) return;
+
         setConfigTemplate(value);
 
         if (value === "custom") return;
@@ -81,6 +83,7 @@ const MachineConfigFieldset = <T extends Record<string, any> = {}>({
                         classNames={{ input: "borderless" }}
                         data={templateSelectData}
                         value={configTemplate}
+                        // @ts-ignore
                         onChange={onTemplateChange}
                         allowDeselect={false}
                         {...props?.templateSelect}
@@ -95,6 +98,7 @@ const MachineConfigFieldset = <T extends Record<string, any> = {}>({
                         size="sm"
                         color="cyan.7"
                         thumbSize="12"
+                        min={512}
                         max={6144}
                         step={512}
                         styles={{ thumb: { border: "none" } }}

@@ -9,7 +9,7 @@ export interface NavButtonProps {
     [key: string]: any;
 }
 
-export const NavButton = React.forwardRef<HTMLButtonElement, NavButtonProps>(({ icon, label, active = false, disabled, ...props }: NavButtonProps, ref) => {
+export const NavButton = React.forwardRef<HTMLButtonElement, NavButtonProps>(({ icon, label, active = false, disabled, ...props }, ref) => {
     return (
         <div style={{ cursor: disabled ? "not-allowed" : active ? "default" : "pointer" }}>
             <ActionIcon
@@ -26,5 +26,4 @@ export const NavButton = React.forwardRef<HTMLButtonElement, NavButtonProps>(({ 
         </div>
     );
 });
-
 export default NavButton;

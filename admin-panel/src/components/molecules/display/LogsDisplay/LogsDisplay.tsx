@@ -2,11 +2,11 @@ import { Flex, Paper, ScrollArea } from "@mantine/core";
 import { useEffect, useRef, useState } from "react";
 
 export default function ConsoleDisplay() {
-    const viewport = useRef(null);
-    const [logs, setLogs] = useState([]);
+    const viewport = useRef<HTMLDivElement>(null);
+    const [logs, setLogs] = useState<string[]>([]);
 
     const addNewLog = (log: string) => setLogs((oldLogs) => [log, ...oldLogs]);
-    const scrollToBottom = () => viewport.current?.scrollTo({ top: viewport.current?.scrollHeight, behavior: "smooth" });
+    const scrollToBottom = () => viewport.current && viewport.current?.scrollTo({ top: viewport.current?.scrollHeight, behavior: "smooth" });
 
     useEffect(() => {
         scrollToBottom();

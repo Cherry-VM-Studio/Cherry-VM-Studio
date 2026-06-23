@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { getColumns } from "./columns";
 import { prepareData } from "./data";
-import { Group } from "../../../../types/api.types";
+import { GroupExtended } from "../../../../types/api.types";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 import TanstackTable from "../../../molecules/display/TanstackTable/TanstackTable";
 import CreateGroupModal from "../../../../modals/account/CreateGroupModal/CreateGroupModal";
@@ -9,7 +9,7 @@ import DeleteModal from "../../../../modals/base/DeleteModal/DeleteModal";
 import { AxiosError } from "axios";
 
 export interface GroupsTableProps {
-    groups: Record<string, Group>;
+    groups: Record<string, GroupExtended>;
     error: AxiosError | null;
     loading: boolean;
     refresh: () => void;

@@ -11,13 +11,20 @@ import GroupModalPlaceholder from "./GroupModalPlaceholder";
 import _, { values } from "lodash";
 import AddClientsSelect from "../../../components/molecules/interactive/AddClientsSelect/AddClientsSelect";
 
-const GroupModal = ({ opened, onClose, uuid, refreshTable = () => undefined }): React.JSX.Element => {
+export interface GroupModal {
+    opened: boolean;
+    refreshTable?: () => void;
+    onClose: () => void;
+    uuid: string;
+}
+
+const GroupModal = ({ opened, onClose, uuid, refreshTable }: GroupModal): React.JSX.Element => {
     const { data: group, loading, error, refresh: refreshModal } = useFetch<GroupExtended>(uuid ? `/groups/group/${uuid}` : undefined);
     const { tns, t } = useNamespaceTranslation("modals", "group");
     const { sendRequest } = useApi();
 
     const refresh = () => {
-        refreshTable();
+        refreshTable?.();
         refreshModal();
     };
 

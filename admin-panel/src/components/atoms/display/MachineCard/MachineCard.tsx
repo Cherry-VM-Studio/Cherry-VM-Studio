@@ -23,7 +23,7 @@ interface MachineCardProps extends CardProps {
 const MachineCard = ({ machine, className, ...props }: MachineCardProps): React.JSX.Element => {
     const { t, tns } = useNamespaceTranslation("pages", "machines");
     const { data: user } = useFetch<UserExtended>("/users/me");
-    const { canManageMachine, canConnectToMachine } = usePermissions();
+    const { canConnectToMachine } = usePermissions();
     const { sendRequest } = useApi();
 
     const colorMap: Record<MachineState, string> = {
@@ -38,7 +38,7 @@ const MachineCard = ({ machine, className, ...props }: MachineCardProps): React.
 
     const stateColor = `var(--mantine-color-${colorMap[machine.state]})`;
 
-    const canConnect = canConnectToMachine(user, machine);
+    const canConnect = user && canConnectToMachine(user, machine);
 
     const toggleState = useThrottledCallback(() => {
         if (machine.state === "ACTIVE") sendRequest("POST", `/machines/stop/${machine.uuid}`);
@@ -46,7 +46,10 @@ const MachineCard = ({ machine, className, ...props }: MachineCardProps): React.
     }, 2000);
 
     return (
-        <Card className={cs(classes.card, className)}>
+        <Card
+            className={cs(classes.card, className)}
+            {...props}
+        >
             <Card.Section className={classes.topSection}>
                 <Group className={classes.topSectionGroup}>
                     <MachineActivityIndicator state={machine.state} />
@@ -92,7 +95,7 @@ const MachineCard = ({ machine, className, ...props }: MachineCardProps): React.
                         c="dimmed"
                         size="sm"
                     >
-                        {machine.description.trim() || "-"}
+                        {machine?.description?.trim() || "-"}
                     </Text>
                 </Stack>
 
@@ -133,7 +136,7 @@ const MachineCard = ({ machine, className, ...props }: MachineCardProps): React.
                             </Text>
                             <BusinessCard
                                 name={getFullUserName(machine.owner)}
-                                comment={`@${machine.owner.username}`}
+                                comment={`@${machine.owner?.username}`}
                                 size="sm"
                                 gap="xs"
                             />

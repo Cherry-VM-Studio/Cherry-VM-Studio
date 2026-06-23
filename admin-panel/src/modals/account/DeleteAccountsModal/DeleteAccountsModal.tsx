@@ -7,7 +7,14 @@ import useErrorHandler from "../../../hooks/useErrorHandler";
 import { ERRORS_EXPANDED } from "../../../config/errors.config";
 import { AxiosError } from "axios";
 
-const DeleteAccountsModal = ({ opened, onClose, onSubmit = () => undefined, uuids }): React.JSX.Element => {
+export interface DeleteAccountsModalProps {
+    opened: boolean;
+    onClose: () => void;
+    onSubmit: () => void;
+    uuids: string[];
+}
+
+const DeleteAccountsModal = ({ opened, onClose, onSubmit, uuids }: DeleteAccountsModalProps): React.JSX.Element => {
     const { sendRequest } = useApi();
     const { tns } = useNamespaceTranslation("modals", "confirm.account-removal");
     const { sendErrorNotification } = useMantineNotifications();
@@ -28,7 +35,7 @@ const DeleteAccountsModal = ({ opened, onClose, onSubmit = () => undefined, uuid
     const onConfirm = async () => {
         await sendRequest("DELETE", `users/delete-many`, { data: uuids ?? [] }, onPostError);
         onClose();
-        onSubmit();
+        onSubmit?.();
     };
 
     return (

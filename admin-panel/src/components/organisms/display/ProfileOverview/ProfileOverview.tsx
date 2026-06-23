@@ -36,6 +36,7 @@ const ProfileOverview = (): React.JSX.Element => {
                             avatarSize="lg"
                         />
                         <BadgeGroup
+                            //@ts-expect-error
                             items={values(user?.groups).map((group) => group.name) ?? []}
                             maw="fit-content"
                         />

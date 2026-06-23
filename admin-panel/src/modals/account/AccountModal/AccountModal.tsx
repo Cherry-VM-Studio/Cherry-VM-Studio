@@ -15,7 +15,7 @@ export interface AccountModalProps {
     openPasswordModal: () => void;
 }
 
-const AccountModal = ({ inEditMode, setInEditMode, opened, onClose, uuid, refreshTable, openPasswordModal }): React.JSX.Element => {
+const AccountModal = ({ inEditMode, setInEditMode, opened, onClose, uuid, refreshTable, openPasswordModal }: AccountModalProps): React.JSX.Element => {
     const { data, error, loading, refresh: refreshUser } = useFetch<UserExtended>(`/users/user/${uuid}`, undefined, true);
 
     const toggle = () => setInEditMode((prev) => !prev);

@@ -1,5 +1,4 @@
-import { Button, Group, Modal, NumberInput, SimpleGrid, Stack, TextInput } from "@mantine/core";
-import { IsoFileImportModalProps } from "../../../types/components.types";
+import { Button, Group, Modal, ModalProps, NumberInput, SimpleGrid, Stack, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
 import classes from "./CreateTemplateModal.module.css";
@@ -14,7 +13,12 @@ export interface CreateTemplateModalFormValues {
     vcpu: number;
 }
 
-const CreateTemplateModal = ({ opened, onClose, onSubmit, ...props }: IsoFileImportModalProps): React.JSX.Element => {
+export interface CreateTemplateModalProps extends ModalProps {
+    opened: boolean;
+    onSubmit: () => void;
+}
+
+const CreateTemplateModal = ({ opened, onClose, onSubmit, ...props }: CreateTemplateModalProps): React.JSX.Element => {
     const { tns, t } = useNamespaceTranslation("modals", "create-template");
     const { sendRequest } = useApi();
     const { handleAxiosError } = useErrorHandler();

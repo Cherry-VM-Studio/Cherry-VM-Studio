@@ -4,11 +4,18 @@ import useFetch from "../../../hooks/useFetch";
 import IconFileTypeIso from "../../../components/atoms/icons/IconFileTypeIso/IconFileTypeIso";
 import classes from "./TemplateModal.module.css";
 
-const TemplateModal = ({ opened, onClose, uuid, refreshTable }): React.JSX.Element => {
+export interface TemplateModalProps {
+    opened: boolean;
+    uuid: string;
+    onClose: () => void;
+    refreshTable: () => void;
+}
+
+const TemplateModal = ({ opened, onClose, uuid, refreshTable }: TemplateModalProps): React.JSX.Element => {
     const { t, tns } = useNamespaceTranslation("modals", "template");
     const { data, error, loading } = useFetch(uuid ? `/machine-templates/machine-template/${uuid}` : undefined);
 
-    if (loading || error) return;
+    if (loading || error) return <></>;
 
     return (
         <Modal

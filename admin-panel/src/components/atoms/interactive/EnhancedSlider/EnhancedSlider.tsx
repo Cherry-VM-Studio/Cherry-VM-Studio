@@ -4,16 +4,15 @@ import cs from "classnames";
 import { ReactNode } from "react";
 
 export interface EnhancedSliderProps extends SliderProps {
+    max: number;
+    min: number;
     heading?: ReactNode;
     label: (value: number) => ReactNode;
 }
 
 const EnhancedSlider = ({ label, disabled, heading, value, onChange, min, max, children, className, ...props }: EnhancedSliderProps): React.JSX.Element => {
     return (
-        <Stack
-            gap="0"
-            className={cs(classes.container, className)}
-        >
+        <Stack className={cs(classes.container, className)}>
             {heading && (
                 <Text
                     fw="500"
@@ -60,7 +59,7 @@ const EnhancedSlider = ({ label, disabled, heading, value, onChange, min, max, c
                             max={max}
                             min={min}
                             clampBehavior="strict"
-                            onChange={onChange}
+                            onChange={(val) => onChange?.(Number(val))}
                             readOnly={disabled}
                         />
                     </Group>

@@ -1,6 +1,6 @@
 import { ActionIcon, Box, ScrollArea } from "@mantine/core";
 import { IconCaretDownFilled, IconCaretUpDown, IconCaretUpFilled, IconList } from "@tabler/icons-react";
-import { flexRender, Table } from "@tanstack/react-table";
+import { Cell, flexRender, Table } from "@tanstack/react-table";
 import React, { useEffect, useRef } from "react";
 import classes from "./TanstackTableBody.module.css";
 import cs from "classnames";
@@ -82,7 +82,7 @@ const TanstackTableBody = ({ table, loading, error, RowComponent, rowProps }: Ta
                         key={row.id}
                         {...rowProps?.(row.id)}
                     >
-                        {row.getVisibleCells().map((cell) => (
+                        {row.getVisibleCells().map((cell: Cell<unknown, unknown>) => (
                             <Box
                                 className={classes.td}
                                 key={cell.id}

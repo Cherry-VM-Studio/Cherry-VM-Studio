@@ -19,7 +19,7 @@ import { entries, merge } from "lodash";
 import { IsoFile } from "../../../../types/api.types";
 
 export interface MachineSourceFormRequiredValues {
-    source_uuid: string;
+    source_uuid: string | null;
     source_type: "iso" | "snapshot";
 }
 
@@ -47,10 +47,12 @@ const MachineSourceFieldset = <T extends Record<string, any> = {}>({
     const { data: isoFiles } = useFetch<Record<string, IsoFile>>("/iso/all");
     const { t, tns } = useNamespaceTranslation(i18nextNamespace ?? "modals", i18nextPrefix ?? "create-machine");
 
-    const isoSelectData = entries(isoFiles).map(([uuid, isoRecord]: [string, IsoFile]) => ({
-        value: uuid,
-        label: isoRecord.name,
-    }));
+    const isoSelectData = isoFiles
+        ? entries(isoFiles).map(([uuid, isoRecord]: [string, IsoFile]) => ({
+              value: uuid,
+              label: isoRecord.name,
+          }))
+        : [];
 
     const snapshotSelectData = [];
 

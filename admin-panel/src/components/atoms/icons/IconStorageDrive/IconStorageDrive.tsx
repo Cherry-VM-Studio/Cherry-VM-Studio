@@ -1,4 +1,6 @@
-export const IconStorageDrive = (props) => (
+import { SVGProps } from "react";
+
+export const IconStorageDrive = (props: SVGProps<SVGSVGElement>) => (
     <svg
         width="1em"
         height="1em"

@@ -1,6 +1,16 @@
-import { Button, Modal, SimpleGrid, Stack, Text, Title } from "@mantine/core";
+import { Button, ButtonProps, Modal, ModalProps, SimpleGrid, Stack, Text, Title } from "@mantine/core";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation.ts";
-import { ConfirmationModalProps } from "../../../types/components.types.ts";
+
+export interface ConfirmationModalProps {
+    opened: boolean;
+    modalProps?: ModalProps;
+    message?: string;
+    title?: string;
+    cancelButtonProps?: ButtonProps;
+    confirmButtonProps?: ButtonProps;
+    onClose: () => void;
+    onConfirm: () => void;
+}
 
 export default function ConfirmationModal({
     modalProps,

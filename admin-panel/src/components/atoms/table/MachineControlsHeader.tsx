@@ -1,19 +1,24 @@
 import { useThrottledCallback } from "@mantine/hooks";
 import useApi from "../../../hooks/useApi";
-import { MachineState } from "../../../types/api.types";
 import { ActionIcon, Group } from "@mantine/core";
 import { IconPlayerPlayFilled, IconPlayerStopFilled } from "@tabler/icons-react";
+import { HeaderContext } from "@tanstack/react-table";
+import { MachineState } from "../../../types/api.types";
 
-const MachineControlsHeader = ({ table, disabled }): React.JSX.Element => {
+export interface MachineControlsHeaderProps extends HeaderContext<unknown, unknown> {
+    disabled: boolean;
+}
+
+const MachineControlsHeader = ({ table, disabled }: MachineControlsHeaderProps): React.JSX.Element => {
     const { sendRequest } = useApi();
 
     const getSelectedMachines = () => {
         const selectedRows = table.getSelectedRowModel().rows;
-        return selectedRows.map((row) => row.getValue("options")) ?? [];
+        return selectedRows.map((row) => row.getValue("options") as { state: MachineState; uuid: string }) ?? [];
     };
 
     const startMachine = useThrottledCallback(() => {
-        getSelectedMachines().forEach(({ state, uuid }: { state: MachineState; uuid: string }) => {
+        getSelectedMachines().forEach(({ state, uuid }) => {
             if (state === "OFFLINE" || state === "ERROR") {
                 sendRequest("POST", `/machines/start/${uuid}`);
             }
@@ -21,7 +26,7 @@ const MachineControlsHeader = ({ table, disabled }): React.JSX.Element => {
     }, 1000);
 
     const stopMachine = useThrottledCallback(() => {
-        getSelectedMachines().forEach(({ state, uuid }: { state: MachineState; uuid: string }) => {
+        getSelectedMachines().forEach(({ state, uuid }) => {
             if (state === "ACTIVE") {
                 sendRequest("POST", `/machines/stop/${uuid}`);
             }

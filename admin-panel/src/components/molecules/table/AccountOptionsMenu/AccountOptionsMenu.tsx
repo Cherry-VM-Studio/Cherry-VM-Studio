@@ -6,8 +6,18 @@ import DeleteAccountsModal from "../../../../modals/account/DeleteAccountsModal/
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 import PERMISSIONS from "../../../../config/permissions.config";
 import { usePermissions } from "../../../../contexts/PermissionsContext";
+import { Row } from "@tanstack/react-table";
+import { AccountType } from "../../../../types/config.types";
 
-const AccountOptionsMenu = ({ row, refreshData, openAccountModal, openPasswordModal, accountType }): React.JSX.Element => {
+export interface AccountOptionsMenuProps {
+    row: Row<unknown>;
+    refreshData: () => void;
+    openAccountModal: (uuid: string, editMode: boolean) => void;
+    openPasswordModal: (uuid: string) => void;
+    accountType: AccountType;
+}
+
+const AccountOptionsMenu = ({ row, refreshData, openAccountModal, openPasswordModal, accountType }: AccountOptionsMenuProps): React.JSX.Element => {
     const uuid = row.id;
     const { tns } = useNamespaceTranslation("pages");
     const { hasPermissions } = usePermissions();

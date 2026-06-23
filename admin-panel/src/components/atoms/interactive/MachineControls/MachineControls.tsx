@@ -44,6 +44,7 @@ const MachineControls = ({ machine, size = "lg", gap = "sm", buttonProps, disabl
         loading ||
         isNull(machine) ||
         !isNull(error) ||
+        isNull(user) ||
         !canManageMachine(user, machine) ||
         !["ACTIVE", "OFFLINE", "ERROR"].includes(machine.state);
 

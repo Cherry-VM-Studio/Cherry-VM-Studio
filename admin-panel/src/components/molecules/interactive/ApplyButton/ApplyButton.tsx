@@ -1,9 +1,13 @@
-import { Button } from "@mantine/core";
-import classes from './ApplyButton.module.css';
+import { Button, ButtonProps } from "@mantine/core";
+import classes from "./ApplyButton.module.css";
 import { useTranslation } from "react-i18next";
-import { ApplyButtonProps } from "../../../../types/components.types";
 
-const ApplyButton = ({onClick, isDirty = null, ...props} : ApplyButtonProps) => {
+export interface ApplyButtonProps extends ButtonProps {
+    onClick: () => void;
+    isDirty?: boolean | null;
+}
+
+const ApplyButton = ({ onClick, isDirty = null, ...props }: ApplyButtonProps) => {
     const { t } = useTranslation();
 
     return (
@@ -13,14 +17,14 @@ const ApplyButton = ({onClick, isDirty = null, ...props} : ApplyButtonProps) => 
             classNames={{
                 root: isDirty === null ? null : classes.saveButton,
             }}
-            variant='default'
+            variant="default"
             // w={isDirty ? 100 : 200}
             p={0}
             {...props}
         >
-            {t(isDirty === null ? 'no-changes' : isDirty ? 'save' : 'changes-saved')}
+            {t(isDirty === null ? "no-changes" : isDirty ? "save" : "changes-saved")}
         </Button>
-    )
-}
+    );
+};
 
 export default ApplyButton;

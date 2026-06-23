@@ -1,23 +1,21 @@
 import { ActionIcon, Group, Loader } from "@mantine/core";
-import { IconEye, IconPlayerPlayFilled, IconPlayerStopFilled, IconTrashXFilled } from "@tabler/icons-react";
-import React, { MouseEvent, useEffect, useState } from "react";
+import { IconEye, IconPlayerPlayFilled, IconPlayerStopFilled } from "@tabler/icons-react";
+import React, { useEffect, useState } from "react";
 import useApi from "../../../hooks/useApi";
-import classes from "./MachineControlsCell.module.css";
 import { useThrottledCallback } from "@mantine/hooks";
-import ModalButton from "../interactive/ModalButton/ModalButton";
-import DeleteModal from "../../../modals/base/DeleteModal/DeleteModal";
 import { MachineState } from "../../../types/api.types";
 import { Link } from "react-router-dom";
+import { CellContext } from "@tanstack/react-table";
 
-export interface MachineControlsCellProps {
-    uuid: string;
-    state: MachineState;
+export interface MachineControlsHeaderProps extends CellContext<unknown, { uuid: string; state: MachineState }> {
     disabled: boolean;
 }
 
-const MachineControlsCell = ({ uuid, state, disabled = false }: MachineControlsCellProps): React.JSX.Element => {
+const MachineControlsCell = ({ getValue, disabled = false }: MachineControlsHeaderProps): React.JSX.Element => {
     const { sendRequest } = useApi();
     const [used, setUsed] = useState(false);
+
+    const { uuid, state } = getValue();
 
     const toggleState = useThrottledCallback((e) => {
         e.preventDefault();

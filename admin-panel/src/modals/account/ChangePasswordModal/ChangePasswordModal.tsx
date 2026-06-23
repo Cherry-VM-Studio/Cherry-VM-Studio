@@ -3,7 +3,13 @@ import { matchesField, useForm } from "@mantine/form";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
 import useApi from "../../../hooks/useApi";
 
-const ChangePasswordModal = ({ uuid, opened, onClose }) => {
+export interface ChangePasswordModalProps {
+    uuid: string;
+    opened: boolean;
+    onClose: () => void;
+}
+
+const ChangePasswordModal = ({ uuid, opened, onClose }: ChangePasswordModalProps) => {
     const { t, tns } = useNamespaceTranslation("modals", "account");
     const { sendRequest } = useApi();
 

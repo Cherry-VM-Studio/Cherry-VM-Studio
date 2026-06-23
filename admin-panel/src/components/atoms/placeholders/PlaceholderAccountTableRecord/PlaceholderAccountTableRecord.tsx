@@ -1,4 +1,4 @@
-import { Box, Group, Skeleton, Stack } from "@mantine/core";
+import { Group, Skeleton, Stack } from "@mantine/core";
 import React from "react";
 
 const PlaceholderAccountTableRecord = (): React.JSX.Element => {

@@ -20,6 +20,7 @@ const UserMultiselect = ({ users, classNames, onChange, value, ...props }: UserM
         label: name || surname ? `${name} ${surname}` : username,
     }));
 
+    // @ts-expect-error
     const renderOption = ({ option }) => (
         <BusinessCard
             name={option.label}
@@ -27,7 +28,7 @@ const UserMultiselect = ({ users, classNames, onChange, value, ...props }: UserM
         />
     );
 
-    const onInputChange = (val) => {
+    const onInputChange = (val: string[]) => {
         ref.current.parentElement.parentElement.scrollTo({ left: ref.current.parentElement.parentElement.scrollWidth });
         onChange?.(val);
     };

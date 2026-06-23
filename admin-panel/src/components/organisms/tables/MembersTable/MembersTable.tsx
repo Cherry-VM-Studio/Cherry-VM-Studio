@@ -7,8 +7,16 @@ import classes from "./MembersTable.module.css";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 import ResourceError from "../../../atoms/feedback/ResourceError/ResourceError";
 import ResourceLoading from "../../../atoms/feedback/ResourceLoading/ResourceLoading";
+import { User, UserExtended } from "../../../../types/api.types";
 
-const MembersTable = ({ usersData, removeMember, error, loading }): React.JSX.Element => {
+export interface MembersTableProps {
+    usersData: User[] | UserExtended[];
+    removeMember: (uuid: string) => void;
+    error: any;
+    loading: boolean;
+}
+
+const MembersTable = ({ usersData, removeMember, error, loading }: MembersTableProps): React.JSX.Element => {
     const { t, tns } = useNamespaceTranslation("modals", "group");
 
     const data = useMemo(
@@ -29,7 +37,7 @@ const MembersTable = ({ usersData, removeMember, error, loading }): React.JSX.El
         {
             accessorKey: "options",
             header: "",
-            cell: ({ row }) => (
+            cell: ({ row }: any) => (
                 <Button
                     color="cherry"
                     variant="light"

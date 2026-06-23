@@ -23,6 +23,15 @@ export interface AccountEditFormProps {
     user: UserExtended;
 }
 
+export interface AccountEditFormValues {
+    name: string;
+    surname: string;
+    username: string;
+    email: string;
+    roles: string[];
+    groups: string[];
+}
+
 const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }: AccountEditFormProps) => {
     const { t, tns } = useNamespaceTranslation("modals", "account");
     const { sendRequest } = useApi();
@@ -32,7 +41,7 @@ const AccountEditForm = ({ onCancel, onSubmit, user, openPasswordModal }: Accoun
 
     const canChangePassword = hasPermissions(user.account_type === "administrative" ? PERMISSIONS.CHANGE_ADMIN_PASSWORD : PERMISSIONS.CHANGE_CLIENT_PASSWORD);
 
-    const form = useForm({
+    const form = useForm<AccountEditFormValues>({
         initialValues: {
             name: "",
             surname: "",

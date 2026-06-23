@@ -28,8 +28,8 @@ type PropertyKey = (typeof PROPERTIES)[number];
 
 const ImportAccountsModal = ({ opened, onClose, onSubmit, accountType }: ImportAccountModalProps): React.JSX.Element => {
     const { tns, t } = useNamespaceTranslation("modals", "import-accounts");
-    const [data, setData] = useState<ParsedData>(null);
-    const [headers, setHeaders] = useState<string[] | null>(null);
+    const [data, setData] = useState<ParsedData | null>(null);
+    const [headers, setHeaders] = useState<string[]>([]);
     const [file, setFile] = useState<File | null>(null);
     const [active, setActive] = useState(0);
     const [preparedData, setPreparedData] = useState<Record<PropertyKey, string>[]>([]);
@@ -39,11 +39,12 @@ const ImportAccountsModal = ({ opened, onClose, onSubmit, accountType }: ImportA
         setActive(0);
         setFile(null);
         setData(null);
-        setHeaders(null);
+        setHeaders([]);
     }, [opened]);
 
     const prepareData = useCallback(
-        (assignment: Record<string, PropertyKey>) =>
+        (assignment: Record<string, PropertyKey | null>) =>
+            data &&
             setPreparedData(data.map((record) => _.mapKeys(_.pick(record, _.keys(assignment)), (_, key) => assignment[key]) as Record<PropertyKey, string>)),
         [JSON.stringify(data)],
     );
@@ -121,7 +122,7 @@ const ImportAccountsModal = ({ opened, onClose, onSubmit, accountType }: ImportA
 
         while (status === "pending") {
             await new Promise((resolve) => setTimeout(resolve, 3000));
-            const statusRes = await sendRequest("GET", `/users/create-in-bulk/job-status/${jobUuid}`, undefined, null);
+            const statusRes = await sendRequest("GET", `/users/create-in-bulk/job-status/${jobUuid}`);
             status = statusRes?.status || "error";
         }
 
@@ -138,24 +139,25 @@ const ImportAccountsModal = ({ opened, onClose, onSubmit, accountType }: ImportA
                 setFile(f);
                 setActive(1);
             }}
-            onReject={() => console.error("File rejected")}
+            onReject={(err) => console.error("File rejected", err)}
         />,
         <ParseSpreadsheetForm
             file={file}
             onCancel={() => {
                 setData(null);
-                setHeaders(null);
+                setHeaders([]);
                 setFile(null);
                 setActive(0);
             }}
             onSubmit={(d, h) => {
                 setData(d);
-                setHeaders(h);
+                setHeaders(h ?? _.keys(d[0]));
                 setActive(2);
             }}
             resetTrigger={opened}
         />,
         <AssignColsSpreadsheetForm
+            //@ts-expect-error
             data={data}
             headers={headers}
             properties={PROPERTIES}

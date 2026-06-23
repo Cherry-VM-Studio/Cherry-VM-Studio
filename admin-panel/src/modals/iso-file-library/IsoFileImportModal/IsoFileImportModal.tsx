@@ -1,5 +1,4 @@
-import { ActionIcon, Avatar, Button, Checkbox, FileButton, Group, Input, Modal, Select, SimpleGrid, Stack, Text, TextInput } from "@mantine/core";
-import { IsoFileImportModalProps } from "../../../types/components.types";
+import { ActionIcon, Avatar, Button, Checkbox, FileButton, Group, Input, Modal, ModalProps, Select, SimpleGrid, Stack, Text, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useRef, useState } from "react";
 import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
@@ -13,6 +12,16 @@ import cs from "classnames";
 
 type ImportTypes = "file" | "url";
 
+interface IsoFileImportFormValues {
+    name: string;
+    file: File | null;
+    url: string;
+}
+export interface IsoFileImportModalProps extends ModalProps {
+    opened: boolean;
+    onSubmit: () => void;
+}
+
 const IsoFileImportModal = ({ opened, onClose, onSubmit, ...props }: IsoFileImportModalProps): React.JSX.Element => {
     const { tns, t } = useNamespaceTranslation("modals", "import-iso");
     const { uploadFile } = useContinousFileUpload("/iso/upload");
@@ -24,7 +33,7 @@ const IsoFileImportModal = ({ opened, onClose, onSubmit, ...props }: IsoFileImpo
 
     const takenNames = values(isoRecords).map((record: IsoFile) => record.name);
 
-    const form = useForm({
+    const form = useForm<IsoFileImportFormValues>({
         mode: "uncontrolled",
         initialValues: {
             name: "",
@@ -45,11 +54,13 @@ const IsoFileImportModal = ({ opened, onClose, onSubmit, ...props }: IsoFileImpo
                             ? tns("validation.name-duplicate")
                             : null,
             file: (val: File | null) =>
-                !val.name.endsWith(".iso")
-                    ? tns("validation.file-invalid-extension")
-                    : val.size > 10 * 1024 * 1024 * 1024
-                      ? tns("validation.file-too-large")
-                      : null,
+                !val
+                    ? tns("validation.file-missing")
+                    : !val.name.endsWith(".iso")
+                      ? tns("validation.file-invalid-extension")
+                      : val.size > 10 * 1024 * 1024 * 1024
+                        ? tns("validation.file-too-large")
+                        : null,
         },
     });
 
@@ -122,7 +133,6 @@ const IsoFileImportModal = ({ opened, onClose, onSubmit, ...props }: IsoFileImpo
                                 >
                                     <FileButton
                                         resetRef={resetRef}
-                                        onChange={(file) => form.setFieldValue("file", file)}
                                         accept=".iso"
                                         key={form.key("file")}
                                         {...form.getInputProps("file")}

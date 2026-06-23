@@ -2,8 +2,13 @@ import React from "react";
 import ApplyButton from "../../../molecules/interactive/ApplyButton/ApplyButton";
 import RestoreButton from "../../../molecules/interactive/RestoreButton/RestoreButton";
 import useMantineNotifications from "../../../../hooks/useMantineNotifications";
-import { ApplyRestoreButtonProps } from "../../../../types/components.types";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
+
+export interface ApplyRestoreButtonProps {
+    isDirty: boolean | null;
+    applyNetworkConfig: () => any;
+    resetFlow: () => any;
+}
 
 const ApplyRestoreButtonPair = ({ resetFlow, applyNetworkConfig, isDirty }: ApplyRestoreButtonProps): React.JSX.Element => {
     const { sendNotification } = useMantineNotifications();

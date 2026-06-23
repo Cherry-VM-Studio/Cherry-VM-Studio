@@ -14,7 +14,7 @@ export default function ErrorBoundary() {
 
     const parseError = (): [number | string, string | undefined] => {
         if (isRouteErrorResponse(error)) return [error.status ?? 600, error.data?.message];
-        if (isAxiosError(error)) return [error.response?.status || error.code, (error.response?.data as Record<string, any>)?.detail];
+        if (isAxiosError(error)) return [error.response?.status || error.code || 600, (error.response?.data as Record<string, any>)?.detail];
         if (isError(error)) return [600, error.message];
         if (isString(error)) return [600, error];
 

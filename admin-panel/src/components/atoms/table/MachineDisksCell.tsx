@@ -2,12 +2,9 @@ import { Group, ScrollArea, Stack, Text } from "@mantine/core";
 import { MachineDiskDynamicData } from "../../../types/api.types";
 import { IconStorageDrive } from "../icons/IconStorageDrive/IconStorageDrive";
 import { formatBytesToUnit, formatBytesToUnitStringify, getRelevantUnit } from "../../../utils/files";
+import { CellContext } from "@tanstack/react-table";
 
-export interface MachineDisksCellProps {
-    getValue: () => MachineDiskDynamicData[];
-}
-
-const MachineDisksCell = ({ getValue }: MachineDisksCellProps): React.JSX.Element => {
+const MachineDisksCell = ({ getValue }: CellContext<unknown, MachineDiskDynamicData[]>): React.JSX.Element => {
     const disks = getValue();
     return (
         <ScrollArea

@@ -51,7 +51,7 @@ const TableFooter = ({ layouts, currentLayout, setCurrentLayout, pagination, set
             >
                 <Pagination
                     value={pagination.pageIndex + 1}
-                    onChange={(val) => setPagination((prev) => ({ ...prev, pageIndex: val - 1 }))}
+                    onChange={(val) => setPagination((prev: any) => ({ ...prev, pageIndex: val - 1 }))}
                     total={getPageCount() || 1}
                     siblings={1}
                     classNames={{ control: classes.paginationControl }}
@@ -63,7 +63,7 @@ const TableFooter = ({ layouts, currentLayout, setCurrentLayout, pagination, set
             >
                 <SizeSelect
                     value={pagination.pageSize}
-                    setValue={(val) => setPagination((prev) => ({ ...prev, pageSize: parseInt(val as string) }))}
+                    setValue={(val) => setPagination((prev: any) => ({ ...prev, pageSize: parseInt(val as string) }))}
                     sizes={[3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 25, 50]}
                 />
             </Flex>

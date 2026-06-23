@@ -3,6 +3,9 @@ import { TableControlsDefaultButtonsConfig, TableControlsIcons, TableControlsTra
 import ExpandingButton from "../../../atoms/interactive/ExpandingButton/ExpandingButton";
 import TableColumnsButton from "../../../atoms/interactive/TableColumnsButton/TableColumnsButton";
 import { Table } from "@tanstack/react-table";
+import React, { ComponentType } from "react";
+
+const renderIcon = (Icon?: ComponentType<any>, props?: any) => (Icon ? <Icon {...props} /> : null);
 
 const getDefaultButtons = (
     table: Table<any>,
@@ -21,7 +24,7 @@ const getDefaultButtons = (
                 columns: table.getAllColumns(),
                 visibleColumns: table.getVisibleLeafColumns(),
             },
-            children: <icons.columns size={20} />,
+            children: renderIcon(icons.columns, { size: 20 }),
         },
     },
     filter: {
@@ -33,7 +36,7 @@ const getDefaultButtons = (
                 variant: "default",
                 disabled: true,
             },
-            children: <icons.filter size={20} />,
+            children: renderIcon(icons.filter, { size: 20 }),
         },
         large: {
             name: "filter",
@@ -42,7 +45,7 @@ const getDefaultButtons = (
                 fw: 400,
                 w: 120,
                 variant: "default",
-                leftSection: <icons.filter size={16} />,
+                leftSection: renderIcon(icons.filter, { size: 16 }),
                 disabled: true,
             },
             children: translations.filter,
@@ -57,7 +60,7 @@ const getDefaultButtons = (
                 variant: "default",
                 disabled: viewMode,
             },
-            children: <icons.import size={20} />,
+            children: renderIcon(icons.import, { size: 20 }),
         },
         large: {
             name: "import",
@@ -66,7 +69,7 @@ const getDefaultButtons = (
                 fw: 400,
                 w: 140,
                 variant: "default",
-                leftSection: <icons.import size={16} />,
+                leftSection: renderIcon(icons.import, { size: 16 }),
 
                 disabled: viewMode,
             },
@@ -83,12 +86,7 @@ const getDefaultButtons = (
                 variant: "white",
                 disabled: viewMode,
             },
-            children: (
-                <icons.create
-                    size={20}
-                    stroke={3}
-                />
-            ),
+            children: renderIcon(icons.create, { size: 20, stroke: 3 }),
         },
         large: {
             name: "create",
@@ -98,12 +96,7 @@ const getDefaultButtons = (
                 color: "black",
                 variant: "white",
                 disabled: viewMode,
-                leftSection: (
-                    <icons.create
-                        size={16}
-                        stroke={3}
-                    />
-                ),
+                leftSection: renderIcon(icons.create, { size: 16, stroke: 3 }),
             },
             children: translations.create,
         },
@@ -122,12 +115,7 @@ const getDefaultButtons = (
                 color: "cherry.9",
                 disabled: viewMode,
             },
-            children: (
-                <icons.delete
-                    size={20}
-                    stroke={3}
-                />
-            ),
+            children: renderIcon(icons.delete, { size: 20, stroke: 3 }),
         },
         large: {
             name: "delete",
@@ -139,12 +127,7 @@ const getDefaultButtons = (
                 parentGap: "1rem",
                 variant: "filled",
                 color: "cherry.9",
-                leftSection: (
-                    <icons.delete
-                        size={16}
-                        stroke={3}
-                    />
-                ),
+                leftSection: renderIcon(icons.delete, { size: 16, stroke: 3 }),
                 disabled: viewMode,
             },
             children: translations.delete,

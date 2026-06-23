@@ -1,10 +1,15 @@
 import { Group, SegmentedControl, Stack } from "@mantine/core";
 import { AreaChart } from "@mantine/charts";
 import { useEffect, useState } from "react";
-import { getCurrentTime } from "../../../../utils/misc";
 import { useTranslation } from "react-i18next";
-import { Machine, MachineState } from "../../../../types/api.types";
-import { MachineStateChartData } from "../../../../types/components.types";
+import { Machine } from "../../../../types/api.types";
+import { getCurrentTime } from "../../../../utils/dates";
+
+export interface MachineStateChartData {
+    ram_used: number;
+    ram_max: number;
+    time?: number;
+}
 
 const getLabel = (resource: string, t: Function) => (t ? t("machine.graph.resource-used", { resource: resource, ns: "pages" }) : null);
 
