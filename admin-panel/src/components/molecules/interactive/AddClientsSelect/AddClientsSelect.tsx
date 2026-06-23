@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import useFetch from "../../../../hooks/useFetch";
 import { ClientExtended, User } from "../../../../types/api.types";
 import BusinessCard from "../../../atoms/display/BusinessCard/BusinessCard";
-import { omit, values } from "lodash";
+import _, { omit, values } from "lodash";
 import { getFullUserName } from "../../../../utils/users";
 import { Select, SelectProps, SelectStylesNames } from "@mantine/core";
 import cs from "classnames";
@@ -28,6 +28,7 @@ const AddClientsSelect = ({ onSubmit, excludedClients, classNames, ...props }: A
         label: getFullUserName(client),
     }));
 
+    // @ts-expect-error
     const renderOption = ({ option }) => (
         <BusinessCard
             name={option.label}
@@ -35,9 +36,9 @@ const AddClientsSelect = ({ onSubmit, excludedClients, classNames, ...props }: A
         />
     );
 
-    const submit = (value: string) => {
+    const submit = (value: string | null) => {
         setValue(null);
-        onSubmit(value);
+        if (!_.isNull(value)) onSubmit(value);
     };
 
     return (

@@ -3,8 +3,10 @@ import BusinessCard from "../display/BusinessCard/BusinessCard";
 import { Stack } from "@mantine/core";
 import AvatarsCell from "./AvatarsCell";
 import { getFullUserName } from "../../../utils/users";
+import { User, UserExtended } from "../../../types/api.types";
+import { CellContext } from "@tanstack/react-table";
 
-const MachineAssignedUserCell = ({ getValue }): React.JSX.Element => {
+const MachineAssignedUserCell = ({ getValue, ...props }: CellContext<unknown, User[] | UserExtended[]>): React.JSX.Element => {
     const users = getValue().filter((e) => e);
 
     if (!users?.length) return <></>;
@@ -17,7 +19,12 @@ const MachineAssignedUserCell = ({ getValue }): React.JSX.Element => {
             />
         );
 
-    return <AvatarsCell getValue={getValue} />;
+    return (
+        <AvatarsCell
+            getValue={getValue}
+            {...props}
+        />
+    );
 };
 
 export const sortingFunction = (rowA: any, rowB: any, columndId: string) => {

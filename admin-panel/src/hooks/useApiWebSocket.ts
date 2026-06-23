@@ -23,6 +23,7 @@ const useApiWebSocket = (path: string, params: Record<string, string> = {}): use
 
     const buildQuery = (params: Record<string, string>) => {
         const searchParams = new URLSearchParams(omitBy(params, isUndefined));
+        // @ts-expect-error
         searchParams.set("access_token", tokens.access_token);
         return searchParams.toString();
     };

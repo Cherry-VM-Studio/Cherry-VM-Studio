@@ -37,9 +37,9 @@ const BadgeGroup = ({ items, label, emptyMessage = "", size, badgeProps, badgeGr
                 className={cs(classes.badgeGroup, badgeGroupProps?.className)}
             >
                 {items.length ? (
-                    items.map((item: string, index: number) => (
+                    items.map((item, i) => (
                         <Badge
-                            key={index}
+                            key={i}
                             variant="light"
                             color="gray"
                             size={size || "lg"}

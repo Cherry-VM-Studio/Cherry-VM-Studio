@@ -4,8 +4,8 @@ import TableSearch from "../TableSearch/TableSearch";
 import ModalButton from "../../../atoms/interactive/ModalButton/ModalButton";
 import { IconFileImport, IconFilter, IconLayoutColumns, IconPlus, IconTrash } from "@tabler/icons-react";
 import { useMediaQuery } from "@mantine/hooks";
-import { entries, isNull, merge } from "lodash";
-import { TableControlsButton, TableControlsProps } from "./TableControls.types";
+import _, { entries, isNull, merge } from "lodash";
+import { TableControlsButton, TableControlsDefaultButtons, TableControlsProps } from "./TableControls.types";
 import getDefaultButtons from "./TableControls.config";
 
 const TableControls = ({
@@ -31,7 +31,7 @@ const TableControls = ({
             import: isXl ? "large" : "small",
             columns: "small",
         }),
-        [isXl, isLg]
+        [isXl, isLg],
     );
 
     const icons = useMemo(
@@ -43,7 +43,7 @@ const TableControls = ({
             columns: IconLayoutColumns,
             ...customIcons,
         }),
-        [customIcons]
+        [customIcons],
     );
 
     const anyRowsSelected = useCallback(() => table.getIsSomeRowsSelected() || table.getIsAllRowsSelected(), [table]);
@@ -53,12 +53,13 @@ const TableControls = ({
     let buttons = useMemo(
         () =>
             entries(defaultButtons)
+                // @ts-expect-error
                 .map(([key, variants]) => (hiddenButtons[key] ? null : merge(variants[currentVariants[key]], options[key])))
                 .filter((e) => !isNull(e)),
-        [defaultButtons, currentVariants]
+        [defaultButtons, currentVariants],
     );
 
-    const insertAtPos = (button: TableControlsButton) => buttons.splice(isNaN(button.position) ? buttons.length : button.position, 0, button);
+    const insertAtPos = (button: TableControlsButton) => buttons.splice(_.isNumber(button.position) ? button.position : buttons.length, 0, button);
 
     additionalButtons?.forEach(insertAtPos);
 
@@ -71,7 +72,7 @@ const TableControls = ({
         >
             <TableSearch
                 id={searchColumnKey}
-                setFilters={onFilteringChange}
+                setFilters={(val) => onFilteringChange?.(val)}
                 toggleAllRowsSelected={table.toggleAllRowsSelected}
                 maw="300"
                 miw="100px"
@@ -95,7 +96,7 @@ const TableControls = ({
                     >
                         {button.children}
                     </button.component>
-                )
+                ),
             )}
         </Group>
     );

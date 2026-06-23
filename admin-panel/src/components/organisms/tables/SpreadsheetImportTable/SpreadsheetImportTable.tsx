@@ -1,5 +1,5 @@
 import { Box, Flex, ScrollArea, Select, TextInput, Tooltip } from "@mantine/core";
-import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { CellContext, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { isBoolean, isEmpty, isNull, isUndefined, keys } from "lodash";
 import React, { useMemo } from "react";
 import { IconExclamationCircle, IconFileAlert, IconList } from "@tabler/icons-react";
@@ -25,12 +25,12 @@ export interface SpreadsheetImportTableProps {
     readOnly?: boolean;
     setCellData?: (rowId: number, colKey: string, newValue: string) => void;
     rowErrors?: RowError[];
-    criticalError?: ParseError;
+    criticalError?: ParseError | null;
     propertyAssignment?: {
-        assignment: Record<string, string>;
-        setAssignment: React.Dispatch<React.SetStateAction<Record<string, string>>>;
+        assignment: Record<string, string | null>;
+        setAssignment: React.Dispatch<React.SetStateAction<Record<string, string | null>>>;
         properties: string[];
-    };
+    } | null;
 }
 
 const SpreadsheetImportTable = ({
@@ -96,7 +96,7 @@ const SpreadsheetImportTable = ({
                     ) : (
                         <Flex className={classes.cellText}>{key}</Flex>
                     ),
-                cell: ({ getValue, row, column }) =>
+                cell: ({ getValue, row, column }: any) =>
                     readOnly ? (
                         <Flex
                             className={classes.cellText}
@@ -124,7 +124,7 @@ const SpreadsheetImportTable = ({
         () => ({
             accessorKey: "__error__",
             header: undefined,
-            cell: ({ getValue }) => {
+            cell: ({ getValue }: CellContext<unknown, string>) => {
                 const val = getValue();
 
                 return val ? (
@@ -157,6 +157,7 @@ const SpreadsheetImportTable = ({
         [rowErrors, errorColumn, spreadsheetColumns],
     );
 
+    //@ts-expect-error
     const table = useReactTable({ data, columns, getCoreRowModel: getCoreRowModel() });
 
     const rows = useMemo(() => table.getRowModel().rows, [data]);

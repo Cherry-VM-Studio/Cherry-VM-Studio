@@ -10,8 +10,9 @@ import MachineAssignedUserCell, {
 import CheckboxHeader from "../../../atoms/table/CheckboxHeader";
 import CheckboxCell from "../../../atoms/table/CheckboxCell";
 import MachineControlsHeader from "../../../atoms/table/MachineControlsHeader";
-import { Flex, ScrollArea, Stack, Text } from "@mantine/core";
+import { ScrollArea, Text } from "@mantine/core";
 import MachineDisksCell from "../../../atoms/table/MachineDisksCell";
+import { CellContext, HeaderContext } from "@tanstack/react-table";
 
 export const getColumns = (global: boolean, viewMode: boolean) =>
     [
@@ -38,7 +39,7 @@ export const getColumns = (global: boolean, viewMode: boolean) =>
             header: t("machines.table.headers.description", { ns: "pages" }),
             minSize: 200,
             enableSorting: false,
-            cell: ({ getValue }) => (
+            cell: ({ getValue }: CellContext<unknown, string>) => (
                 <ScrollArea type="auto">
                     <Text size="sm">{getValue()}</Text>
                 </ScrollArea>
@@ -55,7 +56,7 @@ export const getColumns = (global: boolean, viewMode: boolean) =>
         {
             accessorKey: "port",
             header: t("machines.table.headers.port", { ns: "pages" }),
-            cell: ({ getValue }) => <Text>{getValue()}</Text>,
+            cell: ({ getValue }: CellContext<unknown, string | number>) => <Text>{getValue()}</Text>,
             minSize: 120,
             maxSize: 120,
             sortingFn: (rowA: any, rowB: any, columnId: string) => {
@@ -76,7 +77,7 @@ export const getColumns = (global: boolean, viewMode: boolean) =>
         {
             accessorKey: "ram",
             header: t("machines.table.headers.ram", { ns: "pages" }),
-            cell: ({ getValue }) => (
+            cell: ({ getValue }: CellContext<unknown, number>) => (
                 <ProgressWithPercentage
                     value={getValue()}
                     transitionDuration={200}
@@ -124,16 +125,16 @@ export const getColumns = (global: boolean, viewMode: boolean) =>
         },
         {
             accessorKey: "options",
-            header: (props) => (
+            header: (props: HeaderContext<unknown, unknown>) => (
                 <MachineControlsHeader
                     {...props}
                     disabled={viewMode}
                 />
             ),
             enableSorting: false,
-            cell: ({ getValue }) => (
+            cell: (props: CellContext<unknown, any>) => (
                 <MachineControlsCell
-                    {...getValue()}
+                    {...props}
                     disabled={viewMode}
                 />
             ),

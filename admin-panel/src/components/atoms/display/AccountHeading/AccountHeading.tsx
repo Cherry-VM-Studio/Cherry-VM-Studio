@@ -2,8 +2,13 @@ import { Avatar, Badge, Box, Group, Stack, Text, Title } from "@mantine/core";
 import classes from "./AccountHeading.module.css";
 import { useTranslation } from "react-i18next";
 import { getFullUserName } from "../../../../utils/users";
+import { User, UserExtended } from "../../../../types/api.types";
 
-const AccountHeading = ({ user }): React.JSX.Element => {
+export interface AccountHeadingProps {
+    user: User | UserExtended;
+}
+
+const AccountHeading = ({ user }: AccountHeadingProps): React.JSX.Element => {
     const { t } = useTranslation();
 
     return (

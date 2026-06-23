@@ -332,7 +332,8 @@
             "name-invalid-characters": "Name may only contain alphanumeric characters, spaces, underscores, hyphens and periods.",
             "name-duplicate": "ISO record with this name already exists.",
             "file-invalid-extension": "Selected file must have an .iso extension.",
-            "file-too-large": "Cannot upload file over 10GB."
+            "file-too-large": "Cannot upload file over 10GB.",
+            "file-missing": "ISO file is missing."
         }
     },
     "create-template": {

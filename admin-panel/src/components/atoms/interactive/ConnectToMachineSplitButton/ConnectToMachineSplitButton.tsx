@@ -16,7 +16,7 @@ const ConnectToMachineSplitButton = ({ machine, ...props }: ConnectToMachineSpli
     const { data: user } = useFetch<UserExtended>("/users/me");
     const { canConnectToMachine } = usePermissions();
 
-    const canConnect = canConnectToMachine(user, machine) && machine.state === "ACTIVE";
+    const canConnect = user && canConnectToMachine(user, machine) && machine.state === "ACTIVE";
 
     const connectionKeys = keys(machine.connections).sort((a, b) => (a === "ssh" ? 1 : b === "ssh" ? -1 : 0)) as MachineConnectionProtocols[];
     const mainKey = connectionKeys.shift() as MachineConnectionProtocols;

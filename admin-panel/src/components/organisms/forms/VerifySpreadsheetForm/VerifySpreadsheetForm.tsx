@@ -37,7 +37,7 @@ const VerifySpreadsheetForm = ({ properties, data, setData, onSubmit, onCancel, 
 
     const [firstLoad, setFirstLoad] = useState(true);
     const { t, tns } = useNamespaceTranslation("modals", "import-accounts");
-    const { data: users, loading, error } = useFetch<UserExtended>("/users/all");
+    const { data: users, loading, error } = useFetch<Record<string, UserExtended>>("/users/all");
     const [errors, setErrors] = useState<ValidationErrors>(getEmptyErrors());
     const [currentFocusedRow, setCurrentFocusedRow] = useState(0);
 
@@ -91,13 +91,14 @@ const VerifySpreadsheetForm = ({ properties, data, setData, onSubmit, onCancel, 
     // mutates by reference
     const runValidators = (property: string, record: Record<string, string>, rowIndex: number, validators: Validator[], target: ValidationErrors) => {
         for (const validator of validators) {
+            // @ts-expect-error
             if (!validator.validate(record?.[property], record, duplicates?.[property] || [])) continue;
             target[property][validator.key].push(rowIndex);
         }
     };
 
-    const calculateErrorsInRow = (index: number, prev: ValidationErrors) => {
-        if (!data || index >= data.length) return;
+    const calculateErrorsInRow = (index: number, prev: ValidationErrors): ValidationErrors => {
+        if (!data || index >= data.length) return {};
 
         const record = data[index];
         const newErrors = _.mapValues(prev, (o) => _.mapValues(o, (rows) => _.without(rows, index)));
@@ -107,8 +108,8 @@ const VerifySpreadsheetForm = ({ properties, data, setData, onSubmit, onCancel, 
         return newErrors;
     };
 
-    const calculateErrorsInColumn = (property: string, prev: ValidationErrors) => {
-        if (!data || isUndefined(validationConfig[property])) return;
+    const calculateErrorsInColumn = (property: string, prev: ValidationErrors): ValidationErrors => {
+        if (!data || isUndefined(validationConfig[property])) return {};
 
         const validators = validationConfig[property];
         const newErrors: ValidationErrors = { ...prev, [property]: _.fromPairs(validators.map((v) => [v.key, [] as number[]])) };
@@ -145,6 +146,11 @@ const VerifySpreadsheetForm = ({ properties, data, setData, onSubmit, onCancel, 
     };
 
     const autofix = (rowNumbers: number[], property: string, callback: AutofixFunction) => {
+        // username and email must be unique
+        // so when we're auto fixing username or email and going through the list
+        // we also need to look out for the newly generated values
+        // so that we don't generate equal usernames/emails for different users during autofix
+        // this object is for exactly this purpose
         const additionalDuplicates = {
             username: [],
             email: [],
@@ -159,10 +165,12 @@ const VerifySpreadsheetForm = ({ properties, data, setData, onSubmit, onCancel, 
 
                 if (!record) return;
 
+                // @ts-expect-error
                 record[property] = callback(record?.[property], record, [...(duplicates?.[property] || []), ...(additionalDuplicates?.[property] || [])]);
 
                 if (!(property in additionalDuplicates)) return;
 
+                // @ts-expect-error
                 additionalDuplicates[property].push(record[property]);
             });
 
@@ -205,6 +213,7 @@ const VerifySpreadsheetForm = ({ properties, data, setData, onSubmit, onCancel, 
                     setCurrentFocusedRow={setCurrentFocusedRow}
                     property={property}
                     rows={rows}
+                    //@ts-expect-error
                     validator={validator}
                     onAutofix={autofix}
                 />

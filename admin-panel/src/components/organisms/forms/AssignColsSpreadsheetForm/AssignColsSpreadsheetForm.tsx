@@ -9,16 +9,16 @@ import AUTO_ASSIGNMENTS from "./autoAssignments";
 
 export interface AssignColsSpreadsheetForm {
     data: ParsedData;
-    headers: string[] | null;
+    headers: string[];
     onCancel?: () => void;
-    onSubmit?: (assignment: Record<string, string>) => void;
+    onSubmit?: (assignment: Record<string, string | null>) => void;
     properties: string[];
 }
 
 const AssignColsSpreadsheetForm = ({ properties, data, headers, onCancel, onSubmit }: AssignColsSpreadsheetForm): React.JSX.Element => {
     const { tns, t } = useNamespaceTranslation("modals", "import-accounts");
 
-    const [assignment, setAssignment] = useState(
+    const getAutoAssignment = () =>
         headers.reduce(
             (acc, header) => {
                 const normalized = header
@@ -32,8 +32,9 @@ const AssignColsSpreadsheetForm = ({ properties, data, headers, onCancel, onSubm
                 return acc;
             },
             {} as Record<string, string>,
-        ),
-    );
+        );
+
+    const [assignment, setAssignment] = useState<Record<string, string | null>>(getAutoAssignment());
 
     const cancel = () => {
         setAssignment({});

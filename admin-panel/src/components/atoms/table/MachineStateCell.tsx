@@ -2,8 +2,10 @@ import { Group, Loader, Text } from "@mantine/core";
 import React from "react";
 import { timeSince } from "../../../utils/dates";
 import { useTranslation } from "react-i18next";
+import { CellContext } from "@tanstack/react-table";
+import { MachineState } from "../../../types/api.types";
 
-const MachineStateCell = ({ getValue }): React.JSX.Element => {
+const MachineStateCell = ({ getValue }: CellContext<unknown, { state: MachineState; bootTimestamp: string }>): React.JSX.Element => {
     const { state, bootTimestamp } = getValue();
     const { t } = useTranslation();
 

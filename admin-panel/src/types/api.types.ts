@@ -138,17 +138,17 @@ export type MachineConnectionProtocols = "vnc" | "ssh" | "rdp";
 
 export interface MachinePropertiesPayload {
     uuid: string;
-    title?: string | null;
-    tags?: string[] | null;
-    description?: string | null;
-    owner?: Administrator | null;
+    title: string | null;
+    tags: string[] | null;
+    description: string | null;
+    owner: Administrator;
     assigned_clients: Record<string, Client>;
-    connections?: {
+    connections: {
         ssh?: string;
         rdp?: string;
         vnc?: string;
-    } | null;
-    disks?: MachineDiskStaticData[] | null;
+    };
+    disks: MachineDiskStaticData[] | null;
 }
 
 export interface MachineStatePayload {
@@ -165,12 +165,12 @@ export interface MachineStatePayload {
 
 export interface MachineDisksPayload {
     uuid: string;
-    disks?: MachineDiskDynamicData[] | null;
+    disks: MachineDiskDynamicData[] | null;
 }
 
 export interface MachineConnectionsPayload {
     uuid: string;
-    active_connections?: string[] | null;
+    active_connections: string[] | null;
 }
 
 export type MachineState = "ACTIVE" | "LOADING" | "BOOTING_UP" | "ERROR" | "SHUTTING_DOWN" | "OFFLINE" | "FETCHING";
@@ -251,6 +251,7 @@ export interface MachineSnapshot {
 }
 
 export interface MachineTemplate {
+    uuid: string;
     name: string;
     ram: number;
     vcpu: number;
@@ -272,7 +273,7 @@ export interface NetworkConfiguration {
     machines_with_internet_access: string[];
 }
 
-export class NetworkWorkspace {
+export interface NetworkWorkspace {
     configuration: NetworkConfiguration;
     positions: Record<string, Position>;
 }

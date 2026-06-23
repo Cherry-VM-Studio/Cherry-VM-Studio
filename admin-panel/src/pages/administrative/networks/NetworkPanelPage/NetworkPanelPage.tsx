@@ -23,7 +23,6 @@ import useErrorHandler from "../../../../hooks/useErrorHandler.ts";
 import useMantineNotifications from "../../../../hooks/useMantineNotifications.tsx";
 import useApi from "../../../../hooks/useApi.ts";
 import useFetch from "../../../../hooks/useFetch.ts";
-import { safeObjectValues } from "../../../../utils/misc.js";
 import Prompt from "../../../../modals/base/Prompt/Prompt.jsx";
 import FlowPanel from "../../../../components/organisms/interactive/FlowPanel/FlowPanel.tsx";
 import FloatingConnectionLine from "../../../../components/atoms/flow-connections/Floating/FloatingConnectionLine/FloatingConnectionLine.jsx";
@@ -205,7 +204,7 @@ const Flow = (): JSX.Element => {
     };
 
     // Creates nodes representing virtual machines.
-    const createMachineNodes = (positions: Record<string, Position>) => createFlowNodes("machine", safeObjectValues(machines), positions);
+    const createMachineNodes = (positions: Record<string, Position>) => createFlowNodes("machine", _.values(machines), positions);
 
     // Creates edges between machine nodes and intnet nodes based on the intnet configuration.
     const createIntnetEdges = (intnets: Intnet[]) => {

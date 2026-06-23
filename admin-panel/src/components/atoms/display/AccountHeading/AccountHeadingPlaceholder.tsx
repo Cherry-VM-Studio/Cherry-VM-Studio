@@ -1,10 +1,7 @@
-import { Avatar, Badge, Group, Skeleton, Stack } from "@mantine/core";
+import { Group, Skeleton, Stack } from "@mantine/core";
 import classes from "./AccountHeading.module.css";
-import { useTranslation } from "react-i18next";
 
 const AccountHeadingPlaceholder = (): React.JSX.Element => {
-    const { t } = useTranslation();
-
     return (
         <>
             <Group className={classes.group}>

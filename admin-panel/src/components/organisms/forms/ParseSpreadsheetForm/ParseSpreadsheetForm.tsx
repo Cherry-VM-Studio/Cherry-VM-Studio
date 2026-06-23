@@ -3,7 +3,7 @@ import { isEmpty, isNull, merge } from "lodash";
 import Papa, { ParseConfig, ParseError, ParseMeta, ParseResult } from "papaparse";
 import { useEffect, useState } from "react";
 import { decodeCharacters, encodeCharacters } from "../../../../utils/chars";
-import { IconChevronLeft, IconChevronRight, IconEraser, IconRepeat } from "@tabler/icons-react";
+import { IconEraser, IconRepeat } from "@tabler/icons-react";
 import SpreadsheetImportTable, { RowError } from "../../tables/SpreadsheetImportTable/SpreadsheetImportTable";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 import classes from "./ParseSpreadsheetForm.module.css";
@@ -27,11 +27,11 @@ const ParseSpreadsheetForm = ({ file, onCancel, onSubmit, resetTrigger }: ParseS
         header: true,
     };
 
-    const [data, setData] = useState<ParsedData>(null);
-    const [headers, setHeaders] = useState<string[]>(null);
+    const [data, setData] = useState<ParsedData | null>(null);
+    const [headers, setHeaders] = useState<string[] | null>(null);
     const [options, setOptions] = useState<ParseConfig>(defaultOptions);
     const [parseErrors, setParseErrors] = useState<ParseError[]>([]);
-    const [criticalError, setCriticalError] = useState<ParseError>(null);
+    const [criticalError, setCriticalError] = useState<ParseError | null>(null);
     const [currentFocusedError, setCurrentFocusedError] = useState(0);
 
     useEffect(() => {
@@ -115,6 +115,8 @@ const ParseSpreadsheetForm = ({ file, onCancel, onSubmit, resetTrigger }: ParseS
                         classNames={{ input: "borderless" }}
                         value={encodeCharacters(options.newline as string)}
                         data={["\\r", "\\n", "\\r\\n"]}
+                        allowDeselect={false}
+                        //@ts-expect-error
                         onChange={(value) => setOptions((prev) => ({ ...prev, newline: decodeCharacters(value) }) as ParseConfig)}
                     />
                     <TextInput
@@ -163,6 +165,7 @@ const ParseSpreadsheetForm = ({ file, onCancel, onSubmit, resetTrigger }: ParseS
                 </Group>
             </Stack>
             <SpreadsheetImportTable
+                // @ts-expect-error
                 records={data}
                 headers={headers}
                 loading={isNull(data)}
@@ -234,7 +237,7 @@ const ParseSpreadsheetForm = ({ file, onCancel, onSubmit, resetTrigger }: ParseS
                     variant="white"
                     classNames={{ label: classes.nextButtonLabel }}
                     disabled={isNull(data) || !isEmpty(parseErrors) || !!criticalError}
-                    onClick={() => onSubmit?.(data, headers)}
+                    onClick={() => onSubmit?.(data as ParsedData, headers)}
                 >
                     {t("next")}
                 </Button>

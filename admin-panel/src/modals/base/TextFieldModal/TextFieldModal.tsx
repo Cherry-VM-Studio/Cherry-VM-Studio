@@ -1,8 +1,19 @@
-import { Button, Loader, Modal, Stack, TextInput } from "@mantine/core";
+import { Button, Loader, Modal, Stack, TextInput, TextInputProps } from "@mantine/core";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useField } from "@mantine/form";
-import { TextFieldModalProps } from "../../../types/components.types";
+
+export interface TextFieldModalProps {
+    opened: boolean;
+    title: string;
+    children: React.JSX.Element;
+    inputProps?: TextInputProps | null;
+    initialValue?: string;
+    error?: string;
+    onValidate?: (val: string) => boolean | null;
+    onConfirm: (val: string) => any;
+    onCancel: () => any;
+}
 
 const TextFieldModal = (p: TextFieldModalProps): React.JSX.Element => {
     const { t } = useTranslation();
@@ -17,7 +28,7 @@ const TextFieldModal = (p: TextFieldModalProps): React.JSX.Element => {
         setLoading(true);
         field
             .validate()
-            .then(invalid => !invalid && p.onConfirm(field.getValue()))
+            .then((invalid) => !invalid && p.onConfirm(field.getValue()))
             .then(() => {
                 setLoading(false);
                 field.reset();

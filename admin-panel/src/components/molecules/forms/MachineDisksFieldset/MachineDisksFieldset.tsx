@@ -42,6 +42,7 @@ const MachineDisksFieldset = <T extends Record<string, any> = {}>({
     };
 
     const removeDisk = (index: number) => {
+        //@ts-ignore
         form.setFieldValue("disks", (prev) => prev.filter((_, i) => i !== index));
         //@ts-expect-error
         form.setFieldValue("os_disk", (prev) => (prev >= index ? prev - 1 : prev));

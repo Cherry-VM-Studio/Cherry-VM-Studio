@@ -4,6 +4,7 @@ import CheckboxHeader from "../../../atoms/table/CheckboxHeader";
 import { Group, Text } from "@mantine/core";
 import { IconFileSettings } from "@tabler/icons-react";
 import DateCell from "../../../atoms/table/DateCell";
+import { CellContext } from "@tanstack/react-table";
 
 export const getColumns = () => [
     {
@@ -18,7 +19,7 @@ export const getColumns = () => [
         accessorKey: "name",
         enableSorting: true,
         header: t("templates.table.headers.name", { ns: "pages" }),
-        cell: (props) => (
+        cell: (props: CellContext<unknown, string>) => (
             <Group gap="xs">
                 <IconFileSettings size="28" /> {props.getValue()}
             </Group>
@@ -31,7 +32,9 @@ export const getColumns = () => [
         accessorKey: "ram",
         enableSorting: true,
         header: t("templates.table.headers.ram", { ns: "pages" }),
-        cell: (props) => <Text>{`${props.getValue()} ${t("templates.table.ram-unit", { ns: "pages", count: props.getValue() })}`}</Text>,
+        cell: (props: CellContext<unknown, number>) => (
+            <Text>{`${props.getValue()} ${t("templates.table.ram-unit", { ns: "pages", count: props.getValue() })}`}</Text>
+        ),
         minSize: 100,
         maxSize: 200,
     },
@@ -39,7 +42,9 @@ export const getColumns = () => [
         accessorKey: "vcpu",
         enableSorting: true,
         header: t("templates.table.headers.vcpu", { ns: "pages" }),
-        cell: (props) => <Text>{`${props.getValue()} ${t("templates.table.vcpu-unit", { ns: "pages", count: props.getValue() })}`}</Text>,
+        cell: (props: CellContext<unknown, number>) => (
+            <Text>{`${props.getValue()} ${t("templates.table.vcpu-unit", { ns: "pages", count: props.getValue() })}`}</Text>
+        ),
         minSize: 100,
         maxSize: 200,
     },

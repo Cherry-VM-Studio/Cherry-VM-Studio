@@ -1,6 +1,7 @@
 import { Checkbox } from "@mantine/core";
+import { CellContext } from "@tanstack/react-table";
 
-const CheckboxCell = ({ row }): React.JSX.Element => (
+const CheckboxCell = ({ row }: CellContext<unknown, unknown>): React.JSX.Element => (
     <Checkbox
         checked={row.getIsSelected()}
         disabled={!row.getCanSelect()}

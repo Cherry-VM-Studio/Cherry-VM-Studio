@@ -1,5 +1,4 @@
 import { Group, Progress, ProgressProps, Text } from "@mantine/core";
-import React from "react";
 
 const ProgressWithPercentage = ({ value, ...props }: ProgressProps): React.JSX.Element => {
     return (

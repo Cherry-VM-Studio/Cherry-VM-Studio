@@ -32,7 +32,7 @@ export default function SecondBar({ pages }: SecondBarProps): React.ReactElement
                 w="90%"
                 mb="0.5rem"
             />
-            {page?.subpages.map((subpage, i) => (
+            {page?.subpages?.map((subpage, i) => (
                 <Button
                     onClick={() => navigate(subpage.path)}
                     justify="left"

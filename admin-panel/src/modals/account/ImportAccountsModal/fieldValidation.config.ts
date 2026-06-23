@@ -1,5 +1,6 @@
 import _ from "lodash";
 import { ValidationConfig } from "../../../components/organisms/forms/VerifySpreadsheetForm/VerifySpreadsheetForm";
+import { generatePassword } from "../../../utils/users";
 
 const moreThanOnce = (arr: string[], str: string) => arr.indexOf(str) !== arr.lastIndexOf(str);
 
@@ -58,22 +59,6 @@ const generateUsername = (target: Record<string, string>, values: string[]) => {
     }
 
     return username;
-};
-
-const generatePassword = (length = 12) => {
-    const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const lower = "abcdefghijklmnopqrstuvwxyz";
-    const digits = "0123456789";
-    const specials = "$&+,:;=?@#|'<>.^*()%!_-";
-
-    length = _.clamp(length, 10, 256);
-
-    const required = [_.sample(upper)!, _.sample(lower)!, _.sample(digits)!, _.sample(specials)!];
-
-    const allChars = upper + lower + digits + specials;
-    const remaining = _.times(length - required.length, () => _.sample(allChars)!);
-
-    return _.shuffle([...required, ...remaining]).join("");
 };
 
 const VALIDATION = {

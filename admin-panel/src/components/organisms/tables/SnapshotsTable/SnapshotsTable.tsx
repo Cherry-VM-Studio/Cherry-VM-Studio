@@ -1,21 +1,22 @@
 import { useMemo } from "react";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 import { getColumns } from "./columns";
-import { safeObjectValues } from "../../../../utils/misc";
-import { Snapshot } from "../../../../types/api.types";
+import { MachineSnapshot } from "../../../../types/api.types";
 import TanstackTable from "../../../molecules/display/TanstackTable/TanstackTable";
+import { AxiosError } from "axios";
+import _ from "lodash";
 
 export interface SnapshotsTableProps {
-    snapshots: Record<string, Snapshot>;
+    snapshots: Record<string, MachineSnapshot>;
     loading: boolean;
-    error: Response | null;
+    error: AxiosError | null;
     refresh: () => void;
 }
 
 const SnapshotsTable = ({ snapshots, loading, error, refresh }: SnapshotsTableProps): React.JSX.Element => {
     const { tns } = useNamespaceTranslation("pages", "snapshots.controls.");
 
-    const data = useMemo(() => safeObjectValues(snapshots), [snapshots]);
+    const data = useMemo(() => _.values(snapshots), [snapshots]);
     const columns = useMemo(() => getColumns(), []);
 
     return (

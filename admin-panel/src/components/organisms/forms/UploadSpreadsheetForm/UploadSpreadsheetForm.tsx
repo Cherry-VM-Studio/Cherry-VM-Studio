@@ -24,7 +24,11 @@ const UploadSpreadsheetForm = ({ onUpload, onReject, properties }: UploadSpreads
             <Flex className={classes.item}>
                 <Dropzone
                     acceptColor="lime.6"
-                    accept={[MIME_TYPES.csv]}
+                    accept={{
+                        "text/csv": [".csv"],
+                        "application/vnd.ms-excel": [".csv"],
+                        "text/plain": [".csv"],
+                    }}
                     multiple={false}
                     maxFiles={1}
                     onDrop={(files) => onUpload(files[0])}

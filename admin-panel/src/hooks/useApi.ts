@@ -1,8 +1,8 @@
 import useErrorHandler from "./useErrorHandler.ts";
 import urlConfig from "../config/url.config.ts";
 import { useAuthentication } from "../contexts/AuthenticationContext.tsx";
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
-import { merge, toString } from "lodash";
+import axios, { AxiosError, AxiosHeaders, AxiosRequestConfig, AxiosResponse } from "axios";
+import _, { merge, toString } from "lodash";
 import { ERRORS } from "../config/errors.config.ts";
 import { Tokens } from "../types/api.types.ts";
 import { validPath } from "../utils/path.ts";
@@ -27,12 +27,12 @@ export const useApi = (): useApiReturn => {
         timeoutErrorMessage: "No response from the API service.",
     } as AxiosRequestConfig;
 
-    const getPath = (path: string): string => (API_URL ? `${API_URL}${validPath(path)}` : undefined);
+    const getPath = (path: string): string => (API_URL ? `${API_URL}${validPath(path)}` : "");
 
     const refreshTokens = async (): Promise<Tokens> => {
         return await axios
             .get(getPath("/refresh"), {
-                headers: refreshHeaders,
+                headers: refreshHeaders ?? undefined,
             })
             .then((response) => {
                 setAccessToken(response.data?.access_token);
@@ -69,6 +69,7 @@ export const useApi = (): useApiReturn => {
                         if (!tokens?.access_token) return errorCallback?.(error);
 
                         // after succesfull refresh send the original request again for seamless UX
+                        if (!mergedConfig.headers) mergedConfig.headers = {};
                         mergedConfig.headers["Authorization"] = `Bearer ${tokens.access_token}`;
                         return await sendFetch()
                             .then((response) => response.data)

@@ -3,7 +3,7 @@ import useFetch from "../hooks/useFetch.ts";
 import Loading from "../components/atoms/feedback/Loading/Loading.tsx";
 import { AccountType } from "../types/config.types.ts";
 import { ERRORS } from "../config/errors.config.ts";
-import { isEmpty } from "lodash";
+import _, { isEmpty } from "lodash";
 import { User } from "../types/api.types.ts";
 
 export interface ProtectedProps {
@@ -17,8 +17,8 @@ export const Protected = ({ accountType }: ProtectedProps): React.JSX.Element =>
 
     if (loading) return <Loading />;
 
-    if (error || isEmpty(user)) {
-        if (error.status === ERRORS.HTTP_401_UNAUTHORIZED)
+    if (!_.isNull(error) || isEmpty(user)) {
+        if (error?.status === ERRORS.HTTP_401_UNAUTHORIZED)
             return (
                 <Navigate
                     to="/login"

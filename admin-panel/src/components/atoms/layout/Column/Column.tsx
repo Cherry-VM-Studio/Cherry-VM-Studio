@@ -18,4 +18,4 @@ function Column({ span, children, ...props }: GridColProps): React.JSX.Element {
     );
 }
 
-export { Column as default };
+export default Column;

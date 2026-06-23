@@ -52,6 +52,7 @@ const MachinesGrid = ({ table, machines, loading, error }: MachinesGridProps): R
             ) : !keys(machines).length ? (
                 <ResourceError
                     icon={IconDeviceDesktop}
+                    title={""}
                     message={t("empty")}
                     mt="-36px"
                 />

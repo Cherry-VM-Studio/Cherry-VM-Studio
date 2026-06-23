@@ -1,8 +1,13 @@
-import { Button } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
-import { useTranslation } from 'react-i18next';
-import { RestoreButtonProps } from '../../../../types/components.types';
-import ConfirmationModal from '../../../../modals/base/ConfirmationModal/ConfirmationModal';
+import { Button, ButtonProps } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import { useTranslation } from "react-i18next";
+import ConfirmationModal from "../../../../modals/base/ConfirmationModal/ConfirmationModal";
+
+export interface RestoreButtonProps {
+    onConfirm: () => void;
+    buttonProps: ButtonProps;
+    modalProps: object;
+}
 
 export default function RestoreButton({ onConfirm, buttonProps, modalProps }: RestoreButtonProps) {
     const { t } = useTranslation();
@@ -12,7 +17,7 @@ export default function RestoreButton({ onConfirm, buttonProps, modalProps }: Re
     const onConfirmModal = () => {
         close();
         onConfirm();
-    }
+    };
 
     return (
         <>
@@ -21,15 +26,15 @@ export default function RestoreButton({ onConfirm, buttonProps, modalProps }: Re
                 opened={opened}
                 onClose={close}
                 onConfirm={onConfirmModal}
-                confirmButtonProps={{ color: 'red.7' }}
+                confirmButtonProps={{ color: "red.7" }}
             />
             <Button
                 {...buttonProps}
                 onClick={open}
-                variant='default'
+                variant="default"
             >
-                {t('discard')}
+                {t("discard")}
             </Button>
         </>
-    )
+    );
 }

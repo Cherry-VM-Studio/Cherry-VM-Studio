@@ -7,11 +7,17 @@ import useFetch from "../../../hooks/useFetch";
 import useErrorHandler from "../../../hooks/useErrorHandler";
 import useMantineNotifications from "../../../hooks/useMantineNotifications";
 import UserMultiselect from "../../../components/molecules/interactive/UserMultiselect/UserMultiselect";
-import { safeObjectValues } from "../../../utils/misc";
 import { AxiosError } from "axios";
 import { ClientExtended } from "../../../types/api.types";
+import _ from "lodash";
 
-export default function CreateGroupModal({ opened, onClose, onSubmit }): React.JSX.Element {
+export interface CreateGroupModalProps {
+    opened: boolean;
+    onClose: () => void;
+    onSubmit: () => void;
+}
+
+export default function CreateGroupModal({ opened, onClose, onSubmit }: CreateGroupModalProps): React.JSX.Element {
     const { t, tns } = useNamespaceTranslation("modals", "create-group");
     const { sendRequest } = useApi();
     const { handleAxiosError } = useErrorHandler();
@@ -84,7 +90,7 @@ export default function CreateGroupModal({ opened, onClose, onSubmit }): React.J
                         <UserMultiselect
                             placeholder={tns("select-clients")}
                             nothingFoundMessage={loading ? t("loading") : error ? t("error-clients") : false}
-                            users={safeObjectValues(users)}
+                            users={_.values(users)}
                             classNames={{ input: "borderless" }}
                             key={form.key("users")}
                             {...form.getInputProps("users")}

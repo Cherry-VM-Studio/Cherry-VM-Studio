@@ -3,7 +3,11 @@ import classes from "./AccountDisplay.module.css";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 import AccountHeadingPlaceholder from "../../../atoms/display/AccountHeading/AccountHeadingPlaceholder";
 
-const AccountModalPlaceholder = ({ onClose }): React.JSX.Element => {
+export interface AccountModalPlaceholderProps {
+    onClose: () => void;
+}
+
+const AccountModalPlaceholder = ({ onClose }: AccountModalPlaceholderProps): React.JSX.Element => {
     const { t } = useNamespaceTranslation("modals", "account");
 
     return (

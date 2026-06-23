@@ -32,10 +32,10 @@ export const PermissionsProvider: React.FC<{ children: React.ReactNode }> = ({ c
     );
 
     const canManageMachine = (user: User | UserExtended, machine: Partial<Machine>) =>
-        (user && machine.owner && user.uuid === machine.owner.uuid) || hasPermissions(PERMISSIONS.MANAGE_ALL_VMS);
+        Boolean((user && machine.owner && user.uuid === machine.owner.uuid) || hasPermissions(PERMISSIONS.MANAGE_ALL_VMS));
 
     const canConnectToMachine = (user: User | UserExtended, machine: Partial<Machine>) =>
-        user && (canManageMachine(user, machine) || machine.assigned_clients.hasOwnProperty(user.uuid));
+        Boolean(user && (canManageMachine(user, machine) || machine?.assigned_clients?.hasOwnProperty?.(user.uuid)));
 
     return <PermissionsContext.Provider value={{ hasPermissions, canManageMachine, canConnectToMachine }}>{children}</PermissionsContext.Provider>;
 };

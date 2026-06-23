@@ -45,9 +45,9 @@ const MachineEditForm = ({ machine }: MachineEditFormProps): React.JSX.Element =
     const getInitialValues = (): MachineEditFormValues => ({
         title: machine.title ?? "Unnamed Machine",
         tags: machine?.tags ?? [],
-        description: machine.description?.trim(),
+        description: machine.description?.trim() ?? "",
         config: {
-            ram: machine.ram_max,
+            ram: machine.ram_max ?? 0,
             vcpu: machine.vcpu,
         },
         disks:
@@ -127,7 +127,8 @@ const MachineEditForm = ({ machine }: MachineEditFormProps): React.JSX.Element =
     const addAssignedClient = (newClient: string) => form.setFieldValue("assigned_clients", (prev) => [...prev, newClient]);
     const removeAssignedClient = (uuid: string) => form.setFieldValue("assigned_clients", (prev) => prev.filter((e) => e !== uuid));
 
-    const disabled = !machine || loading || !isNull(error) || !canManageMachine(loggedInUser, machine) || !["OFFLINE", "ERROR"].includes(machine.state);
+    const disabled =
+        !machine || loading || !isNull(error) || (loggedInUser && !canManageMachine(loggedInUser, machine)) || !["OFFLINE", "ERROR"].includes(machine.state);
 
     const assignedClients = form.values.assigned_clients.map((uuid) => users?.[uuid]).filter((e) => !isUndefined(e));
     const assignedClientsChanged = !isEqual(sortBy(form.values.assigned_clients), sortBy(form.getInitialValues().assigned_clients));

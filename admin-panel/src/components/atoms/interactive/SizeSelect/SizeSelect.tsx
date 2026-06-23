@@ -4,7 +4,7 @@ import React from "react";
 export interface SizeSelectProps {
     sizes: number[];
     value: number;
-    setValue: (prev: number | string) => any;
+    setValue: (prev: string | null) => any;
 }
 
 const SizeSelect = ({ sizes, value, setValue }: SizeSelectProps): React.JSX.Element => {
@@ -14,7 +14,7 @@ const SizeSelect = ({ sizes, value, setValue }: SizeSelectProps): React.JSX.Elem
         <Select
             data={data}
             value={`${value}`}
-            onChange={setValue}
+            onChange={(val) => setValue(val)}
             classNames={{
                 input: "border",
             }}

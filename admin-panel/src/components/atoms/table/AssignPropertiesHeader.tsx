@@ -5,12 +5,12 @@ import _ from "lodash";
 export interface AssignPropertiesHeaderProps {
     properties: string[];
     columnKey: string;
-    values: Record<string, string>;
-    setValues: React.Dispatch<React.SetStateAction<Record<string, string>>>;
+    values: Record<string, string | null>;
+    setValues: React.Dispatch<React.SetStateAction<Record<string, string | null>>>;
 }
 
-const AssignPropertiesHeader = ({ properties, values, setValues, columnKey }): React.JSX.Element => {
-    const onChange = (val: string | null) => setValues((prev: Record<string, string>) => ({ ...prev, [columnKey]: val }));
+const AssignPropertiesHeader = ({ properties, values, setValues, columnKey }: AssignPropertiesHeaderProps): React.JSX.Element => {
+    const onChange = (val: string | null) => setValues((prev) => ({ ...prev, [columnKey]: val }));
     const filteredData = properties.filter((prop: string) => prop === values[columnKey] || !_.values(values).includes(prop));
 
     return (

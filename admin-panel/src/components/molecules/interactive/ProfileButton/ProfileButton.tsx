@@ -2,10 +2,7 @@ import { ActionIcon, Avatar, AvatarProps, Badge, Box, Button, Group, Modal, Popo
 import useFetch from "../../../../hooks/useFetch";
 import { getFullUserName } from "../../../../utils/users";
 import classes from "./ProfileButton.module.css";
-import cs from "classnames";
 import BusinessCard from "../../../atoms/display/BusinessCard/BusinessCard";
-import ModalButton from "../../../atoms/interactive/ModalButton/ModalButton";
-import AccountModal from "../../../../modals/account/AccountModal/AccountModal";
 import { useState } from "react";
 import ChangePasswordModal from "../../../../modals/account/ChangePasswordModal/ChangePasswordModal";
 import { useAuthentication } from "../../../../contexts/AuthenticationContext";
@@ -25,7 +22,7 @@ const ProfileButton = ({ targetProps, popoverProps }: ProfileButtonProps): React
     const navigate = useNavigate();
     const { t } = useTranslation();
     const { logout } = useAuthentication();
-    const { data: user, loading, error, refresh } = useFetch<UserExtended>("/users/me");
+    const { data: user, loading, error } = useFetch<UserExtended>("/users/me");
     const [popoverOpened, setPopoverOpened] = useState(false);
     const [modalsOpened, setModalsOpened] = useState({
         account: false,
@@ -71,7 +68,7 @@ const ProfileButton = ({ targetProps, popoverProps }: ProfileButtonProps): React
                     )}
                 </Modal>
                 <ChangePasswordModal
-                    uuid={user?.uuid}
+                    uuid={user?.uuid ?? ""}
                     opened={modalsOpened.password}
                     onClose={closePasswordModal}
                 />

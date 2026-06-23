@@ -2,8 +2,17 @@ import { Group, Stack, Text } from "@mantine/core";
 import React from "react";
 import MachineActivityIndicator from "../feedback/MachineActivityIndicator/MachineActivityIndicator";
 import BadgeGroup from "../display/BadgeGroup/BadgeGroup";
+import { MachineState } from "../../../types/api.types";
+import { CellContext } from "@tanstack/react-table";
 
-const MachineDetailsCell = ({ getValue }): React.JSX.Element => {
+interface MachineDetails {
+    uuid: string;
+    state: MachineState;
+    name: string;
+    tags: string[];
+}
+
+const MachineDetailsCell = ({ getValue }: CellContext<unknown, MachineDetails>): React.JSX.Element => {
     const { state, name, tags } = getValue();
 
     return (

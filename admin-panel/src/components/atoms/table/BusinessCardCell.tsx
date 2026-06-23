@@ -2,13 +2,15 @@ import React from "react";
 import BusinessCard from "../display/BusinessCard/BusinessCard";
 import { useMediaQuery } from "@mantine/hooks";
 import { getFullUserName } from "../../../utils/users";
+import { CellContext } from "@tanstack/react-table";
+import { UserExtended } from "../../../types/api.types";
 
-const BusinessCardCell = ({ getValue }): React.JSX.Element => {
+const BusinessCardCell = ({ getValue }: CellContext<unknown, UserExtended>): React.JSX.Element => {
     const user = getValue() || {};
 
     return (
         <BusinessCard
-            imageSrc={user.avatar}
+            // imageSrc={user.avatar}
             comment={`@${user.username}`}
             name={getFullUserName(user)}
             withAvatar={useMediaQuery(`(min-width: 1200px)`)}

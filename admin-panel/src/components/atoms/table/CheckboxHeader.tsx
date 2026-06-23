@@ -1,6 +1,7 @@
 import { Checkbox } from "@mantine/core";
+import { CellContext } from "@tanstack/react-table";
 
-const CheckboxHeader = ({ table }): React.JSX.Element => (
+const CheckboxHeader = ({ table }: CellContext<unknown, unknown>): React.JSX.Element => (
     <Checkbox
         checked={table.getIsAllRowsSelected()}
         indeterminate={table.getIsSomeRowsSelected()}
