@@ -4,6 +4,8 @@ from modules.machine_websockets.all_machines.websocket_handler import AllMachine
 from modules.machine_websockets.user_machines.websocket_handler import UserMachinesWebsocketHandler
 from modules.machine_websockets.subscribed_machine.websocket_handler import SubscribedMachinesWebsocketHandler
 from fastapi import APIRouter, WebSocket
+from modules.machine_websockets.main_manager import MachineWebSocketManager
+
 
 router = APIRouter(
     prefix='/ws/machines'
