@@ -112,7 +112,7 @@ def create_machine_disk_xml(root_element: ET.Element, machine_disk: MachineDisk,
 def create_machine_network_interface_xml(root_element: ET.Element, network_interface: MachineNetworkInterface) -> ET.Element:
     iface = ET.SubElement(root_element, "interface", type=network_interface.source.type)
     
-    ET.SubElement(iface, "alias", name=network_interface.name)
+    # ET.SubElement(iface, "alias", name=network_interface.name)
 
     source_attribute = {network_interface.source.type: network_interface.source.value}
     ET.SubElement(iface, "source", attrib=source_attribute)
@@ -120,6 +120,7 @@ def create_machine_network_interface_xml(root_element: ET.Element, network_inter
     ET.SubElement(iface, "target", dev=network_interface.name)
     
     ET.SubElement(iface, "model", type="virtio")
+    
     return iface
 
 
@@ -318,8 +319,8 @@ def parse_machine_network_interface(iface_element: ET.Element) -> MachineNetwork
     Parse <interface> element back into MachineNetworkInterface model.
     """
     # Name
-    alias_el = get_required_xml_tag(iface_element, "alias")
-    name = get_required_xml_tag_attribute(alias_el, "name")
+    # alias_el = get_required_xml_tag(iface_element, "alias")
+    # name = get_required_xml_tag_attribute(alias_el, "name")
     
     target_el = get_required_xml_tag(iface_element, "target")
     target = get_required_xml_tag_attribute(target_el, "dev")
