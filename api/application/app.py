@@ -15,8 +15,12 @@ from .endpoints.users import users, groups, roles
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    MachineWebSocketManager.start_all_broadcasts()
     await open_async_pool()
+
     yield
+
+    MachineWebSocketManager.stop_all_broadcasts()
     await close_async_pool()
 
 app = FastAPI(root_path="/api", lifespan=lifespan)
