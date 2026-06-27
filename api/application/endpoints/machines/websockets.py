@@ -3,14 +3,12 @@ from uuid import UUID
 from modules.machine_websockets.all_machines.websocket_handler import AllMachinesWebsocketHandler
 from modules.machine_websockets.user_machines.websocket_handler import UserMachinesWebsocketHandler
 from modules.machine_websockets.subscribed_machine.websocket_handler import SubscribedMachinesWebsocketHandler
-from modules.machine_websockets.main_manager import MachineWebSocketManager
 from fastapi import APIRouter, WebSocket
 
 router = APIRouter(
     prefix='/ws/machines'
 )
 
-MachineWebSocketManager.start_all_broadcasts()
 
 
 @router.websocket('/subscribed')
