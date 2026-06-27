@@ -76,6 +76,8 @@ class MachineParameters(BaseModel):
                                               
     network_interfaces: Optional[list[MachineNetworkInterface]] = None
     
+    internet_connectivity: bool = False
+    
     # As long as default SSH access is not configured automatically the framebuffer element is obligatory, otherwise machine would be inaccessible.
     framebuffer: MachineGraphicalFramebuffer
     
@@ -115,6 +117,8 @@ class CreateMachineForm(BaseModel):
     config: CreateMachineFormConfig
     disks: list[CreateMachineFormDisk]
     os_disk: int = 0
+    
+    internet_connectivity: bool = False
     
     @field_validator("title", "description", mode="before")
     @classmethod
