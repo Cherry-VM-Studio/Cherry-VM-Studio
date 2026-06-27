@@ -1,0 +1,20 @@
+.overviewContainer {
+    align-items: left;
+    gap: var(--mantine-spacing-md);
+}
+
+.overviewControls {
+    gap: var(--mantine-spacing-lg);
+    /* justify-content: space-between; */
+    width: 100%;
+    padding-bottom: 4;
+}
+
+.overviewPaper {
+    display: flex;
+    flex: 1;
+    padding: var(--mantine-spacing-lg);
+    background-color: var(--mantine-color-dark-8);
+    flex-direction: column;
+    min-height: calc(320px + 2 * var(--mantine-spacing-lg));
+}

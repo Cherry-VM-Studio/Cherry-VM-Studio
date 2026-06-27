@@ -1,0 +1,10 @@
+.nextButtonLabel {
+    width: 100%;
+    justify-content: center;
+}
+
+.outputPaper {
+    background-color: var(--mantine-color-dark-8);
+    padding: var(--mantine-spacing-sm);
+    border: 1px solid var(--mantine-color-dark-6);
+}

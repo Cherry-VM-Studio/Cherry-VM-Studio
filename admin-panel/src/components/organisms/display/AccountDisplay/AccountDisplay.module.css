@@ -1,0 +1,52 @@
+.topBox {
+    top: 0;
+    position: absolute;
+    background-color: var(--mantine-color-dark-8);
+    width: 100%;
+    height: 102px;
+}
+
+.stack {
+    padding: var(--mantine-spacing-lg);
+    gap: var(--mantine-spacing-lg);
+    height: 600px;
+}
+
+.accountDetails {
+    margin-top: var(--mantine-spacing-md);
+    padding-left: var(--mantine-spacing-md);
+    gap: var(--mantine-spacing-xs);
+}
+
+.detailLabel {
+    font-size: var(--mantine-font-size-sm);
+    font-weight: 500;
+}
+
+.detailValue {
+    color: var(--mantine-color-dimmed);
+    font-size: inherit;
+}
+
+.buttonGroup {
+    width: 100%;
+    margin-top: auto;
+    justify-content: center;
+    padding-bottom: var(--mantine-spacing-sm);
+}
+
+.editButton {
+    width: 100px;
+    color: black;
+
+    &:disabled,
+    &[data-disabled] {
+        color: var(--mantine-color-dark-3);
+    }
+}
+
+.closeButton {
+    width: 100px;
+    background-color: var(--mantine-color-gray-light);
+    color: var(--mantine-color-gray);
+}

@@ -1,0 +1,10 @@
+.title {
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.avatar {
+    margin-left: var(--mantine-spacing-md);
+    margin-right: 8px;
+}

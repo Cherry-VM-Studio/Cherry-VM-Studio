@@ -1,0 +1,44 @@
+.container {
+    flex-wrap: nowrap;
+    gap: 0;
+    display: inline-flex;
+    align-items: stretch;
+}
+
+.mainButton {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.sideButton {
+    flex: 0 0 auto !important;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-left: none !important;
+    aspect-ratio: 1/1;
+    padding: 0 !important;
+    display: flex;
+    align-items: center; /* center the icon vertically */
+    justify-content: center;
+}
+
+.menuDropdown {
+    padding: 0;
+}
+
+.menuButton {
+    font-weight: 400;
+    justify-content: right;
+    border: none !important;
+    width: 100%;
+}
+
+.menuButton:not(:first-of-type) {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.menuButton:not(:last-of-type) {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}

@@ -1,0 +1,20 @@
+.description {
+    flex-wrap: nowrap;
+    gap: var(--mantine-spacing-sm);
+}
+
+.description * {
+    font-size: var(--mantine-font-size-sm);
+}
+
+.fieldset {
+    margin: 0;
+    padding-top: var(--mantine-spacing-lg);
+    border-width: 2px;
+}
+
+.rightSections {
+    font-size: var(--mantine-font-size-sm);
+    justify-content: flex-end;
+    padding-right: var(--mantine-spacing-xs);
+}

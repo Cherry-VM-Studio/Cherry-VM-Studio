@@ -1,0 +1,324 @@
+{
+    "admin-home": {
+        "title": "Hello, {{fullname}}!",
+        "description1": "Welcome to the Cherry Admin Panel - the management center for your Cherry VM Studio.\nIts primary goal is to offer a user-friendly experience for managing deployed machines.",
+        "description2": "For advanced configurations, you might want to enter the dependency panels:",
+        "cherry-admin-panel": {
+            "start": "Here you can:",
+            "feature1": "Monitor and control your virtual machines in real time.",
+            "feature2": "Configure network connections between deployed machines.",
+            "feature3": "Manage CVMS accounts, roles and permissions",
+            "feature-more": "... and more"
+        },
+        "start-managing": "Start managing",
+        "cards": {
+            "guacamole": {
+                "title": "Apache Guacamole Panel",
+                "description": "Guacamole is an HTML5 web application that provides access to desktop environments using remote desktop protocols (such as VNC or RDP).",
+                "logo-alt": "Apache Guacamole Logo"
+            },
+            "traefik": {
+                "title": "Traefik Proxy Panel",
+                "description": "Traefik is a open-source reverse proxy and load balancer for HTTP and TCP-based applications.",
+                "logo-alt": "Traefik Proxy Logo"
+            }
+        }
+    },
+    "client-home": {
+        "title": "Hello, {{fullname}}!",
+        "description1": "Your virtual workspace is ready.",
+        "machine-overview": "Machine Overview",
+        "description2": "Quickly access your virtual machines.",
+        "view-all": "View all",
+        "your-profile": "Your Profile"
+    },
+    "machines": {
+        "controls": {
+            "all-machines": "All machines",
+            "your-machines": "Your machines",
+            "selected-machines": "Selected machines",
+            "filtered-results": "Filtered results",
+            "search": "Search",
+            "filters": "Filters",
+            "delete-selected": "Delete selected",
+            "import": "Import",
+            "create-machine": "Create machine",
+            "create-multiple": "Create VMs in bulk"
+        },
+        "table": {
+            "headers": {
+                "name": "Name",
+                "state": "State",
+                "ram": "RAM",
+                "vcpu": "vCPU Cores",
+                "assigned-clients": "Assigned Clients",
+                "assignees": "Assignees",
+                "connected-users": "Connected Users",
+                "controls": "Controls",
+                "owner": "Owner",
+                "port": "Port",
+                "domain-path": "Domain",
+                "uuid": "Unique Identifier",
+                "description": "Machine Description",
+                "disks": "Disks"
+            }
+        }
+    },
+    "machine": {
+        "info": {
+            "type": "Type",
+            "domain": "Domain",
+            "address": "Address",
+            "active-connections": "Active connections"
+        },
+        "graph": {
+            "resource-used": "{{resource}} used"
+        },
+        "details": "Details",
+        "resources": "Resources",
+        "disks": "Disks",
+        "assigned-clients": "Assigned Clients",
+        "machine-name": "Machine name",
+        "machine-name-placeholder": "Machine name",
+        "machine-group-no": "No.",
+        "machine-tags": "Additional tags",
+        "machine-tags-placeholder": "Tags",
+        "machine-description-placeholder": "Description",
+        "machine-description": "Description",
+        "machine-uuid": "Unique Identifier",
+        "ram": "RAM",
+        "vcpu": "vCPU",
+        "ram-unit": "MiB",
+        "vcpu-unit": "cores",
+        "vcpu-unit_zero": "cores",
+        "vcpu-unit_one": "core",
+        "vcpu-unit_other": "cores",
+        "description-disks": "Here you can add additional disks for the machine.",
+        "drive-name": "Drive name",
+        "drive-size": "Drive size",
+        "drive-type": "Drive type",
+        "machine-configuration": "Machine configuration",
+        "domain-path": "Domain path",
+        "machine-port": "Port",
+        "state": "Machine state",
+        "active-connections": "Active connections",
+        "hardware-specifications": "Hardware Specifications",
+        "machine-details": "Machine Details",
+        "config-template": "Configuration Templates",
+        "machine-connection-types": "Connection types",
+        "validation": {
+            "name-spaces": "Name cannot contain spaces.",
+            "name-too-long": "Name length cannot exceed 50 characters.",
+            "name-too-short": "Name must be at least 3 characters long.",
+            "name-invalid-first": "Name must start with a letter.",
+            "name-invalid-characters": "Name may only contain alphanumeric characters, spaces, underscores, hyphens and periods.",
+            "tags-invalid-first": "Tag must start with a letter.",
+            "tags-invalid-characters": "Tags may only contain alphanumeric characters, spaces, underscores, hyphens and periods."
+        }
+    },
+    "login": {
+        "title": "Cherry VM Studio",
+        "description": "Log in with an authorized CVMS account",
+        "username-placeholder": "Enter your username",
+        "password-placeholder": "Enter your password"
+    },
+    "network-panel": {
+        "controls": {
+            "load-config": "Load configuration",
+            "default-presets": "Default presets",
+            "saved-snapshots": "Saved snapshots",
+            "presets": {
+                "DesktopX - ServerX": "DesktopX - ServerX",
+                "Unified Intnet": "Unified Intnet",
+                "Group-Based Intnet": "Group-Based Intnet",
+                "Isolated Intnet per VM": "Isolated Intnet per VM"
+            }
+        }
+    },
+    "contributors": {
+        "title-developers": "Developers",
+        "title-helpers": "Helpers",
+        "contributions": {
+            "virtualization": "Virtualization",
+            "networking": "Networking",
+            "cybersecurity": "Cybersecurity",
+            "api-layer": "API Layer",
+            "web-applications": "Web Applications",
+            "ui-ux": "UI/UX",
+            "ui-design": "UI Design",
+            "auth-system": "Auth System",
+            "branding": "Branding",
+            "graphics": "Graphics",
+            "pr": "Public Relations"
+        },
+        "descriptions": {
+            "kk": "Main backend developer focused on low-level virtualization solutions, application security, virtual networking, proxies, certification, and building the Cherry API for connecting Linux daemons with higher-level code. ",
+            "tk": "Main frontend developer responsible for creating the Cherry Web Panels, implementing responsive interfaces and interactive components, and building the Cherry API to translate backend sockets into accessible endpoints. Additionally, overseeing project branding and graphic design."
+        }
+    },
+    "credits": {
+        "project": {
+            "title": "2026 Cherry VM Studio",
+            "description": {
+                "1": "This work is authored by Krzysztof Kolasiński and Tomasz Kośla and is licensed under ",
+                "2": "Certain assets included in this project are subject to different licenses. Please refer to the <branding>branding</branding> and <thirdParty>third party dependencies</thirdParty> sections for detailed information. All rights reserved for respective owners."
+            }
+        },
+        "branding": {
+            "title": "Brand Assets",
+            "description": {
+                "1": "The following brand assets are not covered by the Cherry VM Studio main license. They are licensed separately and authored by different contributors.",
+                "2": "Use of these assets is limited to representing the Cherry VM Studio project.",
+                "3": "Modification, redistribution, or use outside this context is not permitted unless explicitly authorized.",
+                "4": "Cherry VM Studio Logo, Cherry VM Studio Logo Small and Cherry VM Studio Icon by Maja Cegłowska and Tomasz Kośla are licensed under "
+            }
+        },
+        "third-party": {
+            "title": "Third Party Dependencies",
+            "description": {
+                "1": "This project makes use of third-party software components and assets. Each listed dependency is licensed under its own respective license."
+            },
+            "frontend": "Frontend",
+            "frontend-description": "The frontend dependencies are used to build the Cherry Web Panels, providing the user-facing interface of the project.",
+            "backend": "Backend",
+            "backend-description": "The backend dependencies consist of Python libraries used to run the Cherry API, as well as components building up the backend virtualization infrastructure.",
+            "dependency": "Dependency",
+            "license": "License",
+            "key-dependencies": "Key dependencies",
+            "additional-packages": "Additional packages"
+        }
+    },
+    "accounts": {
+        "controls": {
+            "all-accounts": "All accounts",
+            "all-groups": "All groups",
+            "selected-accounts": "Selected accounts",
+            "selected-groups": "Selected groups",
+            "filtered-results": "Filtered results",
+            "search": "Search",
+            "filters": "Filters",
+            "import": "Import",
+            "create-group": "Create group",
+            "create-account": "Create account",
+            "delete-selected": "Delete selected",
+            "view-profile": "View profile",
+            "edit-account": "Edit account",
+            "delete": "Delete",
+            "view-and-edit": "View & Edit",
+            "change-password": "Change password"
+        },
+        "table": {
+            "headers": {
+                "user": "User",
+                "name": "Name",
+                "roles": "Roles",
+                "last-active": "Last active",
+                "groups": "Groups",
+                "member-count": "Member count",
+                "members": "Members"
+            },
+            "cells": {
+                "last-active": {
+                    "seconds_zero": "Now",
+                    "seconds_one": "{{count}} second ago",
+                    "seconds_other": "{{count}} seconds ago",
+                    "minutes_one": "{{count}} minute ago",
+                    "minutes_other": "{{count}} minutes ago",
+                    "hours_one": "{{count}} hour ago",
+                    "hours_other": "{{count}} hours ago",
+                    "days_one": "{{count}} day ago",
+                    "days_other": "{{count}} days ago"
+                }
+            }
+        },
+        "permissions": {
+            "intro": "This role allows users to",
+            "view-machines": "view all machines",
+            "manage-machines": "manage all machines",
+            "manage-client-accounts": "create, edit and remove client accounts",
+            "manage-administrative-accounts": "create, edit and remove administrative accounts",
+            "manage-all-accounts": "create, edit and remove all accounts",
+            "modify-clients-credentials": "modify client accounts' credentials",
+            "modify-administrators-credentials": "modify administrative accounts' credentials",
+            "modify-credentials": "modify all accounts' credentials",
+            "manage-iso-files": "create, edit and remove global ISO files",
+            "manage-system-resources": "set global system resource limits for administrators"
+        }
+    },
+    "snapshots": {
+        "controls": {
+            "all-snapshots": "All snapshots",
+            "selected-snapshots": "Selected snapshots",
+            "filtered-results": "Filtered results",
+            "filters": "Filters",
+            "import": "Import",
+            "delete-selected": "Delete selected",
+            "delete": "Delete"
+        },
+        "table": {
+            "headers": {
+                "name": "Name",
+                "creation-date": "Created",
+                "owner": "Owner",
+                "shared-with": "Shared with",
+                "size": "Size"
+            },
+            "cells": {
+                "shared-with": "Shared with",
+                "shared-by": "Shared by"
+            }
+        }
+    },
+    "iso": {
+        "controls": {
+            "all-files": "All files",
+            "selected-files": "Selected files",
+            "filtered-results": "Filtered results",
+            "filters": "Filters",
+            "import": "Import",
+            "delete-selected": "Delete selected",
+            "delete": "Delete",
+            "add-iso-file": "Add ISO File",
+            "view-and-edit": "View & Edit"
+        },
+        "table": {
+            "headers": {
+                "name": "Name",
+                "location": "Location",
+                "size": "Size",
+                "added": "Added",
+                "added-by": "Added by",
+                "last-used": "Last used",
+                "imported-at": "Imported at",
+                "last-modified-at": "Last modified at",
+                "imported-by": "Imported by",
+                "last-modified-by": "Last modified by"
+            }
+        }
+    },
+    "templates": {
+        "controls": {
+            "all-templates": "All templates",
+            "selected-templates": "Selected templates",
+            "filtered-results": "Filtered results",
+            "filters": "Filters",
+            "import": "Import",
+            "delete-selected": "Delete selected",
+            "delete": "Delete",
+            "create-template": "Create Template"
+        },
+        "table": {
+            "headers": {
+                "name": "Name",
+                "ram": "RAM",
+                "vcpu": "vCPU",
+                "creation-date": "Created"
+            },
+            "ram-unit": "MiB",
+            "vcpu-unit": "cores",
+            "vcpu-unit_zero": "cores",
+            "vcpu-unit_one": "core",
+            "vcpu-unit_other": "cores"
+        }
+    }
+}
