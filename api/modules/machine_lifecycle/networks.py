@@ -8,9 +8,7 @@ from typing import Union
 from uuid import UUID
 
 from modules.libvirt_socket import LibvirtConnection
-from modules.machine_lifecycle.xml_translator import get_required_xml_tag, get_required_xml_tag_attribute, parse_machine_xml, 
-from modules.machine_lifecycle.models import MachineNetworkInterface
-from modules.machine_state.state_management import is_vm_running
+from modules.machine_lifecycle.xml_translator import get_required_xml_tag, get_required_xml_tag_attribute, parse_machine_xml
 
 logger = logging.getLogger(__name__)
 
