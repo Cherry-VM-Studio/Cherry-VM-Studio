@@ -9,7 +9,7 @@ from uuid import UUID
 
 from modules.libvirt_socket import LibvirtConnection
 from modules.machine_lifecycle.xml_translator import get_required_xml_tag, get_required_xml_tag_attribute, parse_machine_xml, create_machine_network_interface_xml
-from modules.machine_lifecycle.models import MachineNetworkInterface, internet_interface
+from modules.machine_lifecycle.models import MachineNetworkInterface, InternetInterface
 from modules.postgresql.main import pool
 from modules.postgresql.simple_select import select_single_field
 
@@ -79,7 +79,7 @@ def attach_network_interface(machine_uuid: UUID, network_interface: MachineNetwo
                         
                         machine.attachDeviceFlags(interface_xml, flags)    
                         
-                    if network_interface.name == internet_interface.name:
+                    if network_interface.name == InternetInterface().name:
                         # If given network interface is the Internet interface a different table needs to be updated in the database 
                         cursor.execute(
                             "INSERT INTO internet_connections (machine_uuid, interface_mac) VALUES (%s, %s)",
@@ -136,7 +136,7 @@ def detach_network_interface(machine_uuid: UUID, mac_address: str):
                     raise Exception(f"Failed to detach network interface with MAC {mac_address} from machine {machine_uuid} because of Libvirt error: {e}")
                     
                 except Exception as e:
-                    raise Exception(f"Failed to detach network interface {network_interface.name} from machine {machine_uuid}: {e}")
+                    raise Exception(f"Failed to detach network interface with MAC {mac_address} from machine {machine_uuid}: {e}")
 
     
     

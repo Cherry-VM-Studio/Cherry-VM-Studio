@@ -1,5 +1,5 @@
 from uuid import UUID
-from pydantic import BaseModel, field_validator, model_validator
+from pydantic import BaseModel, field_validator, model_validator, Field
 from typing import Optional, Literal, Union, TypedDict
 from dataclasses import dataclass
 
@@ -40,11 +40,13 @@ class MachineNetworkInterface(BaseModel):
     mac: Optional[str] = None
     name: str  
     source: NetworkInterfaceSource
+
+class InternetInterface(MachineNetworkInterface):
+    name: str = "Internet"
     
-internet_interface = MachineNetworkInterface(
-    name = "Internet",
-    source = NetworkInterfaceSource(type = "network", value = "cherry-vm")
-)
+    source: NetworkInterfaceSource = Field(
+        default_factory=lambda: NetworkInterfaceSource(type="network", value="cherry-vm")
+    )
 
 class MachineGraphicalFramebuffer(BaseModel):
     type: Literal["rdp", "vnc"]
@@ -81,7 +83,7 @@ class MachineParameters(BaseModel):
     network_interfaces: Optional[list[MachineNetworkInterface]] = None
     
     internet_connectivity: bool = False
-    internet_interface: Optional[MachineNetworkInterface] = None
+    internet_interface: Optional[InternetInterface] = None
     
     # As long as default SSH access is not configured automatically the framebuffer element is obligatory, otherwise machine would be inaccessible.
     framebuffer: MachineGraphicalFramebuffer

@@ -9,7 +9,7 @@ from typing import Union, Optional, Any, Literal, List
 from pathlib import Path
 
 from modules.machine_lifecycle.disks import get_machine_disk_size
-from modules.machine_lifecycle.models import MachineParameters, MachineDisk, MachineNetworkInterface, MachineMetadata, StoragePool, MachineGraphicalFramebuffer, NetworkInterfaceSource, CreateMachineForm, CreateMachineFormDisk, internet_interface
+from modules.machine_lifecycle.models import MachineParameters, MachineDisk, MachineNetworkInterface, MachineMetadata, StoragePool, MachineGraphicalFramebuffer, NetworkInterfaceSource, CreateMachineForm, CreateMachineFormDisk, InternetInterface
 from modules.postgresql import select_rows
 
 logger = logging.getLogger(__name__)
@@ -110,6 +110,9 @@ def create_machine_network_interface_xml(network_interface: MachineNetworkInterf
         iface = ET.Element("interface", type=network_interface.source.type)
     else:
         iface = ET.SubElement(root_element, "interface", type=network_interface.source.type)
+
+    if network_interface.mac is not None:
+        ET.SubElement(iface, "mac", address=network_interface.mac)
 
     source_attribute = {network_interface.source.type: network_interface.source.value}
     ET.SubElement(iface, "source", attrib=source_attribute)
@@ -453,7 +456,7 @@ def parse_machine_xml(machine_xml: str) -> MachineParameters:
         internet_connectivity = False
         
         for interface in network_interfaces:
-            if interface.name == internet_interface.name:
+            if interface.name == InternetInterface().name:
                 internet_connectivity = True
 
         # Framebuffer
