@@ -518,6 +518,7 @@ configure_daemon_libvirt(){
                 <name>$NETWORK_VM_NAME</name>
                 <bridge name='${BR_VMBR}' stp='off' delay='0'/>
                 <forward mode='nat'/>
+                <port isolated='yes'/>
                 <ip address='${prefix_network_vm%.*}.1' prefix='$netmask_network_vm'>
                     <dhcp>
                         <range start='$dhcp_start_network_vm' end='$dhcp_end_network_vm'/>
