@@ -32,7 +32,7 @@ async def __read_groups__() -> dict[UUID, GroupExtended]:
     return all_groups
     
 
-@router.post("/create", response_model=GroupExtended, tags=['Client Groups'])
+@router.post("/create", response_model=UUID, tags=['Client Groups'])
 async def __create_group__(form: CreateGroupForm, current_user: DependsOnAdministrativeAuthentication) -> UUID:
     return UsersManager.create_group(form)
 
