@@ -17,7 +17,7 @@ import ConfirmationModal from "../../../../modals/base/ConfirmationModal/Confirm
 export interface NetworkWorkspaceSelectProps {
     selectedAccountUuid: string;
     setSelectedAccountUuid: React.Dispatch<React.SetStateAction<string>>;
-    isDirty: boolean;
+    isDirty: boolean | null;
     [key: string]: any;
 }
 
@@ -49,7 +49,7 @@ const NetworkWorkspaceSelect = ({ selectedAccountUuid, setSelectedAccountUuid, i
                     fullName: getFullUserName(user),
                     username: user.username,
                 }))
-                .sort((a) => (a.isCurrentUser ? -1 : 0)),
+                .sort((a) => (a.isCurrentUser ? -1 : 1)),
         [users, currentUserUuid, t],
     );
 

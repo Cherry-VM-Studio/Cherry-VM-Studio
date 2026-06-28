@@ -264,7 +264,6 @@ export interface MachineTemplate {
 export interface InternalNetwork {
     uuid: string;
     machines: string[];
-    number: number | null;
     display_name: string;
 }
 
