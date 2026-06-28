@@ -11,7 +11,6 @@ StoragePools = Literal["cvms-disk-images", "cvms-iso-images", "cvms-network-file
 
 ConnectionPermissions = ["READ", "UPDATE", "DELETE", "ADMINISTER"]
 
-
 class MachineMetadata(BaseModel):
     tag: str
     value: str
@@ -38,9 +37,14 @@ class NetworkInterfaceSource(BaseModel):
 
 
 class MachineNetworkInterface(BaseModel):
+    mac: Optional[str] = None
     name: str  
     source: NetworkInterfaceSource
     
+internet_interface = MachineNetworkInterface(
+    name = "Internet",
+    source = NetworkInterfaceSource(type = "network", value = "cherry-vm")
+)
 
 class MachineGraphicalFramebuffer(BaseModel):
     type: Literal["rdp", "vnc"]
@@ -77,6 +81,7 @@ class MachineParameters(BaseModel):
     network_interfaces: Optional[list[MachineNetworkInterface]] = None
     
     internet_connectivity: bool = False
+    internet_interface: Optional[MachineNetworkInterface] = None
     
     # As long as default SSH access is not configured automatically the framebuffer element is obligatory, otherwise machine would be inaccessible.
     framebuffer: MachineGraphicalFramebuffer

@@ -9,7 +9,7 @@ from typing import Union, Optional, Any, Literal, List
 from pathlib import Path
 
 from modules.machine_lifecycle.disks import get_machine_disk_size
-from modules.machine_lifecycle.models import MachineParameters, MachineDisk, MachineNetworkInterface, MachineMetadata, StoragePool, MachineGraphicalFramebuffer, NetworkInterfaceSource, CreateMachineForm, CreateMachineFormDisk
+from modules.machine_lifecycle.models import MachineParameters, MachineDisk, MachineNetworkInterface, MachineMetadata, StoragePool, MachineGraphicalFramebuffer, NetworkInterfaceSource, CreateMachineForm, CreateMachineFormDisk, internet_interface
 from modules.postgresql import select_rows
 
 logger = logging.getLogger(__name__)
@@ -80,11 +80,6 @@ def translate_machine_form_to_machine_parameters(machine_form: CreateMachineForm
     )
 
 
-internet_interface = MachineNetworkInterface(
-    name = "Internet",
-    source = NetworkInterfaceSource(type = "network", value = "cherry-vm")
-)
-
 ################################
 #    XML elements creation
 ################################
@@ -109,8 +104,12 @@ def create_machine_disk_xml(root_element: ET.Element, machine_disk: MachineDisk,
     return disk
 
 
-def create_machine_network_interface_xml(root_element: ET.Element, network_interface: MachineNetworkInterface) -> ET.Element:
-    iface = ET.SubElement(root_element, "interface", type=network_interface.source.type)
+def create_machine_network_interface_xml(network_interface: MachineNetworkInterface, root_element: Optional[ET.Element] = None) -> ET.Element:
+    
+    if root_element is None:
+        iface = ET.Element("interface", type=network_interface.source.type)
+    else:
+        iface = ET.SubElement(root_element, "interface", type=network_interface.source.type)
 
     source_attribute = {network_interface.source.type: network_interface.source.value}
     ET.SubElement(iface, "source", attrib=source_attribute)
@@ -243,10 +242,10 @@ def create_machine_xml(machine: MachineParameters, machine_uuid: UUID) -> str:
 
         if machine.network_interfaces:
             for nic in machine.network_interfaces:
-                create_machine_network_interface_xml(devices, nic)
+                create_machine_network_interface_xml(nic, devices)
 
-        if machine.internet_connectivity:
-            create_machine_network_interface_xml(devices, internet_interface)
+        if machine.internet_connectivity and machine.internet_interface is not None:
+            create_machine_network_interface_xml(machine.internet_interface, devices)
 
         create_machine_graphics_xml(devices, machine.framebuffer)
 
