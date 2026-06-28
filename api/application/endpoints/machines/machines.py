@@ -175,7 +175,7 @@ async def __modify_machine__(uuid: UUID, body: ModifyMachineForm, current_user: 
     if not has_permissions(current_user, PERMISSIONS.MANAGE_ALL_VMS) and not check_machine_access(uuid, current_user):
         raise HTTPException(403, "You do not have the necessary permissions to manage this resource.")
     
-    modify_machine(uuid, body)
+    await modify_machine(uuid, body)
     MachineWebSocketManager.on_machine_modify(uuid)
     
 

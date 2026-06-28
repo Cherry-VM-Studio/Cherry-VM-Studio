@@ -154,6 +154,8 @@ class ModifyMachineForm(BaseModel):
     config: CreateMachineFormConfig | None = None
     disks: list[CreateMachineFormDisk] | None = None
     
+    internet_connectivity: bool | None = None
+    
     @field_validator("title", "description", mode="before")
     @classmethod
     def strip_strings(cls, value):
