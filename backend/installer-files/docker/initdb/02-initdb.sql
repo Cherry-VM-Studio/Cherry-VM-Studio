@@ -1,5 +1,6 @@
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
+-- Clients and Administrators
 CREATE TABLE administrators (
     uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     username VARCHAR(24) UNIQUE NOT NULL,
@@ -51,6 +52,7 @@ CREATE TABLE clients_groups (
     FOREIGN KEY(group_uuid) REFERENCES groups(uuid) ON DELETE CASCADE
 );
 
+-- Machines
 CREATE TABLE deployed_machines_owners (
     machine_uuid UUID PRIMARY KEY,
     owner_uuid UUID,
@@ -72,6 +74,7 @@ CREATE TABLE network_panel_states (
 	FOREIGN KEY(owner_uuid) REFERENCES administrators(uuid) ON DELETE CASCADE
 );
 
+-- ISO Files, Machine Templates, Snapshots
 CREATE TABLE iso_files (
     uuid UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(24) UNIQUE NOT NULL,
@@ -116,6 +119,35 @@ CREATE TABLE machine_snapshots_shares (
     FOREIGN KEY(recipient_uuid) REFERENCES administrators(uuid) ON DELETE CASCADE
 );
 
+-- Network Interfaces and Internal Networks
+CREATE TABLE intnets (
+    uuid UUID PRIMARY KEY,
+    owner_uuid UUID,
+    intnet_name VARCHAR(50),
+    bridge_name VARCHAR(50),
+    bridge_mac macaddr NOT NULL,
+    bridge_ip inet,
+    FOREIGN KEY(owner_uuid) REFERENCES administrators(uuid) ON DELETE CASCADE
+);
+
+CREATE TABLE intnets_connections (
+    intnet_uuid UUID,
+    machine_uuid UUID,
+    interface_mac macaddr NOT NULL,
+    interface_ip inet,
+    interface_name VARCHAR(50),
+    PRIMARY KEY(intnet_uuid, machine_uuid, interface_mac),
+    FOREIGN KEY (intnet_uuid) REFERENCES intnets(uuid) ON DELETE CASCADE,
+    FOREIGN KEY (machine_uuid) REFERENCES deployed_machines_owners(machine_uuid) ON DELETE CASCADE
+);
+
+CREATE TABLE internet_connections(
+    machine_uuid UUID PRIMARY KEY,
+    interface_mac macaddr NOT NULL,
+    FOREIGN KEY (machine_uuid) REFERENCES deployed_machines_owners(machine_uuid) ON DELETE CASCADE
+);
+
+-- Indices
 CREATE INDEX administrators_idx ON administrators (uuid, username, email);
 CREATE INDEX clients_idx ON clients (uuid, username, email);
 CREATE INDEX roles_idx ON roles (uuid, name);
@@ -128,6 +160,8 @@ CREATE INDEX network_panel_states_idx ON network_panel_states(owner_uuid);
 CREATE INDEX machine_snapshots_idx ON machine_snapshots(uuid, owner_uuid);
 CREATE INDEX machine_snapshots_shares_idx ON machine_snapshots_shares(snapshot_uuid, recipient_uuid);
 CREATE INDEX iso_files_idx ON iso_files (uuid, name);
+CREATE INDEX intnets_idx ON intnets (uuid, owner_uuid, intnet_name);
+CREATE INDEX intnets_connections_idx ON intnets_connections (intnet_uuid, machine_uuid, interface_mac);
 
 
 -- Insert roles
