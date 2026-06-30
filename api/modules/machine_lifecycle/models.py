@@ -1,5 +1,5 @@
 from uuid import UUID
-from pydantic import BaseModel, field_validator, model_validator
+from pydantic import BaseModel, field_validator, model_validator, Field
 from typing import Optional, Literal, Union, TypedDict
 from dataclasses import dataclass
 
@@ -10,7 +10,6 @@ DiskType = Literal["raw", "qcow2", "qed", "qcow", "luks", "vdi", "vmdk", "vpc", 
 StoragePools = Literal["cvms-disk-images", "cvms-iso-images", "cvms-network-filesystems"]
 
 ConnectionPermissions = ["READ", "UPDATE", "DELETE", "ADMINISTER"]
-
 
 class MachineMetadata(BaseModel):
     tag: str
@@ -38,9 +37,16 @@ class NetworkInterfaceSource(BaseModel):
 
 
 class MachineNetworkInterface(BaseModel):
+    mac: Optional[str] = None
     name: str  
     source: NetworkInterfaceSource
+
+class InternetInterface(MachineNetworkInterface):
+    name: str = "Internet"
     
+    source: NetworkInterfaceSource = Field(
+        default_factory=lambda: NetworkInterfaceSource(type="network", value="cherry-vm")
+    )
 
 class MachineGraphicalFramebuffer(BaseModel):
     type: Literal["rdp", "vnc"]
@@ -75,6 +81,9 @@ class MachineParameters(BaseModel):
     iso_image: Optional[StoragePool] = None
                                               
     network_interfaces: Optional[list[MachineNetworkInterface]] = None
+    
+    internet_connectivity: bool = False
+    internet_interface: Optional[InternetInterface] = None
     
     # As long as default SSH access is not configured automatically the framebuffer element is obligatory, otherwise machine would be inaccessible.
     framebuffer: MachineGraphicalFramebuffer
@@ -116,6 +125,8 @@ class CreateMachineForm(BaseModel):
     disks: list[CreateMachineFormDisk]
     os_disk: int = 0
     
+    internet_connectivity: bool = False
+    
     @field_validator("title", "description", mode="before")
     @classmethod
     def strip_strings(cls, value):
@@ -144,6 +155,8 @@ class ModifyMachineForm(BaseModel):
     
     config: CreateMachineFormConfig | None = None
     disks: list[CreateMachineFormDisk] | None = None
+    
+    internet_connectivity: bool | None = None
     
     @field_validator("title", "description", mode="before")
     @classmethod

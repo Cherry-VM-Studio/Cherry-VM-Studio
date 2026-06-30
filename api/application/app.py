@@ -6,17 +6,22 @@ from h11 import Request
 from pydantic import ValidationError
 from contextlib import asynccontextmanager
 from modules.postgresql.main import open_async_pool, close_async_pool
+from modules.machine_websockets.main_manager import MachineWebSocketManager
 
 from .endpoints.authentication import authentication
-from .endpoints.machine_resources.iso_files import main as iso_files
+from .endpoints.machine_resources.iso_files import main as iso_files, upload as iso_files_upload
 from .endpoints.machine_resources.machine_templates import main as machine_templates
 from .endpoints.machines import machines, network, websockets
 from .endpoints.users import users, groups, roles
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    MachineWebSocketManager.start_all_broadcasts()
     await open_async_pool()
+
     yield
+
+    MachineWebSocketManager.stop_all_broadcasts()
     await close_async_pool()
 
 app = FastAPI(root_path="/api", lifespan=lifespan)
@@ -29,6 +34,7 @@ app.add_middleware(
 )
 app.include_router(authentication.router)
 app.include_router(iso_files.router)
+app.include_router(iso_files_upload.router)
 app.include_router(machine_templates.router)
 app.include_router(machines.router)
 app.include_router(machines.debug_router)

@@ -10,12 +10,13 @@ from uuid import UUID, uuid4
 
 from modules.libvirt_socket import LibvirtConnection
 from modules.machine_lifecycle.remote_access import update_machine_clients
-from modules.machine_lifecycle.models import MachineParameters, CreateMachineForm, MachineBulkSpec, ConnectionPermissions, ModifyMachineForm
+from modules.machine_lifecycle.models import MachineParameters, CreateMachineForm, MachineBulkSpec, ConnectionPermissions, ModifyMachineForm, InternetInterface, MachineNetworkInterface
 from modules.machine_lifecycle.xml_translator import create_machine_xml, parse_machine_xml, translate_machine_form_to_machine_parameters
 from modules.machine_lifecycle.disks import delete_machine_disk, machine_disks_cleanup, create_machine_disk
-from modules.machine_lifecycle.networks import get_network_bridge_ip
+from modules.machine_lifecycle.networks import get_network_bridge_ip, attach_network_interface, detach_network_interface
 from modules.postgresql.main import async_pool
 from modules.postgresql.simple_select import select_single_field
+from utils.mac import generate_random_mac
 from config.env_config import ENV_CONFIG
 
 logger = logging.getLogger(__name__)
@@ -63,6 +64,10 @@ async def create_machine_async(machine: CreateMachineForm, owner_uuid: UUID) -> 
         VALUES (%s, %s, %s)
     """
     
+    insert_internet_connection = """
+        INSERT INTO internet_connections (machine_uuid, interface_mac)
+        VALUES (%s, %s)
+    """
     
     async with async_pool.connection() as connection:
         async with connection.cursor() as cursor:
@@ -152,9 +157,17 @@ async def create_machine_async(machine: CreateMachineForm, owner_uuid: UUID) -> 
                         for index, disk in enumerate(machine_parameters.additional_disks, start = 1):
                             disk.uuid = created_disk_uuids[index]
                     
+                    # Network interfaces need to be modified, each with their own unique MAC address as Libvirt does not use UUIDs when identifying interfaces
+                    if machine_parameters.internet_connectivity is True:
+                        logger.debug(f"Creating Internet interface for machine {machine_parameters.uuid}")
+                        internet_interface_mac = generate_random_mac()
+                        machine_parameters.internet_interface = InternetInterface(mac=internet_interface_mac)
+                        
+                        logger.debug(f"Inserting db records into internet_connections for machine {machine_parameters.uuid}")
+                        await cursor.execute(insert_internet_connection, (machine_parameters.uuid, internet_interface_mac))
+                        
                     # MachineParameters instance populated with disk UUIDs is passed on to be translated into a Libvirt accepted XML string.
                     machine_xml = create_machine_xml(machine_parameters, machine_parameters.uuid)
-                    
                     
                     # Async Libvirt machines definiton. By default Libvirt operations are synchronous.
                     def define_machine():
@@ -231,6 +244,11 @@ async def create_machine_async_bulk(machines: List[MachineBulkSpec], owner_uuid:
     insert_guacamole_connection_parameter = """
         INSERT INTO guacamole_connection_parameter (connection_id, parameter_name, parameter_value)
         VALUES (%s, %s, %s)
+    """
+    
+    insert_internet_connection = """
+        INSERT INTO internet_connections (machine_uuid, interface_mac)
+        VALUES (%s, %s)
     """
     
     created_machines: list[UUID] = []
@@ -337,6 +355,15 @@ async def create_machine_async_bulk(machines: List[MachineBulkSpec], owner_uuid:
                                 parameter,
                                 value
                             ))
+                        
+                        # Network interfaces need to be modified, each with their own unique MAC address as Libvirt does not use UUIDs when identifying interfaces
+                        if machine_clone.internet_connectivity is True:
+                            logger.debug(f"Creating Internet interface for machine {machine_clone.uuid}")
+                            internet_interface_mac = generate_random_mac()
+                            machine_clone.internet_interface = InternetInterface(mac=internet_interface_mac)
+                            
+                            logger.debug(f"Inserting db records into internet_connections for machine {machine_clone.uuid}")
+                            await cursor.execute(insert_internet_connection, (machine_clone.uuid, internet_interface_mac))
                         
                     # Async per machine disk creation
                     async def create_machine_disks_async(machine: MachineParameters):
@@ -556,8 +583,10 @@ async def delete_machine_async(machine_uuid: UUID) -> bool:
 
     return success
 
-
-def modify_machine(machine_uuid: UUID, form: ModifyMachineForm):
+################################
+#         Modification
+################################
+async def modify_machine(machine_uuid: UUID, form: ModifyMachineForm):
     if form.title is not None:
         pass
     if form.description is not None:
@@ -570,3 +599,33 @@ def modify_machine(machine_uuid: UUID, form: ModifyMachineForm):
         pass
     if form.disks is not None:
         pass
+    if form.internet_connectivity is not None:
+        select_internet_interface_mac = """
+            SELECT interface_mac FROM internet_connections WHERE machine_uuid = %s;
+        """
+        async with async_pool.connection() as connection:
+            async with connection.cursor() as cursor:
+                async with connection.transaction():
+                    try:
+                        await cursor.execute(select_internet_interface_mac, (machine_uuid,))
+                        
+                        internet_interface_result = await cursor.fetchone()
+                        
+                        if internet_interface_result is not None:
+                            internet_interface_mac = internet_interface_result["interface_mac"]
+                        else:
+                            internet_interface_mac = None
+                                
+                        if form.internet_connectivity is True and internet_interface_mac is None:
+                            internet_interface_mac = generate_random_mac()
+                            attach_network_interface(machine_uuid, InternetInterface(mac=internet_interface_mac))
+                        elif form.internet_connectivity is False and internet_interface_mac is not None:
+                            detach_network_interface(machine_uuid, internet_interface_mac)
+                        else:
+                            logger.info(f"No changes to Internet connectivity for machine {machine_uuid}.")
+                            
+                    except libvirt.libvirtError as e:
+                        raise Exception(f"Failed to modify the Internet connectivity for machine {machine_uuid} because of Libvirt error:\n{e}")
+            
+                    except Exception as e:
+                        raise Exception(f"Failed to modify the Internet connectivity for machine {machine_uuid}:\n{e}")

@@ -5,11 +5,11 @@ import string
 import xml.etree.ElementTree as ET
 
 from uuid import UUID, uuid4
-from typing import Union, Optional, Any, Literal
+from typing import Union, Optional, Any, Literal, List
 from pathlib import Path
 
 from modules.machine_lifecycle.disks import get_machine_disk_size
-from modules.machine_lifecycle.models import MachineParameters, MachineDisk, MachineNetworkInterface, MachineMetadata, StoragePool, MachineGraphicalFramebuffer, NetworkInterfaceSource, CreateMachineForm, CreateMachineFormDisk
+from modules.machine_lifecycle.models import MachineParameters, MachineDisk, MachineNetworkInterface, MachineMetadata, StoragePool, MachineGraphicalFramebuffer, NetworkInterfaceSource, CreateMachineForm, CreateMachineFormDisk, InternetInterface
 from modules.postgresql import select_rows
 
 logger = logging.getLogger(__name__)
@@ -75,7 +75,8 @@ def translate_machine_form_to_machine_parameters(machine_form: CreateMachineForm
         iso_image = (StoragePool(pool = "cvms-iso-images", volume = f"{str(machine_form.source_uuid)}.iso") if machine_form.source_type == "iso" else None),
         # Add snapshot as source type,
         framebuffer = MachineGraphicalFramebuffer(type = "vnc", autoport = True, listen_type = "network", listen_network = "cherry-ras"),
-        assigned_clients = machine_form.assigned_clients
+        assigned_clients = machine_form.assigned_clients,
+        internet_connectivity = machine_form.internet_connectivity
     )
 
 
@@ -103,15 +104,25 @@ def create_machine_disk_xml(root_element: ET.Element, machine_disk: MachineDisk,
     return disk
 
 
-def create_machine_network_interface_xml(root_element: ET.Element, network_interface: MachineNetworkInterface) -> ET.Element:
-    iface = ET.SubElement(root_element, "interface", type=network_interface.source.type)
+def create_machine_network_interface_xml(network_interface: MachineNetworkInterface, root_element: Optional[ET.Element] = None) -> ET.Element:
     
-    ET.SubElement(iface, "alias", name=network_interface.name)
+    if root_element is None:
+        iface = ET.Element("interface", type=network_interface.source.type)
+    else:
+        iface = ET.SubElement(root_element, "interface", type=network_interface.source.type)
+
+    if network_interface.mac is not None:
+        ET.SubElement(iface, "mac", address=network_interface.mac)
 
     source_attribute = {network_interface.source.type: network_interface.source.value}
     ET.SubElement(iface, "source", attrib=source_attribute)
     
+    # Servers a similar purpose to alias, but is present even when the machine is offline.
+    # Used for information purposes only, not as a unique identifier.
+    ET.SubElement(iface, "target", dev=network_interface.name)
+    
     ET.SubElement(iface, "model", type="virtio")
+    
     return iface
 
 
@@ -234,7 +245,10 @@ def create_machine_xml(machine: MachineParameters, machine_uuid: UUID) -> str:
 
         if machine.network_interfaces:
             for nic in machine.network_interfaces:
-                create_machine_network_interface_xml(devices, nic)
+                create_machine_network_interface_xml(nic, devices)
+
+        if machine.internet_connectivity and machine.internet_interface is not None:
+            create_machine_network_interface_xml(machine.internet_interface, devices)
 
         create_machine_graphics_xml(devices, machine.framebuffer)
 
@@ -302,13 +316,13 @@ def parse_machine_disk(disk_element: ET.Element) -> MachineDisk:
     )
 
 
-def parse_machine_network_interface(iface_element: ET.Element) -> MachineNetworkInterface | None:
+def parse_machine_network_interface(iface_element: ET.Element) -> MachineNetworkInterface:
     """
     Parse <interface> element back into MachineNetworkInterface model.
     """
-    # Name
-    alias_el = get_required_xml_tag(iface_element, "alias")
-    name = get_required_xml_tag_attribute(alias_el, "name")
+    
+    target_el = get_required_xml_tag(iface_element, "target")
+    target = get_required_xml_tag_attribute(target_el, "dev")
 
     # Source type and value
     source_el = get_required_xml_tag(iface_element, "source")
@@ -330,7 +344,7 @@ def parse_machine_network_interface(iface_element: ET.Element) -> MachineNetwork
     source = NetworkInterfaceSource(type=source_type, value=source_value) # type: ignore
 
     return MachineNetworkInterface(
-        name=name,
+        name=target,
         source=source
     )
 
@@ -437,6 +451,13 @@ def parse_machine_xml(machine_xml: str) -> MachineParameters:
         network_interfaces = []
         for iface_element in devices_el.findall("interface"):
             network_interfaces.append(parse_machine_network_interface(iface_element))
+        
+        # Internet access
+        internet_connectivity = False
+        
+        for interface in network_interfaces:
+            if interface.name == InternetInterface().name:
+                internet_connectivity = True
 
         # Framebuffer
         graphics_element = get_required_xml_tag(devices_el, "graphics")
@@ -457,6 +478,7 @@ def parse_machine_xml(machine_xml: str) -> MachineParameters:
             additional_disks=additional_disks if additional_disks else None,
             iso_image=iso_image,
             network_interfaces=network_interfaces if network_interfaces else None,
+            internet_connectivity=internet_connectivity,
             framebuffer=framebuffer,
             assigned_clients=assigned_clients
         )   
