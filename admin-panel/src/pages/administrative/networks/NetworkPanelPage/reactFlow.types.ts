@@ -1,4 +1,5 @@
-import { Machine } from "../../../../types/api.types";
+import { IconDeviceDesktop } from "@tabler/icons-react";
+import { InternalNetwork, Machine } from "../../../../types/api.types";
 import type { Node } from "@xyflow/react";
 
 export interface Position {
@@ -6,36 +7,34 @@ export interface Position {
     y: number;
 }
 
-export interface Intnet {
-    uuid: string;
-    number: number;
-    machines: string[];
-}
-
 export interface Flow {
     // nodes: (MachineNode | IntnetNode)[];
 }
 
-export type Intnets = Record<string, Intnet>;
+export type Intnets = Record<string, InternalNetwork>;
 
 export type NodeType = "machine" | "intnet" | "cloud";
 
 export type NodeDataMap = {
     machine: Machine;
-    intnet: Intnet;
+    intnet: InternalNetwork;
     cloud: undefined;
 };
 
-export interface MachineNodeObject extends Node {
-    type: "machine";
-}
+type MachineNodeData = {
+    icon: typeof IconDeviceDesktop;
+    label: string;
+};
 
-export interface IntnetNodeObject extends Node {
-    type: "intnet";
-    number: number;
-    intnet: string; // uuid
-}
+type IntnetNodeData = {
+    intnet: string;
+    label: string;
+};
 
-export interface CloudNodeObject extends Node {
-    type: "cloud";
-}
+export type MachineNode = Node<MachineNodeData, "machine">;
+
+export type IntnetNode = Node<IntnetNodeData, "intnet">;
+
+export type CloudNode = Node<never, "cloud">;
+
+export type NetworkPanelNode = MachineNode | IntnetNode | CloudNode;

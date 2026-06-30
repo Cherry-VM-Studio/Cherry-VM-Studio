@@ -14,6 +14,7 @@ from .endpoints.machine_resources.machine_templates import main as machine_templ
 from .endpoints.machines import machines, network, websockets
 from .endpoints.users import users, groups, roles
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     MachineWebSocketManager.start_all_broadcasts()

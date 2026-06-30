@@ -2,9 +2,13 @@ import { Container } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import {
     Background,
+    Connection,
     ConnectionMode,
     Controls,
+    Edge,
+    EdgeChange,
     MiniMap,
+    NodeChange,
     ReactFlow,
     ReactFlowInstance,
     ReactFlowProvider,
@@ -35,14 +39,15 @@ import {
     getNodeId,
     getResourceUuidFromNode,
 } from "./reactFlow.ts";
-import { Intnet, IntnetNodeObject, Intnets, NodeDataMap, Position } from "./reactFlow.types.ts";
+import { NetworkPanelNode, NodeDataMap, Position } from "./reactFlow.types.ts";
 import _ from "lodash";
 import MachineNode from "../../../../components/atoms/flow-nodes/MachineNode/MachineNode.tsx";
 import IntnetNode from "../../../../components/atoms/flow-nodes/IntnetNode/IntnetNode.tsx";
 import { isAxiosError } from "axios";
 import { useProfile } from "../../../../contexts/ProfileContext.tsx";
 import CloudNode from "../../../../components/atoms/flow-nodes/CloudNode/CloudNode.tsx";
-import { NetworkConfiguration } from "../../../../types/api.types.ts";
+import { InternalNetwork, NetworkConfiguration } from "../../../../types/api.types.ts";
+import PositionAllocator from "../../../../handlers/positionAllocator.ts";
 
 const NODE_TYPES = {
     machine: MachineNode,
@@ -71,16 +76,17 @@ const Flow = (): JSX.Element => {
     const { sendRequest } = useApi();
     const { getProfile } = useProfile();
 
-    const [selectedAccountUuid, setSelectedAccountUuid] = useState(getProfile()?.uuid || null);
-    const [nodes, setNodes] = useState([]);
-    const [edges, setEdges] = useState([]);
-    const [rfInstance, setRfInstance] = useState<ReactFlowInstance>(null);
+    const [selectedAccountUuid, setSelectedAccountUuid] = useState(getProfile().uuid);
+    const [nodes, setNodes] = useState<NetworkPanelNode[]>([]);
+    const [edges, setEdges] = useState<Edge[]>([]);
+    const [rfInstance, setRfInstance] = useState<ReactFlowInstance<NetworkPanelNode, Edge> | null>(null);
 
     const initCount = useRef(0);
     const intnetAllocator = useRef(new NumberAllocator()).current;
-    const newPositionsAllocator = useRef(new NumberAllocator()).current;
+    const positionsAllocator = useRef(new PositionAllocator()).current;
 
-    const generateNewPos = () => ({ x: newPositionsAllocator.getNext() * 200, y: 0 });
+    // returns the suffix number if the intnet has a default display name, else returns null
+    const getIntnetNumber = (displayName: string) => +(/^Intnet\s+(\d+)$/.exec(displayName)?.[1] ?? NaN) || null;
 
     /**
      * [isDirty]
@@ -88,22 +94,22 @@ const Flow = (): JSX.Element => {
      * false - no unsaved changes
      * null - no unsaved changes and just loaded
      */
-    const [isDirty, setIsDirty] = useState(null);
+    const [isDirty, setIsDirty] = useState<boolean | null>(null);
 
-    const paths = {
+    const PATHS = {
         machines: `/machines/account/${selectedAccountUuid ?? ""}`,
         getWorkspace: `/network/workspace/${selectedAccountUuid ?? ""}`,
         putPositions: `/network/configuration/positions/${selectedAccountUuid ?? ""}`,
         putConfiguration: `/network/configuration/networks/${selectedAccountUuid ?? ""}`,
-    };
+    } as const;
 
-    const { error: machinesError, data: machines, refresh: refreshMachines } = useFetch(paths.machines);
+    const { error: machinesError, data: machines, refresh: refreshMachines } = useFetch(PATHS.machines);
 
     // adds new nodes to the flow
-    const addNodes = (...nodes) => setNodes((nds) => [...nds, ...nodes.flat()]);
+    const addNodes = (...nodes: NetworkPanelNode[]) => setNodes((nds) => [...nds, ...nodes.flat()]);
 
     // adds an edge between nodes in the flow
-    const addEdgeToFlow = (edge) => {
+    const addEdgeToFlow = (edge: Edge) => {
         setEdges((eds) => addEdge(edge, eds));
         setIsDirty(true);
     };
@@ -112,7 +118,7 @@ const Flow = (): JSX.Element => {
      * Handles changes to nodes in the flow.
      * Marks the flow as unsaved (dirty) if changes are made.
      */
-    const onNodesChange = useCallback((changes) => {
+    const onNodesChange = useCallback((changes: NodeChange<NetworkPanelNode>[]) => {
         setNodes((nds) => applyNodeChanges(changes, nds));
         if (changes && !changes.every((e) => e.type === "dimensions")) setIsDirty(true);
     }, []);
@@ -121,14 +127,27 @@ const Flow = (): JSX.Element => {
      * Handles the deletion of nodes from the flow.
      * When deleting an intnet node, removes the intnet number from the allocator,
      * allowing for future intnets to use its number.
+     * No need to mark the flow as unsaved - on node deletion the function above, onNodesChange, also runs and it handles it already.
      */
-    const onNodesDelete = useCallback((deletedNodes) => deletedNodes.forEach((node) => intnetAllocator.remove(node?.number)), []);
+    const onNodesDelete = useCallback(
+        (deletedNodes: NetworkPanelNode[]) =>
+            deletedNodes.forEach((node) => {
+                if (node.type !== "intnet") return;
+
+                // checks if the intnet node has a default name and extracts the number suffix
+                const number = getIntnetNumber(node.data.label);
+
+                // removes the number suffix of the deleted node
+                if (!_.isNull(number)) intnetAllocator.remove(number);
+            }),
+        [],
+    );
 
     /**
      * Handles changes to edges in the flow.
      * Marks the flow as unsaved (dirty).
      */
-    const onEdgesChange = useCallback((changes) => {
+    const onEdgesChange = useCallback((changes: EdgeChange<Edge>[]) => {
         setEdges((eds) => applyEdgeChanges(changes, eds));
         setIsDirty(true);
     }, []);
@@ -138,27 +157,37 @@ const Flow = (): JSX.Element => {
      * When connecting a machine to another machine, it automatically creates a new internal network between them.
      */
     const onNodesConnect = useCallback(
-        ({ source, target }) => {
-            if (source.startsWith("intnet") || source.startsWith("cloud")) return;
-            if (target.startsWith("intnet") || target.startsWith("cloud")) return addEdgeToFlow({ source: source, target: target });
+        (connection: Connection) => {
+            const { source, target } = connection;
 
-            const intnet = { uuid: uuidv4(), number: intnetAllocator.getNext() } as Intnet;
-            const intnetPosition = calcMiddlePosition(getNode(source).position, getNode(target).position);
+            if (source.startsWith("intnet") || source.startsWith("cloud")) {
+                return console.warn("Somehow the user managed to create a connection between intnets/cloud.", connection);
+            }
+
+            // connection started from a machine node and ending on a intnet/cloud node.
+            if (target.startsWith("intnet") || target.startsWith("cloud")) {
+                return addEdgeToFlow({ source: source, target: target } as Edge);
+            }
+
+            // connection between two machine nodes
+            // new intnet is created
+            const intnet = { uuid: uuidv4(), display_name: `Intnet ${intnetAllocator.getNext()}` } as InternalNetwork;
+            const intnetPosition = calcMiddlePosition(getNode(source)!.position, getNode(target)!.position) as Position;
             const intnetNode = generateIntnetNodeObject(intnet, intnetPosition);
 
             addNodes(intnetNode);
-            addEdgeToFlow({ source: target, target: intnetNode.id });
-            addEdgeToFlow({ source: source, target: intnetNode.id });
+            addEdgeToFlow({ source: target, target: intnetNode.id } as Edge);
+            addEdgeToFlow({ source: source, target: intnetNode.id } as Edge);
         },
         [setEdges],
     );
 
-    const getNodePositions = useCallback(() => rfInstance.getNodes().reduce((acc, node) => ({ ...acc, [node.id]: node.position }), {}), [rfInstance]);
+    const getNodePositions = useCallback(() => rfInstance?.getNodes().reduce((acc, node) => ({ ...acc, [node.id]: node.position }), {}) ?? {}, [rfInstance]);
 
     const getNetworksConfig = (): NetworkConfiguration => {
         const edges = getEdges();
-        const intnets = {};
-        const machinesWithInternetAccess = [];
+        const intnets: Record<string, InternalNetwork> = {};
+        const machinesWithInternetAccess: string[] = [];
 
         edges.forEach(({ source, target }) => {
             const machineUuid = getResourceUuidFromNode(source);
@@ -174,7 +203,6 @@ const Flow = (): JSX.Element => {
             if (!intnets[intnetUuid]) {
                 intnets[intnetUuid] = {
                     uuid: intnetUuid,
-                    number: (getNode(intnetUuid) as IntnetNodeObject).number,
                     machines: [],
                     display_name: "",
                 };
@@ -193,9 +221,9 @@ const Flow = (): JSX.Element => {
     const createFlowNodes = <T extends keyof NodeDataMap>(nodeType: T, data: NodeDataMap[T][], positions: Record<string, Position>) => {
         if (_.isEmpty(data)) return;
 
-        const getPos = (uuid: string) => positions[getNodeId(nodeType, uuid)] ?? generateNewPos();
+        const getPos = (uuid: string) => positions[getNodeId(nodeType, uuid)] ?? positionsAllocator.getNext();
 
-        addNodes(data.map((node) => generateNodeObject(nodeType, node, getPos(node.uuid))));
+        addNodes(...data.map((node) => generateNodeObject(nodeType, node, getPos(nodeType === "cloud" ? "" : node!.uuid)) as NetworkPanelNode));
     };
 
     const createCloudNode = (positions: Record<string, Position>) => {
@@ -207,7 +235,7 @@ const Flow = (): JSX.Element => {
     const createMachineNodes = (positions: Record<string, Position>) => createFlowNodes("machine", _.values(machines), positions);
 
     // Creates edges between machine nodes and intnet nodes based on the intnet configuration.
-    const createIntnetEdges = (intnets: Intnet[]) => {
+    const createIntnetEdges = (intnets: InternalNetwork[]) => {
         if (_.isEmpty(intnets)) return;
 
         intnets.forEach(({ uuid, machines }) =>
@@ -215,7 +243,7 @@ const Flow = (): JSX.Element => {
                 addEdgeToFlow({
                     source: getNodeId("machine", machineUuid),
                     target: getNodeId("intnet", uuid),
-                });
+                } as Edge);
             }),
         );
     };
@@ -228,7 +256,7 @@ const Flow = (): JSX.Element => {
             addEdgeToFlow({
                 source: getNodeId("machine", machineUuid),
                 target: CLOUD_ID,
-            });
+            } as Edge);
         });
     };
 
@@ -240,6 +268,8 @@ const Flow = (): JSX.Element => {
             const intnetsArray = _.values(configuration.internal_networks).filter((intnet) => intnet.machines.length > 1);
             const internetArray = configuration.machines_with_internet_access;
 
+            positionsAllocator.setBounds(_.values(positions));
+
             setNodes([]);
             setEdges([]);
 
@@ -248,15 +278,18 @@ const Flow = (): JSX.Element => {
             createFlowNodes("intnet", intnetsArray, positions);
             createIntnetEdges(intnetsArray);
             createInternetEdges(internetArray);
-            intnetAllocator.setCurrent(Math.max(...intnetsArray.map((e) => e.number), 0));
-            newPositionsAllocator.setCurrent(0);
+
+            const takenIntnetNumbers = intnetsArray.map((intnet) => getIntnetNumber(intnet.display_name)).filter((e) => !_.isNull(e));
+
+            intnetAllocator.setCurrent(Math.max(...takenIntnetNumbers, 0));
+
             resolve();
         });
     };
 
     // Resets the flow to the current network configuration from the backend.
     const resetFlow = async () => {
-        const { configuration, positions } = await sendRequest("GET", paths.getWorkspace);
+        const { configuration, positions } = await sendRequest("GET", PATHS.getWorkspace);
         return loadFlowWithIntnets(positions, configuration);
     };
 
@@ -274,10 +307,10 @@ const Flow = (): JSX.Element => {
     }, [resetFlow]);
 
     // Sends a PUT request to save the current flow panel state.
-    const putNodePositions = () => sendRequest("PUT", paths.putPositions, { data: getNodePositions() });
+    const putNodePositions = () => sendRequest("PUT", PATHS.putPositions, { data: getNodePositions() });
 
     // Sends a PUT request to save the internal network (Intnet) configuration.
-    const putIntnetConfiguration = () => sendRequest("PUT", paths.putConfiguration, { data: getNetworksConfig() });
+    const putIntnetConfiguration = () => sendRequest("PUT", PATHS.putConfiguration, { data: getNetworksConfig() });
 
     // Saves the current flow state and internal network (Intnet) configuration.
     const applyNetworkConfig = async () => {
@@ -306,12 +339,12 @@ const Flow = (): JSX.Element => {
 
     if (machinesError) {
         handleAxiosError(machinesError);
-        return;
+        return <></>;
     }
 
     return (
         <>
-            <Prompt when={isDirty} />
+            <Prompt when={isDirty ?? false} />
             <Container
                 flex="1"
                 fluid
@@ -353,10 +386,10 @@ const Flow = (): JSX.Element => {
     );
 };
 
-export default function NetworkPanelPage(props) {
+export default function NetworkPanelPage() {
     return (
         <ReactFlowProvider>
-            <Flow {...props} />
+            <Flow />
         </ReactFlowProvider>
     );
 }

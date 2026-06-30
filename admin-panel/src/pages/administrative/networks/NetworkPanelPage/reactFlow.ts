@@ -1,6 +1,7 @@
 import { IconDeviceDesktop } from "@tabler/icons-react";
-import { CloudNodeObject, IntnetNodeObject, MachineNodeObject, NodeDataMap, NodeType, Position } from "./reactFlow.types";
+import { CloudNode, IntnetNode, MachineNode, NodeDataMap, NodeType, Position } from "./reactFlow.types";
 import _ from "lodash";
+import { Node } from "@xyflow/react";
 
 export const NODE_ID_SEPERATOR = ":::";
 export const CLOUD_ID = "cloud:::";
@@ -26,7 +27,7 @@ export const calcMiddlePosition = (...positions: Position[]) => {
     };
 };
 
-export const extractPositionsFromNodes = (nodes) => nodes?.reduce((acc, { id, position }) => ({ ...acc, [id]: position }), {}) ?? {};
+export const extractPositionsFromNodes = (nodes: Node[]) => nodes?.reduce((acc, { id, position }) => ({ ...acc, [id]: position }), {}) ?? {};
 
 export const generateNodeObject = <T extends keyof NodeDataMap>(type: T, data: NodeDataMap[T], position: Position) => {
     const creators = {
@@ -51,19 +52,18 @@ export const generateMachineNodeObject = (machine: NodeDataMap["machine"], posit
             label: `${machine.title}\n${machine.uuid}`,
             icon: IconDeviceDesktop,
         },
-    }) as MachineNodeObject;
+    }) as MachineNode;
 
 export const generateIntnetNodeObject = (intnet: NodeDataMap["intnet"], position: Position) =>
     ({
         id: getNodeId("intnet", intnet.uuid),
         type: "intnet",
-        intnet: intnet.uuid,
         position: position,
-        number: intnet.number,
         data: {
-            label: `Intnet ${intnet.number ?? intnet.uuid.substring(0, 4)}`,
+            label: intnet.display_name ?? `Intnet ${intnet.uuid}`,
+            intnet: intnet.uuid,
         },
-    }) as IntnetNodeObject;
+    }) as IntnetNode;
 
 export const generateCloudNodeObject = (position: Position) =>
     ({
@@ -72,4 +72,4 @@ export const generateCloudNodeObject = (position: Position) =>
         position: position,
         deletable: false,
         selectable: false,
-    }) as CloudNodeObject;
+    }) as CloudNode;

@@ -4,6 +4,7 @@ import MachineActivityIndicator from "../feedback/MachineActivityIndicator/Machi
 import BadgeGroup from "../display/BadgeGroup/BadgeGroup";
 import { MachineState } from "../../../types/api.types";
 import { CellContext } from "@tanstack/react-table";
+import _ from "lodash";
 
 interface MachineDetails {
     uuid: string;
@@ -18,7 +19,7 @@ const MachineDetailsCell = ({ getValue }: CellContext<unknown, MachineDetails>):
     return (
         <Group
             gap="lg"
-            align="start"
+            align="stretch"
             c="white"
             wrap="nowrap"
         >
@@ -26,7 +27,11 @@ const MachineDetailsCell = ({ getValue }: CellContext<unknown, MachineDetails>):
                 state={state}
                 pt="xs"
             />
-            <Stack gap="2">
+            <Stack
+                gap="2"
+                justify="center"
+                mih="0"
+            >
                 <Text
                     tt="capitalize"
                     size="lg"
@@ -34,10 +39,14 @@ const MachineDetailsCell = ({ getValue }: CellContext<unknown, MachineDetails>):
                 >
                     {name ?? "Unnamed Machine"}
                 </Text>
-                <BadgeGroup
-                    size="sm"
-                    items={tags ?? []}
-                />
+                {!_.isEmpty(tags) ? (
+                    <BadgeGroup
+                        size="sm"
+                        items={tags ?? []}
+                    />
+                ) : (
+                    <></>
+                )}
             </Stack>
         </Group>
     );

@@ -10,7 +10,7 @@ export interface FlowPanelProps {
     resetFlow: () => void;
     applyNetworkConfig: () => void;
     refreshMachines: () => void;
-    isDirty: boolean;
+    isDirty: boolean | null;
     selectedAccountUuid: string;
     setSelectedAccountUuid: React.Dispatch<React.SetStateAction<string>>;
 }
