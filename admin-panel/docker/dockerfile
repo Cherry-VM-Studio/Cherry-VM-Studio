@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.7-labs
-FROM node:18-alpine
+FROM node:22.14.0-alpine
 
 LABEL org.opencontainers.image.source=https://github.com/Krzysztoff27/Cherry-VM-Manager
 LABEL org.opencontainers.image.description="Cherry Admin Panel"
