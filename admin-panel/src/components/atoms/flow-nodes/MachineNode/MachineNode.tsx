@@ -1,10 +1,11 @@
 import { Handle, Position, useConnection } from "@xyflow/react";
 import { Stack, Text } from "@mantine/core";
 import classes from "./MachineNode.module.css";
+import { MachineNodeData } from "../../../../pages/administrative/networks/NetworkPanelPage/reactFlow.types";
 
 export interface MachineNodeProps {
     id: string;
-    data: any;
+    data: MachineNodeData;
 }
 
 const MachineNode = ({ id, data }: MachineNodeProps): React.JSX.Element => {

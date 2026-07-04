@@ -1,0 +1,3 @@
+:global(.react-flow__node.selected) {
+    color: var(--mantine-color-cherry-5);
+}

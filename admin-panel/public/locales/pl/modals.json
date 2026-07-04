@@ -58,7 +58,7 @@
             "username-too-short": "Nazwa użytkownika musi mieć co najmniej 3 znaki.",
             "username-too-long": "Długość nazwy użytkownika nie może przekraczać 24 znaków.",
             "username-spaces": "Nazwa użytkownika nie może zawierać spacji.",
-            "username-invalid-first": "Nazwa użytkownika musi zaczynać się od litery.",
+            "username-invalid-first": "Nazwa użytkownika musi zaczynać się literą.",
             "username-invalid-characters": "Nazwa użytkownika może zawierać tylko znaki alfanumeryczne, podkreślenia, myślniki i kropki.",
             "username-duplicate": "Użytkownik o tej nazwie już istnieje.",
             "email-invalid": "Nieprawidłowy adres email.",
@@ -183,7 +183,7 @@
         "validation": {
             "name-too-long": "Nazwa nie może mieć więcej niż 24 znaków.",
             "name-too-short": "Nazwa musi mieć co najmniej 3 znaki.",
-            "name-invalid-first": "Nazwa musi zaczynać się od litery.",
+            "name-invalid-first": "Nazwa musi zaczynać się literą.",
             "name-invalid-characters": "Nazwa może zawierać tylko znaki alfanumeryczne, spacje, podkreślenia, myślniki i kropki.",
             "name-duplicate": "Rekord ISO o tej nazwie już istnieje.",
             "file-invalid-extension": "Wybrany plik musi mieć rozszerzenie .iso.",
@@ -213,7 +213,7 @@
         "validation": {
             "name-too-long": "Nazwa nie może mieć więcej niż 24 znaków.",
             "name-too-short": "Nazwa musi mieć co najmniej 3 znaki.",
-            "name-invalid-first": "Nazwa musi zaczynać się od litery.",
+            "name-invalid-first": "Nazwa musi zaczynać się literą.",
             "name-invalid-characters": "Nazwa może zawierać tylko znaki alfanumeryczne, spacje, podkreślenia, myślniki i kropki."
         }
     },
@@ -255,9 +255,9 @@
             "name-spaces": "Nazwa nie może zawierać spacji.",
             "name-too-long": "Nazwa nie może mieć więcej niż 24 znaki.",
             "name-too-short": "Nazwa musi mieć co najmniej 3 znaki.",
-            "name-invalid-first": "Nazwa musi zaczynać się od litery.",
+            "name-invalid-first": "Nazwa musi zaczynać się literą.",
             "name-invalid-characters": "Nazwa może zawierać tylko znaki alfanumeryczne, podkreślenia, myślniki i kropki.",
-            "tags-invalid-first": "Każdy tag musi zaczynać się od litery.",
+            "tags-invalid-first": "Każdy tag musi zaczynać się literą.",
             "tags-invalid-characters": "Tagi mogą zawierać tylko znaki alfanumeryczne, podkreślenia, myślniki i kropki.",
             "source-uuid-empty": "Nie wybrano źródła."
         }

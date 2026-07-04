@@ -1,4 +1,4 @@
-import { Container } from "@mantine/core";
+import { Container, Group, Stack } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import {
     Background,
@@ -37,9 +37,9 @@ import {
     generateIntnetNodeObject,
     generateNodeObject,
     getNodeId,
+    getResourceTypeFromNode,
     getResourceUuidFromNode,
 } from "./reactFlow.ts";
-import { NetworkPanelNode, NodeDataMap, Position } from "./reactFlow.types.ts";
 import _ from "lodash";
 import MachineNode from "../../../../components/atoms/flow-nodes/MachineNode/MachineNode.tsx";
 import IntnetNode from "../../../../components/atoms/flow-nodes/IntnetNode/IntnetNode.tsx";
@@ -48,6 +48,9 @@ import { useProfile } from "../../../../contexts/ProfileContext.tsx";
 import CloudNode from "../../../../components/atoms/flow-nodes/CloudNode/CloudNode.tsx";
 import { InternalNetwork, NetworkConfiguration } from "../../../../types/api.types.ts";
 import PositionAllocator from "../../../../handlers/positionAllocator.ts";
+import "./NetworkPanelPage.module.css";
+import NetworkPanelSelectedNodeForm from "../../../../components/organisms/forms/NetworkPanelSelectedNodeForm/NetworkPanelSelectedNodeForm.tsx";
+import { NetworkPanelNode, NodeDataMap, Position } from "./reactFlow.types.ts";
 
 const NODE_TYPES = {
     machine: MachineNode,
@@ -84,6 +87,8 @@ const Flow = (): JSX.Element => {
     const initCount = useRef(0);
     const intnetAllocator = useRef(new NumberAllocator()).current;
     const positionsAllocator = useRef(new PositionAllocator()).current;
+
+    const selectedNode = nodes.find((n) => n.selected);
 
     // returns the suffix number if the intnet has a default display name, else returns null
     const getIntnetNumber = (displayName: string) => +(/^Intnet\s+(\d+)$/.exec(displayName)?.[1] ?? NaN) || null;
@@ -181,6 +186,38 @@ const Flow = (): JSX.Element => {
         },
         [setEdges],
     );
+
+    const onManualSelect = (nodeId: string | null) => {
+        setNodes((nodes) => nodes.map((node) => ({ ...node, selected: node.id === nodeId })));
+
+        const selected = nodes.find((node) => node.id === nodeId);
+
+        if (!selected) return;
+
+        setCenter(selected.position.x + 50, selected.position.y + 50);
+        zoomTo(getZoom() - 0.5, { duration: 500 });
+    };
+
+    const onManualEdgeRemoval = ({ source, target }: Edge) => {
+        setEdges((edges) => edges.filter((e) => e.source !== source || e.target !== target));
+    };
+
+    const onManualIntnetCreation = (name: string, connectedNode: NetworkPanelNode) => {
+        const intnet = { uuid: uuidv4(), display_name: name } as InternalNetwork;
+        const intnetNode = generateIntnetNodeObject(intnet, positionsAllocator.getNext());
+        addNodes(intnetNode);
+        addEdgeToFlow({ source: connectedNode.id, target: intnetNode.id } as Edge);
+    };
+
+    const onIntnetRename = (nodeId: string, name: string) => {
+        if (getResourceTypeFromNode(nodeId) !== "intnet") return;
+        setNodes((prev) => prev.map((node) => (node.id === nodeId ? _.merge({}, node, { data: { label: name } }) : node)));
+    };
+
+    const onIntnetRemove = (nodeId: string) => {
+        if (getResourceTypeFromNode(nodeId) !== "intnet") return;
+        setNodes((prev) => prev.filter((n) => n.id !== nodeId));
+    };
 
     const getNodePositions = useCallback(() => rfInstance?.getNodes().reduce((acc, node) => ({ ...acc, [node.id]: node.position }), {}) ?? {}, [rfInstance]);
 
@@ -345,11 +382,12 @@ const Flow = (): JSX.Element => {
     return (
         <>
             <Prompt when={isDirty ?? false} />
-            <Container
+            <Group
                 flex="1"
-                fluid
+                gap="0"
             >
                 <ReactFlow
+                    connectOnClick={false}
                     colorMode="dark"
                     connectionMode={ConnectionMode.Loose}
                     onInit={setRfInstance}
@@ -364,6 +402,9 @@ const Flow = (): JSX.Element => {
                     edgeTypes={EDGE_TYPES}
                     defaultEdgeOptions={DEFAULT_EDGE_OPTIONS}
                     connectionLineComponent={FloatingConnectionLine}
+                    style={{
+                        flex: 4,
+                    }}
                 >
                     <FlowPanel
                         refreshMachines={refreshMachines}
@@ -381,7 +422,21 @@ const Flow = (): JSX.Element => {
                     />
                     <Background />
                 </ReactFlow>
-            </Container>
+                <NetworkPanelSelectedNodeForm
+                    flex={1}
+                    display={selectedNode ? "flex" : "none"}
+                    selectedNode={selectedNode}
+                    nodes={nodes}
+                    edges={edges}
+                    machines={machines}
+                    onManualSelect={onManualSelect}
+                    onManualEdgeRemoval={onManualEdgeRemoval}
+                    onManualEdgeCreation={addEdgeToFlow}
+                    onManualIntnetCreation={onManualIntnetCreation}
+                    onIntnetRename={onIntnetRename}
+                    onIntnetRemove={onIntnetRemove}
+                />
+            </Group>
         </>
     );
 };

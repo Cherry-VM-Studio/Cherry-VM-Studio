@@ -21,12 +21,12 @@ export type NodeDataMap = {
     cloud: undefined;
 };
 
-type MachineNodeData = {
+export type MachineNodeData = {
     icon: typeof IconDeviceDesktop;
     label: string;
 };
 
-type IntnetNodeData = {
+export type IntnetNodeData = {
     intnet: string;
     label: string;
 };

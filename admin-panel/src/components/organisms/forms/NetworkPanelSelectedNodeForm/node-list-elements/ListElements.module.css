@@ -1,0 +1,14 @@
+.container {
+    background-color: var(--mantine-color-dark-6);
+    padding: 6px var(--mantine-spacing-xs);
+    border-radius: var(--mantine-radius-md);
+}
+
+.label {
+    font-size: var(--mantine-font-size-sm);
+}
+
+.id {
+    font-size: var(--mantine-font-size-xs);
+    color: var(--mantine-color-dimmed);
+}

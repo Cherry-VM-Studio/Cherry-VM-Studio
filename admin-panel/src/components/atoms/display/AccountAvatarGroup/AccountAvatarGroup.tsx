@@ -21,6 +21,7 @@ const AccountAvatarGroup = ({ users, max = 5, avatarProps, dropdownLabel, ...pro
     return (
         <HoverCard
             openDelay={1000}
+            position="bottom-start"
             {...props}
             withinPortal
         >
