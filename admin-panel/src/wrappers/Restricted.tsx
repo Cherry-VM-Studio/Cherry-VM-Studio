@@ -6,7 +6,7 @@ const Restricted = ({ children, requiredPermissions }: { children: any; required
 
     const hasPermissions = (user?.permissions | requiredPermissions) === requiredPermissions;
 
-    if (!user || loading || error || !hasPermissions) return;
+    if (!user || loading || error || !hasPermissions) return <></>;
     return children;
 };
 

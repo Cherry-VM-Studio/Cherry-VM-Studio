@@ -104,20 +104,26 @@ export default function LoginPage() {
                         withAsterisk
                         key={form.key("password")}
                         {...form.getInputProps("password")}
+                        styles={{ input: { fontSize: "var(--mantine-font-size-sm)" } }} // important
                     />
                     <Group
                         justify="space-between"
                         mt="md"
                     >
-                        <Button
+                        {/* <Button
                             onClick={() => navigate("/")}
                             style={{ fontWeight: 500 }}
                             color="dark.1"
                             variant="light"
                         >
                             {t("go-back")}
+                        </Button> */}
+                        <Button
+                            ml="auto"
+                            type="submit"
+                        >
+                            {t("log-in")}
                         </Button>
-                        <Button type="submit">{t("log-in")}</Button>
                     </Group>
                 </Fieldset>
             </Center>

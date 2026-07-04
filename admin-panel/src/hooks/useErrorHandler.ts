@@ -20,7 +20,6 @@ const useErrorHandler = (): ErrorHandlerReturn => {
         const detail = data?.detail;
         const variant = ERROR_VARIANTS_MAP[code]?.[detail];
 
-        console.error(error);
         sendErrorNotification([code, variant] as ErrorCode | ExpandedErrorCode);
         return error;
     };

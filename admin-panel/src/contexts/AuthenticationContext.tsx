@@ -37,8 +37,8 @@ export const AuthenticationProvider = ({ children }: { children?: ReactNode }): 
     };
 
     const logout = () => {
+        // navigate("/login");
         clearTokens();
-        navigate("/login");
     };
 
     const tokens = useMemo(

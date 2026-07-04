@@ -4,6 +4,7 @@ import { useCookies } from "react-cookie";
 import { UserExtended } from "../types/api.types";
 import useApi from "../hooks/useApi";
 import { useAuthentication } from "./AuthenticationContext";
+import useErrorHandler from "../hooks/useErrorHandler";
 
 export interface ProfileContextValue {
     getProfile: () => UserExtended;
@@ -16,6 +17,7 @@ export const ProfileProvider = ({ children }: { children?: ReactNode }): ReactNo
     const [cookies, setCookies] = useCookies(["cached_profile"]);
     const { tokens } = useAuthentication();
     const { sendRequest } = useApi();
+    const { handleAxiosError } = useErrorHandler();
 
     const setCachedProfile = (profile: UserExtended | null) => setCookies("cached_profile", profile, { path: "/" });
 
@@ -24,7 +26,11 @@ export const ProfileProvider = ({ children }: { children?: ReactNode }): ReactNo
     };
 
     const updateProfile = async () => {
-        const res = await sendRequest("GET", "/users/me");
+        // important to override the default error handler here so that the notification doesnt show up after logging out
+        const res = await sendRequest("GET", "/users/me", undefined, (error) => {
+            if (error.status === 401) return;
+            handleAxiosError(error);
+        });
         setCachedProfile(isAxiosError(res) ? null : res);
     };
 
