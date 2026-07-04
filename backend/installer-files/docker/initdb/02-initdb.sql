@@ -183,10 +183,19 @@ INSERT INTO administrators (uuid, username, password)
 VALUES 
     ('83212b1e-b222-4bba-a1d4-450e08cbbeb1', 'root', '$2b$12$GNkVdiV24DIhBWYssz0H9.22nhoI1EuT9TNXRpwUHOCRKyKa7.wfS');
 
--- Insert corresponding guacamole_entity record to allow for one-to-one user mapping
+-- Insert corresponding guacamole_entity and guacamole_user records to allow for one-to-one user mapping
 INSERT INTO guacamole_entity (name, type)
 VALUES
     ('83212b1e-b222-4bba-a1d4-450e08cbbeb1', 'USER');
+
+INSERT INTO guacamole_user (entity_id, password_hash, password_date, disabled, expired) 
+VALUES
+    (
+        (SELECT entity_id FROM guacamole_entity WHERE name = '83212b1e-b222-4bba-a1d4-450e08cbbeb1'), 
+        '', 
+        NOW(), 
+        FALSE, 
+        FALSE);
 
 -- Assign roles to root administrator
 INSERT INTO administrators_roles (administrator_uuid, role_uuid)
