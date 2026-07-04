@@ -8,7 +8,7 @@ from modules.users.permissions import has_permissions
 
 
 def validate_machines_in_network_configuration(network_configuration: NetworkConfiguration, logged_in_user: AdministratorExtended):
-    machine_uuids = set(*network_configuration.machines_with_internet_access)
+    machine_uuids = set(network_configuration.machines_with_internet_access)
     
     for intnet in network_configuration.internal_networks.values():
         for machine_uuid in intnet.machines:
