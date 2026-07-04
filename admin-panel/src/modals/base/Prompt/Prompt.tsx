@@ -1,5 +1,6 @@
 import { Button, Modal, SimpleGrid, Stack, Text } from "@mantine/core";
 import ReactRouterPrompt from "react-router-prompt";
+import useNamespaceTranslation from "../../../hooks/useNamespaceTranslation";
 
 /**
  * A prompt that alerts the user when attempting to navigate away from a page with unsaved changes.
@@ -16,6 +17,8 @@ interface RouterPromptRenderProps {
 }
 
 export default function Prompt({ when }: PromptProps) {
+    const { tns, t } = useNamespaceTranslation("modals", "confirm.leaving");
+
     return (
         <ReactRouterPrompt
             when={when}
@@ -37,9 +40,9 @@ export default function Prompt({ when }: PromptProps) {
                             size="xl"
                             fw={600}
                         >
-                            You're leaving the page
+                            {tns("title")}
                         </Text>
-                        <Text size="sm">You have unsaved changes that will be permanently lost if you leave this page. Are you sure you want to continue?</Text>
+                        <Text size="sm">{tns("description")}</Text>
                         <SimpleGrid
                             mt="xs"
                             cols={2}
@@ -48,18 +51,15 @@ export default function Prompt({ when }: PromptProps) {
                                 onClick={onCancel}
                                 variant="light"
                                 color="gray"
-                                radius="sm"
                                 data-autofocus
                             >
-                                Return
+                                {t("return")}
                             </Button>
                             <Button
                                 onClick={onConfirm}
-                                variant="light"
-                                color="red.9"
-                                radius="sm"
+                                variant="white"
                             >
-                                Leave page
+                                {t("leave-page")}
                             </Button>
                         </SimpleGrid>
                     </Stack>

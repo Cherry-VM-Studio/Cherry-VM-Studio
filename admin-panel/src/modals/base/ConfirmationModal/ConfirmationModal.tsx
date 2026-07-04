@@ -46,8 +46,7 @@ export default function ConfirmationModal({
                     </Button>
                     <Button
                         onClick={onConfirm}
-                        variant="light"
-                        color="gray"
+                        variant="white"
                         radius="sm"
                         {...confirmButtonProps}
                     >

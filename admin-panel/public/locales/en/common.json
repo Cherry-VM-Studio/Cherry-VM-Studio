@@ -108,5 +108,9 @@
     "your-environment": "Your environment",
     "select-environment": "Select environment",
     "load-more": "Load more",
-    "internet-gateway": "Internet gateway"
+    "internet-gateway": "Internet gateway",
+    "assigned-clients": "Assigned clients",
+    "machine-details": "Machine details",
+    "name-saved": "Name saved",
+    "name-saving": "Saving name"
 }

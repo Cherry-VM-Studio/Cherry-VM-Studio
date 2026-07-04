@@ -51,7 +51,7 @@ const IsoTable = ({ isoFiles, loading, error, refresh }: IsoTableProps): React.J
                         component: DeleteModal,
                         props: {
                             i18nextPrefix: "confirm.iso-removal",
-                            path: "isos/delete",
+                            path: "iso/delete",
                         },
                     },
                 },
