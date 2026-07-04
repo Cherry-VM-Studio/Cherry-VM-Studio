@@ -108,5 +108,9 @@
   "your-environment": "Twoje środowisko",
   "select-environment": "Wybierz środowisko",
   "load-more": "Wczytaj więcej",
-  "internet-gateway": "Brama internetowa"
+  "internet-gateway": "Brama internetowa",
+  "assigned-clients": "Przypisani klienci",
+  "machine-details": "Informacje o maszynie",
+  "name-saved": "Zapisano nazwę",
+  "name-saving": "Zapisywanie nazwy"
 }

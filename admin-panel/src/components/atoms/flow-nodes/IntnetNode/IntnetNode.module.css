@@ -10,3 +10,10 @@ div.customHandle {
     border: none;
     opacity: 0;
 }
+
+.intnetNode {
+    align-items: center;
+    padding: 2px;
+    gap: 0;
+    width: 100px;
+}

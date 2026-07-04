@@ -1,19 +1,15 @@
 import { Handle, Position } from "@xyflow/react";
 import { Stack, Text } from "@mantine/core";
 import classes from "./IntnetNode.module.css";
+import { IntnetNodeData } from "../../../../pages/administrative/networks/NetworkPanelPage/reactFlow.types";
 
 export interface IntnetNodeProps {
-    data: any;
+    data: IntnetNodeData;
 }
 
 const IntnetNode = ({ data }: IntnetNodeProps): React.JSX.Element => {
     return (
-        <Stack
-            align="center"
-            p="2"
-            gap="0"
-            w={100}
-        >
+        <Stack className={classes.intnetNode}>
             <Handle
                 className={classes.customHandle}
                 position={Position.Left}
@@ -22,7 +18,6 @@ const IntnetNode = ({ data }: IntnetNodeProps): React.JSX.Element => {
             />
             <Text
                 ta="center"
-                tt="capitalize"
                 style={{ fontSize: "18px" }}
             >
                 {data.label}

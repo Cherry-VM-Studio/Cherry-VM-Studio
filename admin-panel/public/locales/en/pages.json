@@ -133,6 +133,33 @@
                 "Group-Based Intnet": "Group-Based Intnet",
                 "Isolated Intnet per VM": "Isolated Intnet per VM"
             }
+        },
+        "selection-form": {
+            "sections": {
+                "selected-node": "Selected node",
+                "selected-machine-data": "Selected machine data",
+                "properties": "Properties"
+            },
+            "not-selected": "Select a node to manage",
+            "internal-network-connections": "Internal network connections",
+            "connected-machines": "Connected machines",
+            "internet-access": "Internet access",
+            "internet-access-description": "Machine can access the internet",
+            "add-connection": "Add connection",
+            "create-new-intnet": "Create new intnet",
+            "creating-new-intnet": "Creating new intnet",
+            "display-name": "Display name",
+            "intnet-validation": {
+                "name-too-long": "Name length cannot exceed 50 characters.",
+                "name-too-short": "Name must be at least 3 characters long.",
+                "name-invalid-first": "Name must start with a letter.",
+                "name-invalid-characters": "Name may only contain alphanumeric characters, spaces, underscores, hyphens and periods."
+            },
+            "delete-intnet": "Delete intnet",
+            "intnet-removal": {
+                "title": "Intnernal network removal",
+                "description": "Selected internal network will be removed. Are you sure you want to continue?"
+            }
         }
     },
     "contributors": {

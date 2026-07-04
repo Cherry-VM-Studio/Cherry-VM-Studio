@@ -110,13 +110,13 @@
         "config-template": "Szablony konfiguracji",
         "machine-connection-types": "Typy połączeń",
         "validation": {
-            "name-spaces": "Name cannot contain spaces.",
-            "name-too-long": "Name length cannot exceed 24 characters.",
-            "name-too-short": "Name must be at least 3 characters long.",
-            "name-invalid-first": "Name must start with a letter.",
-            "name-invalid-characters": "Name may only contain alphanumeric characters, spaces, underscores, hyphens and periods.",
-            "tags-invalid-first": "Tag must start with a letter.",
-            "tags-invalid-characters": "Tags may only contain alphanumeric characters, spaces, underscores, hyphens and periods."
+            "name-spaces": "Nazwa maszyny nie może zawierać spacji.",
+            "name-too-long": "Nazwa maszyny nie może przekraczać 24 znaków",
+            "name-too-short": "Nazwa maszyny musi mieć przynajmniej 3 znaki długości.",
+            "name-invalid-first": "Nazwa musi zaczynać się literą.",
+            "name-invalid-characters": "Nazwa maszyny może zawierać tylko znaki alfanumeryczne, podkreślenia, myślniki i kropki..",
+            "tags-invalid-first": "Tagi muszą zaczynać się literą.",
+            "tags-invalid-characters": "Tagi mogą zawierać tylko znaki alfanumeryczne, podkreślenia, myślniki i kropki."
         }
     },
     "login": {
@@ -135,6 +135,33 @@
                 "Unified Intnet": "Jedna sieć",
                 "Group-Based Intnet": "Sieć na grupę",
                 "Isolated Intnet per VM": "Brak połączeń"
+            }
+        },
+        "selection-form": {
+            "sections": {
+                "selected-node": "Wybrany obiekt",
+                "selected-machine-data": "Informacje o wybranym obiekcie",
+                "properties": "Właściwości"
+            },
+            "not-selected": "Wybierz obiekt z listy",
+            "internal-network-connections": "Połączenia sieci wewnętrznych",
+            "connected-machines": "Podłączone maszyny",
+            "internet-access": "Dostęp do internetu",
+            "internet-access-description": "Maszyna ma dostęp do internetu",
+            "add-connection": "Dodaj połączenie",
+            "create-new-intnet": "Stwórz nową sieć wewnętrzną",
+            "creating-new-intnet": "Tworzenie nowej sieci wewnętrznej",
+            "display-name": "Wyświetlana nazwa",
+            "intnet-validation": {
+                "name-too-long": "Nazwa sieci nie może przekraczać 50 znaków.",
+                "name-too-short": "Nazwa sieci musi mieć co najmniej 3 znaki długości.",
+                "name-invalid-first": "Nazwa sieci musi zaczynać się literą.",
+                "name-invalid-characters": "Nazwa sieci może zawierać tylko znaki alfanumeryczne, podkreślenia, myślniki i kropki."
+            },
+            "delete-intnet": "Usuń sieć",
+            "intnet-removal": {
+                "title": "Usuwanie sieci wewnętrznej",
+                "description": "Wybrana sieć wewnętrzna zostanie usunięta. Czy jesteś pewien, że chcesz kontynuować?"
             }
         }
     },

@@ -1,4 +1,4 @@
-import { Button, Loader, Modal, Stack, TextInput, TextInputProps } from "@mantine/core";
+import { Button, Group, Loader, Modal, Stack, TextInput, TextInputProps } from "@mantine/core";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useField } from "@mantine/form";
@@ -6,11 +6,11 @@ import { useField } from "@mantine/form";
 export interface TextFieldModalProps {
     opened: boolean;
     title: string;
-    children: React.JSX.Element;
+    children?: React.JSX.Element;
     inputProps?: TextInputProps | null;
     initialValue?: string;
     error?: string;
-    onValidate?: (val: string) => boolean | null;
+    onValidate?: (val: string) => string | null;
     onConfirm: (val: string) => any;
     onCancel: () => any;
 }
@@ -24,15 +24,17 @@ const TextFieldModal = (p: TextFieldModalProps): React.JSX.Element => {
         validate: p.onValidate,
     });
 
-    const onConfirm = () => {
+    const onConfirm = async () => {
         setLoading(true);
-        field
-            .validate()
-            .then((invalid) => !invalid && p.onConfirm(field.getValue()))
-            .then(() => {
-                setLoading(false);
-                field.reset();
-            });
+
+        const validation = await field.validate();
+
+        if (!validation) {
+            p.onConfirm(field.getValue());
+            field.reset();
+        } else field.setError(validation);
+
+        setLoading(false);
     };
 
     const onCancel = () => {
@@ -42,8 +44,11 @@ const TextFieldModal = (p: TextFieldModalProps): React.JSX.Element => {
     };
 
     useEffect(() => {
-        field.setError(p.error);
-    }, [p.error]);
+        if (p.opened) {
+            field.setValue(p.initialValue ?? "");
+            field.setError(null);
+        }
+    }, [p.opened, p.initialValue]);
 
     return (
         <Modal
@@ -54,19 +59,33 @@ const TextFieldModal = (p: TextFieldModalProps): React.JSX.Element => {
             <Stack>
                 {p.children}
                 <TextInput
-                    {...p.inputProps}
                     {...field.getInputProps()}
+                    {...p.inputProps}
                     rightSection={loading ? <Loader size={18} /> : null}
+                    classNames={{ input: "borderless" }}
                 />
-                <Button
-                    type="submit"
-                    variant="light"
-                    radius="sm"
-                    data-autofocus
-                    onClick={onConfirm}
-                >
-                    {t("confirm")}
-                </Button>
+
+                <Group justify="center">
+                    <Button
+                        type="submit"
+                        variant="light"
+                        flex="1"
+                        data-autofocus
+                        color="gray"
+                        onClick={onCancel}
+                    >
+                        {t("cancel")}
+                    </Button>
+                    <Button
+                        type="submit"
+                        variant="white"
+                        data-autofocus
+                        onClick={onConfirm}
+                        flex="1"
+                    >
+                        {t("confirm")}
+                    </Button>
+                </Group>
             </Stack>
         </Modal>
     );

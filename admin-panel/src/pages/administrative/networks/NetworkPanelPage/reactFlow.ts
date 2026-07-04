@@ -8,7 +8,9 @@ export const CLOUD_ID = "cloud:::";
 
 export const getNodeId = (type: NodeType, resourceUuid: string) => `${type}${NODE_ID_SEPERATOR}${resourceUuid}`;
 
-export const getResourceUuidFromNode = (nodeId: string) => nodeId.split(NODE_ID_SEPERATOR)[1] || null;
+export const getResourceUuidFromNode = (nodeId: string): string | null => nodeId.split(NODE_ID_SEPERATOR)[1] || null;
+
+export const getResourceTypeFromNode = (nodeId: string): string | null => nodeId.split(NODE_ID_SEPERATOR)[0] || null;
 
 export const calcMiddlePosition = (...positions: Position[]) => {
     if (positions.length === 0) return null;
@@ -47,9 +49,9 @@ export const generateMachineNodeObject = (machine: NodeDataMap["machine"], posit
         type: "machine",
         position: position,
         deletable: false,
-        selectable: false,
+        selectable: true,
         data: {
-            label: `${machine.title}\n${machine.uuid}`,
+            label: machine.title,
             icon: IconDeviceDesktop,
         },
     }) as MachineNode;
@@ -59,6 +61,8 @@ export const generateIntnetNodeObject = (intnet: NodeDataMap["intnet"], position
         id: getNodeId("intnet", intnet.uuid),
         type: "intnet",
         position: position,
+        deletable: false,
+        selectable: true,
         data: {
             label: intnet.display_name ?? `Intnet ${intnet.uuid}`,
             intnet: intnet.uuid,
@@ -71,5 +75,8 @@ export const generateCloudNodeObject = (position: Position) =>
         type: "cloud",
         position: position,
         deletable: false,
-        selectable: false,
+        selectable: true,
+        data: {
+            label: "Internet Gateway",
+        },
     }) as CloudNode;

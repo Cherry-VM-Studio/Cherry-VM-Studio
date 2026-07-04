@@ -1,0 +1,31 @@
+.container {
+    justify-content: start;
+    height: 100%;
+    padding: var(--mantine-spacing-md);
+}
+
+.machineDetails {
+    gap: var(--mantine-spacing-sm);
+}
+
+.machineTitleStack {
+    gap: 0;
+}
+
+.machineTitle {
+    height: 100%;
+    text-transform: capitalize;
+    font-size: var(--mantine-font-size-md);
+    font-weight: 600;
+}
+
+.machineSubtitle {
+    font-size: var(--mantine-font-size-xs);
+    padding: 2px;
+    color: var(--mantine-color-dimmed);
+}
+
+.sectionText {
+    font-weight: 700;
+    font-size: var(--mantine-font-size-xs) !important;
+}
