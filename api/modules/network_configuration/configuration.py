@@ -1,15 +1,19 @@
+import logging
 from uuid import UUID
 from fastapi.encoders import jsonable_encoder
 from psycopg.types.json import Jsonb
 from .models import NetworkConfiguration, NetworkConfiguration, Positions
 from modules.postgresql import pool, select_one
+from modules.postgresql.simple_select import select_rows
 
-
+logger = logging.getLogger(__name__)
 # intnets
 
 def get_current_network_configuration(owner_uuid: UUID) -> NetworkConfiguration:
     # TODO
     # should return network configuration for machines owned by owner_uuid
+    
+    
     
     return NetworkConfiguration(
         internal_networks={},

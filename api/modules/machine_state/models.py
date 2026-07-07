@@ -1,7 +1,6 @@
-from uuid import UUID, uuid4
-from pydantic import BaseModel, Field
-from typing import Literal, Type
-from modules.websockets.models import Command
+from uuid import UUID
+from pydantic import BaseModel
+from typing import Literal
 from modules.users.models import Administrator, Client
 from modules.machine_lifecycle.models import DiskType
 from datetime import datetime
@@ -18,6 +17,10 @@ class StaticDiskInfo(BaseModel):
 class DynamicDiskInfo(StaticDiskInfo):
     occupied_bytes: int
 
+class StaticInterfaceInfo(BaseModel):
+    mac: str
+    ip: str | None = None
+    name: str
 
 class MachinePropertiesPayload(BaseModel):
     uuid: UUID                                      
@@ -27,7 +30,8 @@ class MachinePropertiesPayload(BaseModel):
     owner: Administrator | None = None          
     assigned_clients: dict[UUID, Client] = {}
     connections: dict[Literal["ssh", "rdp", "vnc"], str] | None = None
-    disks: list[StaticDiskInfo] | None = None   
+    disks: list[StaticDiskInfo] | None = None
+    interfaces: list[StaticInterfaceInfo] | None = None
 
 
 class MachineStatePayload(BaseModel):

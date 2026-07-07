@@ -1,7 +1,8 @@
 from uuid import UUID
 from pydantic import BaseModel, field_validator, model_validator, Field
-from typing import Optional, Literal, Union, TypedDict
-from dataclasses import dataclass
+from typing import Optional, Literal
+from pydantic_extra_types.mac_address import MacAddress
+from ipaddress import IPv4Interface
 
 ################################
 #   Machine creation models
@@ -35,9 +36,9 @@ class NetworkInterfaceSource(BaseModel):
     type: Literal["network", "bridge"]
     value: str
 
-
 class MachineNetworkInterface(BaseModel):
-    mac: Optional[str] = None
+    mac: Optional[MacAddress] = None
+    ip: Optional[IPv4Interface] = None
     name: str  
     source: NetworkInterfaceSource
 
