@@ -219,6 +219,7 @@
     },
     "create-machine": {
         "title": "Stwórz Nową Maszynę",
+        "title-network": "Ustaw Konfigurację Sieciową",
         "title-disks": "Stwórz Dyski Dla Maszyny",
         "machine-name-placeholder": "Wprowadź nazwę maszyny",
         "machine-name": "Nazwa maszyny",
@@ -251,6 +252,8 @@
         "drive-type": "Typ dysku",
         "machine-description-placeholder": "Wprowadź opis maszyny",
         "machine-description": "Opis maszyny",
+        "internet-connectivity": "Połączenie z internetem",
+        "internet-connectivity-label": "Maszyna ma dostęp do internetu.",
         "validation": {
             "name-spaces": "Nazwa nie może zawierać spacji.",
             "name-too-long": "Nazwa nie może mieć więcej niż 24 znaki.",

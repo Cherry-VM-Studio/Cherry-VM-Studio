@@ -18,5 +18,12 @@
     padding-top: var(--mantine-spacing-md);
     min-height: 0;
     flex: 1;
-    border: none;
+    border: none !important;
+}
+
+.cancelButton {
+    background-color: var(--mantine-color-dark-6);
+}
+
+.saveChangesButton {
 }

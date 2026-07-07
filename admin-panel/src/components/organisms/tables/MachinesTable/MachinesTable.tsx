@@ -11,6 +11,8 @@ import { AxiosError } from "axios";
 import DeleteModal from "../../../../modals/base/DeleteModal/DeleteModal";
 import MachinesGrid from "../../../molecules/display/MachinesGrid/MachinesGrid";
 import { IconLayoutGrid } from "@tabler/icons-react";
+import { Link } from "react-router-dom";
+import classes from "./MachinesTable.module.css";
 
 export interface MachinesTableDataRow {
     uuid: string;
@@ -54,7 +56,7 @@ const MachinesTable = ({ machines, loading, error, global, mode }: MachinesTable
                 columns={columns}
                 loading={loading}
                 error={error}
-                defaultHiddenColumns={["port", global ? "ram" : "owner", "connected_users", "disks"]}
+                defaultHiddenColumns={["uuid", "port", global ? "ram" : "owner", "connected_users", "disks"]}
                 headingProps={{
                     translations: {
                         all: tns(global ? "all-machines" : "your-machines"),
@@ -110,7 +112,8 @@ const MachinesTable = ({ machines, loading, error, global, mode }: MachinesTable
                 ]}
                 defaultLayout={mode === "administrative" ? 0 : 1}
                 // RowComponent={Link}
-                // rowProps={(uuid) => ({ to: `/admin/machines/machine/${uuid}` })}
+                // rowProps={(uuid) => ({ to: `/admin/machines/machine/${uuid}`, className: classes.row })}
+
             />
         </>
     );

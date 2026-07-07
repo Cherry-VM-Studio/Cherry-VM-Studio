@@ -78,9 +78,9 @@ const TanstackTableBody = ({ table, loading, error, RowComponent, rowProps }: Ta
             ) : (
                 table.getRowModel().rows.map((row: any, i: number) => (
                     <RowComponent
-                        className={`${classes.tr} ${row.getIsSelected() ? classes.selected : ""}`}
-                        key={row.id}
                         {...rowProps?.(row.id)}
+                        className={cs(classes.tr, {[classes.selected]: row.getIsSelected()}, rowProps?.(row.id)?.className)}
+                        key={row.id}
                     >
                         {row.getVisibleCells().map((cell: Cell<unknown, unknown>) => (
                             <Box
@@ -93,6 +93,7 @@ const TanstackTableBody = ({ table, loading, error, RowComponent, rowProps }: Ta
                                     minWidth: cell.column.columnDef.minSize,
                                     maxWidth: cell.column.columnDef.maxSize,
                                 }}
+                                
                             >
                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
                             </Box>

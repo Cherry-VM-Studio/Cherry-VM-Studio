@@ -1,4 +1,4 @@
-import { Group, Title } from "@mantine/core";
+import { Group, Stack, Text, Title } from "@mantine/core";
 import React from "react";
 import MachineControls from "../../../atoms/interactive/MachineControls/MachineControls";
 import classes from "./MachineHeading.module.css";
@@ -14,12 +14,20 @@ const MachineHeading = ({ machine }: MachineHeadingProps): React.JSX.Element => 
         <Group className={classes.container}>
             <Group className={classes.leftGroup}>
                 <MachineActivityIndicator state={machine.state} />
-                <Title
-                    order={2}
-                    className={classes.title}
-                >
-                    {machine?.title ?? "Unnamed Machine"}
-                </Title>
+                <Stack gap="0">
+                    <Title
+                        order={2}
+                        className={classes.title}
+                    >
+                        {machine?.title ?? "Unnamed Machine"}
+                    </Title>
+                    <Text
+                        c="dimmed"
+                        size="sm"
+                    >
+                        {machine?.uuid}
+                    </Text>
+                </Stack>
             </Group>
 
             <MachineControls machine={machine} />

@@ -1,5 +1,6 @@
 import { Button, Group } from "@mantine/core";
 import { useTranslation } from "react-i18next";
+import { MantineButtonAllProps } from "../../../../types/mantine.types";
 
 interface FormControlButtonsProps {
     onClose: () => void;
@@ -12,9 +13,13 @@ interface FormControlButtonsProps {
         close?: string;
         submit?: string;
     };
+    props?: {
+        close?: MantineButtonAllProps;
+        submit?: MantineButtonAllProps;
+    };
 }
 
-const FormControlButtons = ({ label, onClose, onSubmit, classNames }: FormControlButtonsProps): React.JSX.Element => {
+const FormControlButtons = ({ label, onClose, onSubmit, classNames, props = {} }: FormControlButtonsProps): React.JSX.Element => {
     const { t } = useTranslation();
 
     return (
@@ -25,6 +30,7 @@ const FormControlButtons = ({ label, onClose, onSubmit, classNames }: FormContro
             <Button
                 className={classNames?.close}
                 onClick={onClose}
+                {...props?.close}
             >
                 {label?.close || t("close")}
             </Button>
@@ -32,6 +38,7 @@ const FormControlButtons = ({ label, onClose, onSubmit, classNames }: FormContro
                 variant="white"
                 className={classNames?.submit}
                 onClick={onSubmit}
+                {...props?.submit}
             >
                 {label?.submit || t("submit")}
             </Button>

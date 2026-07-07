@@ -362,6 +362,7 @@
     },
     "create-machine": {
         "title": "Create New Machine",
+        "title-network": "Set Network Configuration",
         "title-disks": "Create Disks For The Machine",
         "machine-name-placeholder": "Enter machine name here",
         "machine-name": "Machine name",
@@ -393,6 +394,8 @@
         "drive-type": "Drive type",
         "machine-description-placeholder": "Enter machine description",
         "machine-description": "Machine description",
+        "internet-connectivity": "Internet connectivity",
+        "internet-connectivity-label": "Machine can connect to the internet.",
         "validation": {
             "name-spaces": "Name cannot contain spaces.",
             "name-too-long": "Name length cannot exceed 24 characters.",
