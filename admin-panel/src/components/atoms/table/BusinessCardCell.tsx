@@ -4,16 +4,25 @@ import { useMediaQuery } from "@mantine/hooks";
 import { getFullUserName } from "../../../utils/users";
 import { CellContext } from "@tanstack/react-table";
 import { UserExtended } from "../../../types/api.types";
+import { MantineSize } from "@mantine/core";
 
-const BusinessCardCell = ({ getValue }: CellContext<unknown, UserExtended>): React.JSX.Element => {
-    const user = getValue() || {};
+export interface BusinessCardCellProps extends CellContext<unknown, UserExtended> {
+    size?: MantineSize | string;
+    avatarSize?: MantineSize | string;
+}
+
+const BusinessCardCell = ({ getValue, size = "md", avatarSize = "md" }: BusinessCardCellProps): React.JSX.Element => {
+    const user: UserExtended = getValue();
+    const withAvatar = useMediaQuery(`(min-width: 1200px)`, false);
 
     return (
         <BusinessCard
             // imageSrc={user.avatar}
             comment={`@${user.username}`}
             name={getFullUserName(user)}
-            withAvatar={useMediaQuery(`(min-width: 1200px)`)}
+            withAvatar={withAvatar}
+            avatarSize={avatarSize}
+            size={size}
         />
     );
 };

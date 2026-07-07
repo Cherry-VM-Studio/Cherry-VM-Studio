@@ -7,15 +7,15 @@ import { UseFormReturnType } from "@mantine/form";
 import useFetch from "../../../../hooks/useFetch";
 import { MachineTemplate } from "../../../../types/api.types";
 
-export interface MachineConfigFormRequiredValues {
+export interface MachineConfigFieldsetRequiredValues {
     config: {
         ram: number;
         vcpu: number;
     };
 }
 
-export interface MachineConfigFormProps<T = {}> {
-    form: UseFormReturnType<MachineConfigFormRequiredValues & T>;
+export interface MachineConfigFieldsetProps<T = {}> {
+    form: UseFormReturnType<MachineConfigFieldsetRequiredValues & T>;
     disabled?: boolean;
     props?: {
         scrollArea?: Partial<ScrollAreaProps>;
@@ -38,7 +38,7 @@ const MachineConfigFieldset = <T extends Record<string, any> = {}>({
     props,
     i18nextNamespace,
     i18nextPrefix,
-}: MachineConfigFormProps<T>): React.JSX.Element => {
+}: MachineConfigFieldsetProps<T>): React.JSX.Element => {
     const { t, tns } = useNamespaceTranslation(i18nextNamespace ?? "pages", i18nextPrefix ?? "machine");
     const { data: templates, error, loading } = useFetch<Record<string, MachineTemplate>>("/machine-templates/all");
 
@@ -90,7 +90,12 @@ const MachineConfigFieldset = <T extends Record<string, any> = {}>({
                         readOnly={disabled}
                     />
                     <Divider />
-                    <Text fw="500">{t("configuration")}</Text>
+                    <Text
+                        fw="600"
+                        fz="sm"
+                    >
+                        {t("configuration")}
+                    </Text>
                     <EnhancedSlider
                         heading={tns("ram")}
                         label={(val) => tns("ram-unit", { count: val })}

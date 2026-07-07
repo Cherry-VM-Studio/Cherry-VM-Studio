@@ -1,8 +1,8 @@
 import React, { useMemo } from "react";
 import BusinessCardCell from "../../../atoms/table/BusinessCardCell";
-import { Box, Button, ScrollArea, Stack } from "@mantine/core";
+import { Box, Button, MantineSize, ScrollArea, Stack } from "@mantine/core";
 import { IconLinkOff, IconUsers } from "@tabler/icons-react";
-import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { CellContext, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import classes from "./MembersTable.module.css";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 import ResourceError from "../../../atoms/feedback/ResourceError/ResourceError";
@@ -14,9 +14,11 @@ export interface MembersTableProps {
     removeMember: (uuid: string) => void;
     error: any;
     loading: boolean;
+    size?: MantineSize | string | number;
+    avatarSize?: MantineSize | string | number;
 }
 
-const MembersTable = ({ usersData, removeMember, error, loading }: MembersTableProps): React.JSX.Element => {
+const MembersTable = ({ usersData, removeMember, error, loading, size = "sm", avatarSize = "md" }: MembersTableProps): React.JSX.Element => {
     const { t, tns } = useNamespaceTranslation("modals", "group");
 
     const data = useMemo(
@@ -28,28 +30,37 @@ const MembersTable = ({ usersData, removeMember, error, loading }: MembersTableP
         [usersData],
     );
 
-    const columns = [
-        {
-            accessorKey: "details",
-            header: "",
-            cell: BusinessCardCell,
-        },
-        {
-            accessorKey: "options",
-            header: "",
-            cell: ({ row }: any) => (
-                <Button
-                    color="cherry"
-                    variant="light"
-                    leftSection={<IconLinkOff size={16} />}
-                    size="sm"
-                    onClick={() => removeMember(row.id)}
-                >
-                    {tns("remove-user")}
-                </Button>
-            ),
-        },
-    ];
+    const columns = useMemo(
+        () => [
+            {
+                accessorKey: "details",
+                header: "",
+                cell: (props: CellContext<unknown, UserExtended>) => (
+                    <BusinessCardCell
+                        {...props}
+                        size={size}
+                        avatarSize={avatarSize}
+                    />
+                ),
+            },
+            {
+                accessorKey: "options",
+                header: "",
+                cell: ({ row }: CellContext<unknown, unknown>) => (
+                    <Button
+                        color="cherry"
+                        variant="light"
+                        leftSection={<IconLinkOff size={16} />}
+                        size="xs"
+                        onClick={() => removeMember(row.id)}
+                    >
+                        {tns("remove-user")}
+                    </Button>
+                ),
+            },
+        ],
+        [],
+    );
 
     const table = useReactTable({
         data: data,

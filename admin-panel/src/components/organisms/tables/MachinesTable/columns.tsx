@@ -35,6 +35,16 @@ export const getColumns = (global: boolean, viewMode: boolean) =>
             enableHiding: false,
         },
         {
+            accessorKey: "uuid",
+            header: "UUID",
+            cell: ({getValue} : CellContext<unknown, string>) =>                     <Text size="sm">{getValue()}</Text>,
+            minSize: 350,
+            maxSize: 350,
+            sortingFn: (rowA: any, rowB: any, columndId: string) => rowB.getValue(columndId)?.name.localeCompare(rowA.getValue(columndId)?.name),
+            filterFn: (row: any, columnId: string, filterValue: string) => row.getValue(columnId)?.name?.toLowerCase().startsWith(filterValue.toLowerCase()),
+            enableHiding: true,
+        },
+        {
             accessorKey: "description",
             header: t("machines.table.headers.description", { ns: "pages" }),
             minSize: 200,

@@ -14,6 +14,7 @@ import MachineConfigFieldset from "../../../components/molecules/forms/MachineCo
 import MachineSourceFieldset from "../../../components/molecules/forms/MachineSourceFieldset/MachineSourceFieldset";
 import MachineDisksFieldset from "../../../components/molecules/forms/MachineDisksFieldset/MachineDisksFieldset";
 import { keys } from "lodash";
+import MachineNetworkFieldset from "../../../components/molecules/forms/MachineNetworkFieldset/MachineNetworkFieldset";
 
 export interface CreateMachineFormValues {
     title: string;
@@ -29,6 +30,7 @@ export interface CreateMachineFormValues {
     disks: MachineDiskForm[];
     os_disk: number;
     connection_protocols: MachineConnectionProtocolsFormValues;
+    internet_connectivity: boolean;
 }
 
 export interface CreateMachineFormSubmitValues extends Omit<CreateMachineFormValues, "disks" | "connection_protocols"> {
@@ -57,7 +59,7 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
 
     const [configTemplate, setConfigTemplate] = useState<string>("custom");
 
-    const stack = useModalsStack(["details-page", "source-page", "config-page", "disks-page"]);
+    const stack = useModalsStack(["details-page", "source-page", "config-page", "network-page", "disks-page"]);
 
     const form = useForm<CreateMachineFormValues>({
         initialValues: {
@@ -74,6 +76,7 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
             disks: [{ name: "System", size: 10, unit: "GiB", type: "qcow2" }],
             os_disk: 0,
             connection_protocols: "vnc+ssh",
+            internet_connectivity: false,
         },
         validateInputOnChange: false,
         validateInputOnBlur: true,
@@ -134,6 +137,10 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
     const resetConfigPage = () => {
         setConfigTemplate("custom");
         form.resetField("config");
+    };
+
+    const resetNetworkPage = () => {
+        form.resetField("internet_connectivity");
     };
 
     const resetDisksPage = () => {
@@ -250,8 +257,38 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
                         stack.close("config-page");
                     }}
                     onSubmit={() => {
-                        stack.open("disks-page");
+                        stack.open("network-page");
                         stack.close("config-page");
+                    }}
+                    classNames={{
+                        close: classes.closeButton,
+                        submit: classes.nextButton,
+                    }}
+                    label={{
+                        close: t("previous"),
+                        submit: t("next"),
+                    }}
+                />
+            </Modal>
+            <Modal
+                {...stack.register("network-page")}
+                title={tns("title-network")}
+                onClose={onClose}
+            >
+                <MachineNetworkFieldset<CreateMachineFormValues>
+                    form={form}
+                    i18nextNamespace="modals"
+                    i18nextPrefix="create-machine"
+                />
+                <FormControlButtons
+                    onClose={() => {
+                        resetNetworkPage();
+                        stack.open("config-page");
+                        stack.close("network-page");
+                    }}
+                    onSubmit={() => {
+                        stack.open("disks-page");
+                        stack.close("network-page");
                     }}
                     classNames={{
                         close: classes.closeButton,
@@ -281,7 +318,7 @@ export const CreateMachineModalStack = ({ opened, onClose, onSubmit }: CreateMac
                 <FormControlButtons
                     onClose={() => {
                         resetDisksPage();
-                        stack.open("config-page");
+                        stack.open("network-page");
                         stack.close("disks-page");
                     }}
                     onSubmit={() => {

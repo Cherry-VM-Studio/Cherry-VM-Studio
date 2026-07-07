@@ -156,7 +156,7 @@ export interface MachineStatePayload {
     active: boolean;
     loading: boolean;
     vcpu: number;
-    ram_max?: number | null;
+    ram_max: number | null;
     ram_used?: number | null;
     boot_timestamp?: string | null;
     ras_ip?: string | null;
