@@ -119,7 +119,7 @@ def create_machine_network_interface_xml(network_interface: MachineNetworkInterf
     
     # Servers a similar purpose to alias, but is present even when the machine is offline.
     # Used for information purposes only, not as a unique identifier.
-    ET.SubElement(iface, "target", dev=network_interface.name)
+    # ET.SubElement(iface, "target", dev=network_interface.name)
     
     ET.SubElement(iface, "model", type="virtio")
     
@@ -321,8 +321,8 @@ def parse_machine_network_interface(iface_element: ET.Element) -> MachineNetwork
     Parse <interface> element back into MachineNetworkInterface model.
     """
     
-    target_el = get_required_xml_tag(iface_element, "target")
-    target = get_required_xml_tag_attribute(target_el, "dev")
+    # target_el = get_required_xml_tag(iface_element, "target")
+    # target = get_required_xml_tag_attribute(target_el, "dev")
 
     # Source type and value
     source_el = get_required_xml_tag(iface_element, "source")
@@ -344,7 +344,7 @@ def parse_machine_network_interface(iface_element: ET.Element) -> MachineNetwork
     source = NetworkInterfaceSource(type=source_type, value=source_value) # type: ignore
 
     return MachineNetworkInterface(
-        name=target,
+        # name=target,
         source=source
     )
 

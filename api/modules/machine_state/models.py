@@ -20,7 +20,7 @@ class DynamicDiskInfo(StaticDiskInfo):
 class StaticInterfaceInfo(BaseModel):
     mac: str
     ip: str | None = None
-    name: str
+    # name: str
 
 class MachinePropertiesPayload(BaseModel):
     uuid: UUID                                      

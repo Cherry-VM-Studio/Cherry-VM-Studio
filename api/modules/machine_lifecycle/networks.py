@@ -7,9 +7,10 @@ import xml.etree.ElementTree as ET
 from typing import Union
 from uuid import UUID, uuid4
 
+from modules.postgresql.simple_select import select_single_field
 from modules.libvirt_socket import LibvirtConnection
 from modules.machine_lifecycle.xml_translator import get_required_xml_tag, get_required_xml_tag_attribute, parse_machine_xml, create_machine_network_interface_xml
-from modules.machine_lifecycle.models import MachineNetworkInterface, InternetInterface
+from modules.machine_lifecycle.models import MachineNetworkInterface, InternetInterface, NetworkInterfaceSource
 from modules.postgresql.main import pool
 from modules.network_configuration.models import InternalNetworkSetForm
 from utils.mac import generate_random_mac
@@ -60,7 +61,7 @@ def get_machine_framebuffer_port(machine_uuid: UUID) -> str:
 ################################
 # Internet gateway attachment
 ################################
-def attach_internet_interface(machine_uuid: UUID):
+def attach_internet_interface(machine_uuid: UUID) -> None:
     """
     Attaches an Internet interface to a running machine.
     """
@@ -100,7 +101,7 @@ def attach_internet_interface(machine_uuid: UUID):
                 except Exception as e:
                     raise Exception(f"Failed to attach Internet interface {internet_interface.name} to machine {machine_uuid}: {e}")
     
-def detach_internet_interface(machine_uuid: UUID):
+def detach_internet_interface(machine_uuid: UUID) -> None:
     """
     Detaches an Internet interface from a running machine.
     """
@@ -150,7 +151,7 @@ def detach_internet_interface(machine_uuid: UUID):
 ################################
 # Internal networks attachment
 ################################
-def attach_network_interface(machine_uuid: UUID, network_interface: MachineNetworkInterface):
+def attach_network_interface(machine_uuid: UUID, network_interface: MachineNetworkInterface) -> None:
     """
     Attaches a network interface to a running machine.
     """
@@ -161,7 +162,7 @@ def attach_network_interface(machine_uuid: UUID, network_interface: MachineNetwo
         with connection.cursor() as cursor:
             with connection.transaction():
                 try:
-                    logger.debug(f"Attaching network interface {network_interface.name} to machine {machine_uuid}")
+                    logger.debug(f"Attaching network interface {network_interface.mac} to machine {machine_uuid}")
                     
                     interface_xml = ET.tostring(create_machine_network_interface_xml(network_interface), encoding="unicode")
                     
@@ -185,7 +186,7 @@ def attach_network_interface(machine_uuid: UUID, network_interface: MachineNetwo
                 except Exception as e:
                     raise Exception(f"Failed to attach network interface {network_interface.name} to machine {machine_uuid}: {e}")
     
-def detach_network_interface(machine_uuid: UUID, mac_address: str):
+def detach_network_interface(machine_uuid: UUID, mac_address: str) -> None:
     
     from modules.machine_state.state_management import is_vm_running
     
@@ -226,7 +227,7 @@ def detach_network_interface(machine_uuid: UUID, mac_address: str):
 ################################
 #   Internal networks
 ################################
-def create_internal_network(owner_uuid: UUID, internal_network_set_form: InternalNetworkSetForm):
+def create_internal_network(owner_uuid: UUID, internal_network_set_form: InternalNetworkSetForm) -> None:
     """
     Creates a new internal network.
     """
@@ -237,13 +238,15 @@ def create_internal_network(owner_uuid: UUID, internal_network_set_form: Interna
                 try:
                     logger.debug("Creating a new internal network")
                     
-                    internal_network_uuid = uuid4()
+                    if internal_network_set_form.intnet_name is None or internal_network_set_form.machines is None:
+                        raise ValueError("intnet_name and machines are required to create an internal network.")
+                    
                     bridge_mac = generate_random_mac()
                     
                     internal_network_xml_lines = [
                         "<network>",
-                        f"<name>{internal_network_set_form.intnet_name}</name>",
-                        f"<uuid>{internal_network_uuid}</uuid>",
+                        f"<name>{internal_network_set_form.uuid}</name>",
+                        f"<uuid>{internal_network_set_form.uuid}</uuid>",
                         f"<mac address='{bridge_mac}'/>"
                     ]
                     
@@ -256,25 +259,31 @@ def create_internal_network(owner_uuid: UUID, internal_network_set_form: Interna
                     
                     with LibvirtConnection("rw") as libvirt_connection:
                         network = libvirt_connection.networkDefineXML(internal_network_xml)
-                        network.autostart()
+                        network.setAutostart(True)
                         network.create()
                         
-                    cursor.execute("INSERT INTO intets (uuid, owner_uuid, intent_name, bridge_name, bridge_mac, bridge_ip) VALUES (%s, %s, %s, %s, %s, %s)", (
-                        internal_network_uuid,
+                    cursor.execute("INSERT INTO intets (uuid, owner_uuid, intnet_name, bridge_name, bridge_mac, bridge_ip) VALUES (%s, %s, %s, %s, %s, %s)", (
+                        internal_network_set_form.uuid,
                         owner_uuid,
                         internal_network_set_form.intnet_name,
-                        internal_network_set_form.bridge_name,
                         bridge_mac,
                         internal_network_set_form.bridge_ip
                     ))
-
+                    
+                    for machine in internal_network_set_form.machines:
+                        interface = MachineNetworkInterface(
+                            mac=generate_random_mac(),
+                            source=NetworkInterfaceSource(type="network", value=str(internal_network_set_form.uuid))
+                        )
+                        attach_network_interface(machine, interface)
+                                
                 except libvirt.libvirtError as e:
                     raise Exception(f"Failed to create internal network {internal_network_set_form.intnet_name} because of Libvirt error: {e}")
                     
                 except Exception as e:
                     raise Exception(f"Failed to create internal network {internal_network_set_form.intnet_name}: {e}")
 
-def remove_internal_network(intent_uuid: UUID):
+def delete_internal_network(intnet_uuid: UUID) -> None:
     """
     Removes an existing internal network.
     """
@@ -283,17 +292,81 @@ def remove_internal_network(intent_uuid: UUID):
         with connection.cursor() as cursor:
             with connection.transaction():
                 try:
-                    logger.debug(f"Removing internal network {intent_uuid}")
+                    logger.debug(f"Removing internal network {intnet_uuid}")
                     
                     with LibvirtConnection("rw") as libvirt_connection:
-                        network = libvirt_connection.networkLookupByUUID(intent_uuid.bytes)
+                        network = libvirt_connection.networkLookupByUUID(intnet_uuid.bytes)
                         network.destroy()
                         network.undefine()
                         
-                    cursor.execute("DELETE FROM intnets WHERE uuid = %s", (intent_uuid,))
+                    cursor.execute("DELETE FROM intnets WHERE uuid = %s", (intnet_uuid,))
                     
                 except libvirt.libvirtError as e:
-                    raise Exception(f"Failed to remove internal network {intent_uuid} because of Libvirt error: {e}")
+                    raise Exception(f"Failed to remove internal network {intnet_uuid} because of Libvirt error: {e}")
                     
                 except Exception as e:
-                    raise Exception(f"Failed to remove internal network {intent_uuid}: {e}")
+                    raise Exception(f"Failed to remove internal network {intnet_uuid}: {e}")
+
+def modify_internal_network(intnet_uuid: UUID, internal_network_set_form: InternalNetworkSetForm) -> None:
+    """
+    Modifies an existing internal network.
+    """
+    
+    with pool.connection() as connection:
+        with connection.cursor() as cursor:
+            with connection.transaction():
+                try:
+                    logger.debug(f"Modifying internal network {intnet_uuid}")
+                    
+                    if internal_network_set_form.intnet_name is not None:
+                        cursor.execute("UPDATE intnets SET intnet_name = %s WHERE uuid = %s", (internal_network_set_form.intnet_name, intnet_uuid))
+                        
+                    if internal_network_set_form.bridge_ip is not None:
+                        cursor.execute("UPDATE intnets SET bridge_ip = %s WHERE uuid = %s", (internal_network_set_form.bridge_ip, intnet_uuid))
+                        with LibvirtConnection("rw") as libvirt_connection:
+                            network = libvirt_connection.networkLookupByUUID(intnet_uuid.bytes)
+                            
+                            network_xml = network.XMLDesc(0)
+                            
+                            network_root = ET.fromstring(network_xml)
+                            
+                            ip_element = get_required_xml_tag(network_root, "ip")
+                            ip_element.set("address", str(internal_network_set_form.bridge_ip.ip))
+                            ip_element.set("netmask", str(internal_network_set_form.bridge_ip.netmask))
+                            modified_network_xml = ET.tostring(network_root, encoding="unicode")
+                            
+                            if network.isActive():
+                                network.destroy()
+                            network.undefine()
+                            
+                            libvirt_connection.networkDefineXML(modified_network_xml)
+                            
+                            network.setAutostart(True)
+
+                            network.create()
+                       
+                    if internal_network_set_form.machines is not None:
+                        
+                        connected_machines_db = set(select_single_field("machine_uuid", "SELECT machine_uuid FROM intnets_connections WHERE intnet_uuid = %s", (intnet_uuid,)))
+                        connected_machines_incoming = set(internal_network_set_form.machines)
+                        
+                        deleted_connections = connected_machines_db - connected_machines_incoming
+                        new_connections = connected_machines_incoming - connected_machines_db
+                        
+                        for machine in deleted_connections:
+                            detach_network_interface(machine, internal_network_set_form.machines[machine])
+                            
+                        for machine in new_connections:
+                            interface = MachineNetworkInterface(
+                                mac=generate_random_mac(),
+                                source=NetworkInterfaceSource(type="network", value=str(intnet_uuid))
+                            )
+                            attach_network_interface(machine, interface)
+                        
+                        cursor.execute("DELETE FROM intnets_connections WHERE intnet_uuid = %s", (intnet_uuid,))
+                                
+                except libvirt.libvirtError as e:
+                    raise Exception(f"Failed to modify internal network {intnet_uuid} because of Libvirt error: {e}")
+                    
+                except Exception as e:
+                    raise Exception(f"Failed to modify internal network {intnet_uuid}: {e}")

@@ -3,7 +3,7 @@ from typing import Literal, Optional
 from uuid import UUID
 from datetime import datetime
 
-from api.modules.machine_state.models import StaticInterfaceInfo, StaticInterfaceInfo
+from modules.machine_state.models import StaticInterfaceInfo
 from modules.libvirt_socket import LibvirtConnection
 from modules.authentication.validation import encode_guacamole_connection_string
 from modules.users.permissions import is_admin, is_client
@@ -149,8 +149,8 @@ def get_machine_network_interfaces(machine_uuid: UUID) -> list[StaticInterfaceIn
     
     rows = select_rows(select_network_interfaces, (machine_uuid,))
     
-    return [StaticInterfaceInfo(mac=mac, ip=ip, name=name) for mac, ip, name in rows]
-
+    # return [StaticInterfaceInfo(mac=mac, ip=ip, name=name) for mac, ip, name in rows]
+    return [StaticInterfaceInfo(mac=mac, ip=ip) for mac, ip, name in rows]
 
 
 def check_machine_membership(machine_uuid: UUID) -> bool:

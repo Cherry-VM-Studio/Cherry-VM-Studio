@@ -39,7 +39,7 @@ class NetworkInterfaceSource(BaseModel):
 class MachineNetworkInterface(BaseModel):
     mac: Optional[MacAddress] = None
     ip: Optional[IPv4Interface] = None
-    name: str  
+    name: str | None = None
     source: NetworkInterfaceSource
 
 class InternetInterface(MachineNetworkInterface):
