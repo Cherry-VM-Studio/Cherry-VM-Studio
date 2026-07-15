@@ -110,7 +110,7 @@ def __create_internal_network__(owner_uuid: UUID, internal_network_set_form: Int
     
     create_internal_network(owner_uuid, internal_network_set_form)
     
-@debug.delete("/internal_network/delete", tags=['Network Debug'])
+@debug.delete("/internal_network/delete/{uuid}", tags=['Network Debug'])
 def __delete_internal_network__(intnet_uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> None:
     if not check_machine_access(intnet_uuid, current_user):
         raise HTTPException(403, f"You do not have the necessary permissions to manage machines for user with UUID={intnet_uuid}.")
