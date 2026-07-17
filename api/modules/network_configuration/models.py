@@ -28,7 +28,7 @@ class InternalNetworkGetForm(BaseModel):
     intnet_name: str | None = None
     bridge_mac: MacAddress
     bridge_ip: IPv4Interface | None = None
-    machines: list[dict[UUID, MacAddress]]  
+    machines: dict[UUID, MacAddress]
 
 class NetworkConfigurationSet(BaseModel):
     internal_networks: dict[UUID, InternalNetworkSetForm]

@@ -25,14 +25,14 @@ def get_current_network_configuration(owner_uuid: UUID) -> NetworkConfigurationG
             bridge_ip = intnet["bridge_ip"]
             
             machines = select_rows("SELECT machine_uuid, interface_mac FROM intnets_connections WHERE intnet_uuid = %s", (intnet_uuid,))
-            machines_list = [{machine["machine_uuid"]: machine["interface_mac"]} for machine in machines]
+            machines_dict = {machine["machine_uuid"]: machine["interface_mac"] for machine in machines}
             
             internal_networks[intnet_uuid] = {
                 "uuid": intnet_uuid,
                 "intnet_name": intnet_name,
                 "bridge_mac": bridge_mac,
                 "bridge_ip": bridge_ip,
-                "machines": machines_list
+                "machines": machines_dict
             }
         
     # Get a list of machines with internet access belonging to the owner
