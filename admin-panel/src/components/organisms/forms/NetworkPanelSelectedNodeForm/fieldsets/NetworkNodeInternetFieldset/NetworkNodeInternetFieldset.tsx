@@ -3,7 +3,7 @@ import useNamespaceTranslation from "../../../../../../hooks/useNamespaceTransla
 import classes from "../../NetworkPanelSelectedNodeForm.module.css";
 import MachineNodeListElement from "../../node-list-elements/MachineNodeListElement/MachineNodeListElement";
 import { CloudNode, NetworkPanelEdge, NetworkPanelNode } from "../../../../../../pages/administrative/networks/NetworkPanelPage/reactFlow.types";
-import { Machine } from "../../../../../../types/api.types";
+import { Machine, MachinePropertiesPayload } from "../../../../../../types/api.types";
 import { getResourceTypeFromNode } from "../../../../../../pages/administrative/networks/NetworkPanelPage/reactFlow";
 import SelectNodeRenderOption from "../../SelectNodeRenderOption";
 
@@ -11,7 +11,7 @@ export interface NetworkNodeInternetFieldsetProps {
     nodes: NetworkPanelNode[];
     edges: NetworkPanelEdge[];
     selectedNode: CloudNode;
-    machines: Record<string, Machine>;
+    machines: Record<string, MachinePropertiesPayload>;
     onManualEdgeRemoval: (edge: NetworkPanelEdge) => void;
     onManualEdgeCreation: (edge: NetworkPanelEdge) => void;
 }

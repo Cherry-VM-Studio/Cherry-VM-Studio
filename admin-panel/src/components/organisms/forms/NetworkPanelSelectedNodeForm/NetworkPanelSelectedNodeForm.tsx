@@ -8,7 +8,7 @@ import {
     NetworkPanelNode,
 } from "../../../../pages/administrative/networks/NetworkPanelPage/reactFlow.types";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
-import { Machine } from "../../../../types/api.types";
+import { MachinePropertiesPayload } from "../../../../types/api.types";
 import NetworkNodeMachineFieldset from "./fieldsets/NetworkNodeMachineFieldset/NetworkNodeMachineFieldset";
 import NetworkNodeIntnetFieldset from "./fieldsets/NetworkNodeIntnetFieldset/NetworkNodeIntnetFieldset";
 import SelectNodeRenderOption from "./SelectNodeRenderOption";
@@ -17,7 +17,7 @@ import NetworkNodeInternetFieldset from "./fieldsets/NetworkNodeInternetFieldset
 export interface NetworkPanelSelectedNodeFormProps extends StackProps {
     nodes: NetworkPanelNode[];
     selectedNode?: NetworkPanelNode;
-    machines: Record<string, Machine>;
+    machines: Record<string, MachinePropertiesPayload>;
     edges: NetworkPanelEdge[];
     onManualSelect: (nodeId: string | null) => void;
     onManualEdgeRemoval: (edge: NetworkPanelEdge) => void;

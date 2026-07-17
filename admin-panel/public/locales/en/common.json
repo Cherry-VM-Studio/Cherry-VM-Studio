@@ -112,5 +112,9 @@
     "assigned-clients": "Assigned clients",
     "machine-details": "Machine details",
     "name-saved": "Name saved",
-    "name-saving": "Saving name"
+    "name-saving": "Saving name",
+    "unknown": "Unknown",
+    "not-set": "Not set",
+    "mac-address": "MAC address",
+    "ip-address": "IP address"
 }

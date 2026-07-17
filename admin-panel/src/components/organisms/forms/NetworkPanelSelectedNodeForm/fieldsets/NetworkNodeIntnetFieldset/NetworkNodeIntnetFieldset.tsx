@@ -3,7 +3,7 @@ import classes from "../../NetworkPanelSelectedNodeForm.module.css";
 import useNamespaceTranslation from "../../../../../../hooks/useNamespaceTranslation";
 import { IntnetNode, NetworkPanelEdge, NetworkPanelNode } from "../../../../../../pages/administrative/networks/NetworkPanelPage/reactFlow.types";
 import { getResourceTypeFromNode } from "../../../../../../pages/administrative/networks/NetworkPanelPage/reactFlow";
-import { Machine } from "../../../../../../types/api.types";
+import { MachinePropertiesPayload } from "../../../../../../types/api.types";
 import SelectNodeRenderOption from "../../SelectNodeRenderOption";
 import MachineNodeListElement from "../../node-list-elements/MachineNodeListElement/MachineNodeListElement";
 import { IconTrash } from "@tabler/icons-react";
@@ -15,7 +15,7 @@ export interface NetworkNodeIntnetFieldsetProps {
     nodes: NetworkPanelNode[];
     edges: NetworkPanelEdge[];
     selectedNode: IntnetNode;
-    machines: Record<string, Machine>;
+    machines: Record<string, MachinePropertiesPayload>;
     onManualEdgeRemoval: (edge: NetworkPanelEdge) => void;
     onManualEdgeCreation: (edge: NetworkPanelEdge) => void;
     onIntnetRename: (nodeId: string, newName: string) => void;

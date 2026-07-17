@@ -112,5 +112,9 @@
   "assigned-clients": "Przypisani klienci",
   "machine-details": "Informacje o maszynie",
   "name-saved": "Zapisano nazwę",
-  "name-saving": "Zapisywanie nazwy"
+  "name-saving": "Zapisywanie nazwy",
+  "unknown": "Brak danych",
+  "not-set": "Brak danych",
+  "mac-address": "Adres MAC",
+  "ip-address": "Adres IP"
 }

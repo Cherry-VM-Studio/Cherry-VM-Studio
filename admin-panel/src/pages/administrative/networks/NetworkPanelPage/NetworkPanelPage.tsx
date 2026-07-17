@@ -1,4 +1,4 @@
-import { ActionIcon, Group } from "@mantine/core";
+import { Group } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import {
     Background,
@@ -8,7 +8,6 @@ import {
     EdgeChange,
     MiniMap,
     NodeChange,
-    Panel,
     ReactFlow,
     ReactFlowInstance,
     ReactFlowProvider,
@@ -21,7 +20,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import "@xyflow/react/dist/style.css";
 import { ERRORS } from "../../../../config/errors.config.ts";
-import FloatingEdge from "../../../../components/atoms/flow-connections/Floating/FloatingEdge/FloatingEdge.jsx";
 import NumberAllocator from "../../../../handlers/numberAllocator.ts";
 import useErrorHandler from "../../../../hooks/useErrorHandler.ts";
 import useMantineNotifications from "../../../../hooks/useMantineNotifications.tsx";
@@ -29,7 +27,6 @@ import useApi from "../../../../hooks/useApi.ts";
 import useFetch from "../../../../hooks/useFetch.ts";
 import Prompt from "../../../../modals/base/Prompt/Prompt.jsx";
 import FlowPanel from "../../../../components/organisms/interactive/FlowPanel/FlowPanel.tsx";
-import FloatingConnectionLine from "../../../../components/atoms/flow-connections/Floating/FloatingConnectionLine/FloatingConnectionLine.jsx";
 import {
     calcMiddlePosition,
     CLOUD_ID,
@@ -46,13 +43,19 @@ import IntnetNode from "../../../../components/atoms/flow-nodes/IntnetNode/Intne
 import { isAxiosError } from "axios";
 import { useProfile } from "../../../../contexts/ProfileContext.tsx";
 import CloudNode from "../../../../components/atoms/flow-nodes/CloudNode/CloudNode.tsx";
-import { InternalNetwork, InternalNetworkSetForm, NetworkConfiguration, NetworkConfigurationSetForm } from "../../../../types/api.types.ts";
+import {
+    InternalNetwork,
+    InternalNetworkSetForm,
+    MachinePropertiesPayload,
+    NetworkConfiguration,
+    NetworkConfigurationSetForm,
+} from "../../../../types/api.types.ts";
 import PositionAllocator from "../../../../handlers/positionAllocator.ts";
 import "./NetworkPanelPage.module.css";
 import NetworkPanelSelectedNodeForm from "../../../../components/organisms/forms/NetworkPanelSelectedNodeForm/NetworkPanelSelectedNodeForm.tsx";
 import { NetworkPanelEdge, NetworkPanelNode, NodeDataMap, Position } from "./reactFlow.types.ts";
-import { useDisclosure } from "@mantine/hooks";
-import { IconChevronsLeft, IconTool, IconTools } from "@tabler/icons-react";
+import FloatingEdge from "../../../../components/atoms/flow-connections/NetworkPanelEdge/FloatingEdge/FloatingEdge.tsx";
+import FloatingConnectionLine from "../../../../components/atoms/flow-connections/NetworkPanelEdge/FloatingConnectionLine/FloatingConnectionLine.jsx";
 
 const NODE_TYPES = {
     machine: MachineNode,
@@ -110,7 +113,7 @@ const Flow = (): JSX.Element => {
         putConfiguration: selectedAccountUuid ? `/network/configuration/networks/${selectedAccountUuid}` : `/network/configuration/networks`,
     } as const;
 
-    const { error: machinesError, data: machines, refresh: refreshMachines } = useFetch(PATHS.machines);
+    const { error: machinesError, data: machines, refresh: refreshMachines } = useFetch<Record<string, MachinePropertiesPayload>>(PATHS.machines);
 
     // adds new nodes to the flow
     const addNodes = (...nodes: NetworkPanelNode[]) => setNodes((nds) => [...nds, ...nodes.flat()]);
@@ -280,12 +283,21 @@ const Flow = (): JSX.Element => {
     const createIntnetEdges = (intnets: InternalNetwork[]) => {
         if (_.isEmpty(intnets)) return;
 
-        intnets.forEach(({ uuid, machines }) =>
-            _.entries(machines)?.forEach?.(([machineUuid, interfaceMac]) => {
+        intnets.forEach(({ uuid, machines: connectedMachines }) =>
+            _.entries(connectedMachines)?.forEach?.(([machineUuid, interfaceMac]) => {
+                const machine = machines?.[machineUuid];
+
+                if (!machine) return;
+
+                const networkInterface = machine.interfaces.find((e) => e.mac === interfaceMac);
+
                 addEdgeToFlow({
                     source: getNodeId("machine", machineUuid),
                     target: getNodeId("intnet", uuid),
-                    data: { interfaceMac },
+                    data: {
+                        interfaceMac: interfaceMac,
+                        interfaceIp: networkInterface?.ip,
+                    },
                 } as NetworkPanelEdge);
             }),
         );
@@ -432,7 +444,7 @@ const Flow = (): JSX.Element => {
                     selectedNode={selectedNode}
                     nodes={nodes}
                     edges={edges}
-                    machines={machines}
+                    machines={machines ?? {}}
                     onManualSelect={onManualSelect}
                     onManualEdgeRemoval={onManualEdgeRemoval}
                     onManualEdgeCreation={addEdgeToFlow}

@@ -4,7 +4,7 @@ import TextFieldModal from "../../../../../../modals/base/TextFieldModal/TextFie
 import { IntnetNode, MachineNode, NetworkPanelEdge, NetworkPanelNode } from "../../../../../../pages/administrative/networks/NetworkPanelPage/reactFlow.types";
 import { Checkbox, Divider, Group, ScrollArea, Select, Stack, Text } from "@mantine/core";
 import { IconDeviceDesktop } from "@tabler/icons-react";
-import { Machine } from "../../../../../../types/api.types";
+import { Machine, MachinePropertiesPayload } from "../../../../../../types/api.types";
 import { CLOUD_ID, getResourceUuidFromNode } from "../../../../../../pages/administrative/networks/NetworkPanelPage/reactFlow";
 import BadgeGroup from "../../../../../atoms/display/BadgeGroup/BadgeGroup";
 import _ from "lodash";
@@ -21,7 +21,7 @@ export interface NetworkNodeMachineFieldsetProps {
     nodes: NetworkPanelNode[];
     edges: Edge[];
     selectedNode: MachineNode;
-    machines: Record<string, Machine>;
+    machines: Record<string, MachinePropertiesPayload>;
     onManualIntnetCreation: (name: string, selectedMachineNode: MachineNode) => void;
     onManualEdgeRemoval: (edge: NetworkPanelEdge) => void;
     onManualEdgeCreation: (edge: NetworkPanelEdge) => void;

@@ -7,7 +7,7 @@
 }
 
 .connectionLineCircle {
-    stroke:#fff;
+    stroke: #fff;
     stroke-width: 1.5;
 }
 
@@ -19,14 +19,24 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    
+
     background-color: #141414;
     border: solid 1px var(--mantine-color-dark-2);
     color: var(--mantine-color-dark-2);
     z-index: 100;
 }
 
-.deleteButton:hover{
+.deleteButton:hover {
     border-color: var(--mantine-primary-color-4);
     color: var(--mantine-primary-color-4);
+}
+
+.edgeDot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    border: solid 1px var(--mantine-color-dark-2);
+    background: #141414;
+    cursor: pointer;
+    z-index: 1000;
 }

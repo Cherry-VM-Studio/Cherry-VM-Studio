@@ -1,5 +1,5 @@
 import { IconDeviceDesktop } from "@tabler/icons-react";
-import { InternalNetwork, InternalNetworkSetForm, Machine } from "../../../../types/api.types";
+import { InternalNetwork, InternalNetworkSetForm, Machine, MachinePropertiesPayload } from "../../../../types/api.types";
 import type { Edge, Node } from "@xyflow/react";
 
 export interface Position {
@@ -16,7 +16,7 @@ export type Intnets = Record<string, InternalNetwork>;
 export type NodeType = "machine" | "intnet" | "cloud";
 
 export type NodeDataMap = {
-    machine: Machine;
+    machine: MachinePropertiesPayload;
     intnet: InternalNetwork | InternalNetworkSetForm;
     cloud: undefined;
 };
@@ -42,7 +42,8 @@ export type CloudNode = Node<never, "cloud">;
 export type NetworkPanelNode = MachineNode | IntnetNode | CloudNode;
 
 export type NetworkPanelEdgeData = {
-    interfaceMac: string; // originating interface of the virtual machine
+    interfaceMac?: string; // originating interface of the virtual machine
+    interfaceIp?: string;
 };
 
 export type NetworkPanelEdge = Edge<NetworkPanelEdgeData>;

@@ -1,6 +1,6 @@
 import { ActionIcon, Group, Stack, Text } from "@mantine/core";
 import { getResourceUuidFromNode } from "../../../../../../pages/administrative/networks/NetworkPanelPage/reactFlow";
-import { Machine } from "../../../../../../types/api.types";
+import { MachinePropertiesPayload } from "../../../../../../types/api.types";
 import { IconLinkOff } from "@tabler/icons-react";
 import classes from "../ListElements.module.css";
 import { NetworkPanelEdge, NetworkPanelNode } from "../../../../../../pages/administrative/networks/NetworkPanelPage/reactFlow.types";
@@ -8,7 +8,7 @@ import { NetworkPanelEdge, NetworkPanelNode } from "../../../../../../pages/admi
 export interface MachineNodeListElementProps {
     selectedNode: NetworkPanelNode;
     machineNodeId: string;
-    machines: Record<string, Machine>;
+    machines: Record<string, MachinePropertiesPayload>;
     onManualEdgeRemoval: (edge: NetworkPanelEdge) => void;
 }
 
