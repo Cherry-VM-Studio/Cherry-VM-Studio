@@ -14,7 +14,7 @@ import _, { random } from "lodash";
 const ProjectSlide = ({ slide, setSlide, ...props }: CopyrightPageSlideProps): React.JSX.Element => {
     const { tns, t } = useNamespaceTranslation("pages", "credits");
 
-    const imageNumber = random(0, 50);
+    const imageNumber = random(0, 49);
 
     const easterEgg =
         imageNumber === 0 ? (
