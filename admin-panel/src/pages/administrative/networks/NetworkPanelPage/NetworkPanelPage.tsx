@@ -5,7 +5,6 @@ import {
     Connection,
     ConnectionMode,
     Controls,
-    Edge,
     EdgeChange,
     MiniMap,
     NodeChange,
@@ -46,11 +45,11 @@ import IntnetNode from "../../../../components/atoms/flow-nodes/IntnetNode/Intne
 import { isAxiosError } from "axios";
 import { useProfile } from "../../../../contexts/ProfileContext.tsx";
 import CloudNode from "../../../../components/atoms/flow-nodes/CloudNode/CloudNode.tsx";
-import { InternalNetwork, NetworkConfiguration } from "../../../../types/api.types.ts";
+import { InternalNetwork, InternalNetworkSetForm, NetworkConfiguration, NetworkConfigurationSetForm } from "../../../../types/api.types.ts";
 import PositionAllocator from "../../../../handlers/positionAllocator.ts";
 import "./NetworkPanelPage.module.css";
 import NetworkPanelSelectedNodeForm from "../../../../components/organisms/forms/NetworkPanelSelectedNodeForm/NetworkPanelSelectedNodeForm.tsx";
-import { NetworkPanelNode, NodeDataMap, Position } from "./reactFlow.types.ts";
+import { NetworkPanelEdge, NetworkPanelNode, NodeDataMap, Position } from "./reactFlow.types.ts";
 
 const NODE_TYPES = {
     machine: MachineNode,
@@ -81,8 +80,8 @@ const Flow = (): JSX.Element => {
 
     const [selectedAccountUuid, setSelectedAccountUuid] = useState(getProfile().uuid);
     const [nodes, setNodes] = useState<NetworkPanelNode[]>([]);
-    const [edges, setEdges] = useState<Edge[]>([]);
-    const [rfInstance, setRfInstance] = useState<ReactFlowInstance<NetworkPanelNode, Edge> | null>(null);
+    const [edges, setEdges] = useState<NetworkPanelEdge[]>([]);
+    const [rfInstance, setRfInstance] = useState<ReactFlowInstance<NetworkPanelNode, NetworkPanelEdge> | null>(null);
 
     const initCount = useRef(0);
     const intnetAllocator = useRef(new NumberAllocator()).current;
@@ -114,7 +113,7 @@ const Flow = (): JSX.Element => {
     const addNodes = (...nodes: NetworkPanelNode[]) => setNodes((nds) => [...nds, ...nodes.flat()]);
 
     // adds an edge between nodes in the flow
-    const addEdgeToFlow = (edge: Edge) => {
+    const addEdgeToFlow = (edge: NetworkPanelEdge) => {
         setEdges((eds) => addEdge(edge, eds));
         setIsDirty(true);
     };
@@ -152,7 +151,7 @@ const Flow = (): JSX.Element => {
      * Handles changes to edges in the flow.
      * Marks the flow as unsaved (dirty).
      */
-    const onEdgesChange = useCallback((changes: EdgeChange<Edge>[]) => {
+    const onEdgesChange = useCallback((changes: EdgeChange<NetworkPanelEdge>[]) => {
         setEdges((eds) => applyEdgeChanges(changes, eds));
         setIsDirty(true);
     }, []);
@@ -171,18 +170,18 @@ const Flow = (): JSX.Element => {
 
             // connection started from a machine node and ending on a intnet/cloud node.
             if (target.startsWith("intnet") || target.startsWith("cloud")) {
-                return addEdgeToFlow({ source: source, target: target } as Edge);
+                return addEdgeToFlow({ source: source, target: target } as NetworkPanelEdge);
             }
 
             // connection between two machine nodes
             // new intnet is created
-            const intnet = { uuid: uuidv4(), display_name: `Intnet ${intnetAllocator.getNext()}` } as InternalNetwork;
+            const intnet = { uuid: uuidv4(), intnet_name: `Intnet ${intnetAllocator.getNext()}`, bridge_ip: null, machines: [] } as InternalNetworkSetForm;
             const intnetPosition = calcMiddlePosition(getNode(source)!.position, getNode(target)!.position) as Position;
             const intnetNode = generateIntnetNodeObject(intnet, intnetPosition);
 
             addNodes(intnetNode);
-            addEdgeToFlow({ source: target, target: intnetNode.id } as Edge);
-            addEdgeToFlow({ source: source, target: intnetNode.id } as Edge);
+            addEdgeToFlow({ source: target, target: intnetNode.id } as NetworkPanelEdge);
+            addEdgeToFlow({ source: source, target: intnetNode.id } as NetworkPanelEdge);
         },
         [setEdges],
     );
@@ -198,15 +197,15 @@ const Flow = (): JSX.Element => {
         zoomTo(getZoom() - 0.5, { duration: 500 });
     };
 
-    const onManualEdgeRemoval = ({ source, target }: Edge) => {
+    const onManualEdgeRemoval = ({ source, target }: NetworkPanelEdge) => {
         setEdges((edges) => edges.filter((e) => e.source !== source || e.target !== target));
     };
 
     const onManualIntnetCreation = (name: string, connectedNode: NetworkPanelNode) => {
-        const intnet = { uuid: uuidv4(), display_name: name } as InternalNetwork;
+        const intnet = { uuid: uuidv4(), intnet_name: name, bridge_ip: null, machines: [] } as InternalNetworkSetForm;
         const intnetNode = generateIntnetNodeObject(intnet, positionsAllocator.getNext());
         addNodes(intnetNode);
-        addEdgeToFlow({ source: connectedNode.id, target: intnetNode.id } as Edge);
+        addEdgeToFlow({ source: connectedNode.id, target: intnetNode.id } as NetworkPanelEdge);
     };
 
     const onIntnetRename = (nodeId: string, name: string) => {
@@ -221,12 +220,12 @@ const Flow = (): JSX.Element => {
 
     const getNodePositions = useCallback(() => rfInstance?.getNodes().reduce((acc, node) => ({ ...acc, [node.id]: node.position }), {}) ?? {}, [rfInstance]);
 
-    const getNetworksConfig = (): NetworkConfiguration => {
+    const getNetworksConfig = (): NetworkConfigurationSetForm => {
         const edges = getEdges();
-        const intnets: Record<string, InternalNetwork> = {};
+        const intnets: Record<string, InternalNetworkSetForm> = {};
         const machinesWithInternetAccess: string[] = [];
 
-        edges.forEach(({ source, target }) => {
+        edges.forEach(({ source, target, data }) => {
             const machineUuid = getResourceUuidFromNode(source);
 
             if (!source.startsWith("machine") || _.isNull(machineUuid)) return;
@@ -235,13 +234,16 @@ const Flow = (): JSX.Element => {
             if (!target.startsWith("intnet")) return;
 
             const intnetUuid = getResourceUuidFromNode(target);
-            if (_.isNull(intnetUuid)) return;
+            const intnetNode = nodes.find((n) => n.id === target);
+
+            if (_.isNull(intnetUuid) || !intnetNode) return;
 
             if (!intnets[intnetUuid]) {
                 intnets[intnetUuid] = {
                     uuid: intnetUuid,
                     machines: [],
-                    display_name: "",
+                    intnet_name: intnetNode.data.label,
+                    bridge_ip: null,
                 };
             }
 
@@ -276,11 +278,12 @@ const Flow = (): JSX.Element => {
         if (_.isEmpty(intnets)) return;
 
         intnets.forEach(({ uuid, machines }) =>
-            machines?.forEach?.((machineUuid) => {
+            _.entries(machines)?.forEach?.(([machineUuid, interfaceMac]) => {
                 addEdgeToFlow({
                     source: getNodeId("machine", machineUuid),
                     target: getNodeId("intnet", uuid),
-                } as Edge);
+                    data: { interfaceMac },
+                } as NetworkPanelEdge);
             }),
         );
     };
@@ -293,7 +296,7 @@ const Flow = (): JSX.Element => {
             addEdgeToFlow({
                 source: getNodeId("machine", machineUuid),
                 target: CLOUD_ID,
-            } as Edge);
+            } as NetworkPanelEdge);
         });
     };
 
@@ -302,7 +305,7 @@ const Flow = (): JSX.Element => {
         return new Promise<void>(async (resolve, reject) => {
             if (!positions || !configuration) return reject("Either positions or intnets is undefined.");
 
-            const intnetsArray = _.values(configuration.internal_networks).filter((intnet) => intnet.machines.length > 1);
+            const intnetsArray = _.values(configuration.internal_networks).filter((intnet) => _.size(intnet.machines) > 1);
             const internetArray = configuration.machines_with_internet_access;
 
             positionsAllocator.setBounds(_.values(positions));
@@ -316,7 +319,7 @@ const Flow = (): JSX.Element => {
             createIntnetEdges(intnetsArray);
             createInternetEdges(internetArray);
 
-            const takenIntnetNumbers = intnetsArray.map((intnet) => getIntnetNumber(intnet.display_name)).filter((e) => !_.isNull(e));
+            const takenIntnetNumbers = intnetsArray.map((intnet) => getIntnetNumber(intnet.intnet_name)).filter((e) => !_.isNull(e));
 
             intnetAllocator.setCurrent(Math.max(...takenIntnetNumbers, 0));
 

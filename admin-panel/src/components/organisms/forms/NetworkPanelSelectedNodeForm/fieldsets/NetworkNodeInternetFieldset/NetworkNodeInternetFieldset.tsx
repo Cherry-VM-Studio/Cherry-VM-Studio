@@ -2,19 +2,18 @@ import { Divider, ScrollArea, Select, Stack, Text } from "@mantine/core";
 import useNamespaceTranslation from "../../../../../../hooks/useNamespaceTranslation";
 import classes from "../../NetworkPanelSelectedNodeForm.module.css";
 import MachineNodeListElement from "../../node-list-elements/MachineNodeListElement/MachineNodeListElement";
-import { CloudNode, NetworkPanelNode } from "../../../../../../pages/administrative/networks/NetworkPanelPage/reactFlow.types";
-import { Edge } from "@xyflow/react";
+import { CloudNode, NetworkPanelEdge, NetworkPanelNode } from "../../../../../../pages/administrative/networks/NetworkPanelPage/reactFlow.types";
 import { Machine } from "../../../../../../types/api.types";
 import { getResourceTypeFromNode } from "../../../../../../pages/administrative/networks/NetworkPanelPage/reactFlow";
 import SelectNodeRenderOption from "../../SelectNodeRenderOption";
 
 export interface NetworkNodeInternetFieldsetProps {
     nodes: NetworkPanelNode[];
-    edges: Edge[];
+    edges: NetworkPanelEdge[];
     selectedNode: CloudNode;
     machines: Record<string, Machine>;
-    onManualEdgeRemoval: (edge: Edge) => void;
-    onManualEdgeCreation: (edge: Edge) => void;
+    onManualEdgeRemoval: (edge: NetworkPanelEdge) => void;
+    onManualEdgeCreation: (edge: NetworkPanelEdge) => void;
 }
 
 const NetworkNodeInternetFieldset = ({
@@ -50,7 +49,7 @@ const NetworkNodeInternetFieldset = ({
                     <Select
                         placeholder={tns("add-connection")}
                         data={addConnectionSelectData}
-                        onChange={(val) => onManualEdgeCreation({ source: val, target: selectedNode.id } as Edge)}
+                        onChange={(val) => onManualEdgeCreation({ source: val, target: selectedNode.id } as NetworkPanelEdge)}
                         renderOption={SelectNodeRenderOption}
                         value={null}
                     />

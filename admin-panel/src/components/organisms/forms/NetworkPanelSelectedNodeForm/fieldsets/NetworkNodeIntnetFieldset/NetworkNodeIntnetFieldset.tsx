@@ -1,26 +1,23 @@
-import { Button, Divider, Group, Loader, ScrollArea, Select, Stack, Text, TextInput } from "@mantine/core";
+import { Button, Divider, Group, ScrollArea, Select, Stack, Text } from "@mantine/core";
 import classes from "../../NetworkPanelSelectedNodeForm.module.css";
 import useNamespaceTranslation from "../../../../../../hooks/useNamespaceTranslation";
-import { IntnetNode, MachineNode, NetworkPanelNode } from "../../../../../../pages/administrative/networks/NetworkPanelPage/reactFlow.types";
-import { Edge } from "@xyflow/react";
+import { IntnetNode, NetworkPanelEdge, NetworkPanelNode } from "../../../../../../pages/administrative/networks/NetworkPanelPage/reactFlow.types";
 import { getResourceTypeFromNode } from "../../../../../../pages/administrative/networks/NetworkPanelPage/reactFlow";
 import { Machine } from "../../../../../../types/api.types";
 import SelectNodeRenderOption from "../../SelectNodeRenderOption";
-import { useField } from "@mantine/form";
 import MachineNodeListElement from "../../node-list-elements/MachineNodeListElement/MachineNodeListElement";
-import { useEffect, useState } from "react";
-import { IconCheck, IconTrash, IconX } from "@tabler/icons-react";
+import { IconTrash } from "@tabler/icons-react";
 import ConfirmationModal from "../../../../../../modals/base/ConfirmationModal/ConfirmationModal";
-import { useDebouncedCallback, useDisclosure } from "@mantine/hooks";
+import { useDisclosure } from "@mantine/hooks";
 import DebouncedTextInput from "../../../../../atoms/interactive/DebouncedTextInput/DebouncedTextInput";
 
 export interface NetworkNodeIntnetFieldsetProps {
     nodes: NetworkPanelNode[];
-    edges: Edge[];
+    edges: NetworkPanelEdge[];
     selectedNode: IntnetNode;
     machines: Record<string, Machine>;
-    onManualEdgeRemoval: (edge: Edge) => void;
-    onManualEdgeCreation: (edge: Edge) => void;
+    onManualEdgeRemoval: (edge: NetworkPanelEdge) => void;
+    onManualEdgeCreation: (edge: NetworkPanelEdge) => void;
     onIntnetRename: (nodeId: string, newName: string) => void;
     onIntnetRemove: (nodeId: string) => void;
 }
@@ -90,7 +87,7 @@ const NetworkNodeIntnetFieldset = ({
                     <Select
                         placeholder={tns("add-connection")}
                         data={addConnectionSelectData}
-                        onChange={(val) => onManualEdgeCreation({ source: val, target: selectedNode.id } as Edge)}
+                        onChange={(val) => onManualEdgeCreation({ source: val, target: selectedNode.id } as NetworkPanelEdge)}
                         renderOption={SelectNodeRenderOption}
                         value={null}
                     />

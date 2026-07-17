@@ -3,14 +3,13 @@ import { getResourceUuidFromNode } from "../../../../../../pages/administrative/
 import { Machine } from "../../../../../../types/api.types";
 import { IconLinkOff } from "@tabler/icons-react";
 import classes from "../ListElements.module.css";
-import { Edge } from "@xyflow/react";
-import { NetworkPanelNode } from "../../../../../../pages/administrative/networks/NetworkPanelPage/reactFlow.types";
+import { NetworkPanelEdge, NetworkPanelNode } from "../../../../../../pages/administrative/networks/NetworkPanelPage/reactFlow.types";
 
 export interface MachineNodeListElementProps {
     selectedNode: NetworkPanelNode;
     machineNodeId: string;
     machines: Record<string, Machine>;
-    onManualEdgeRemoval: (edge: Edge) => void;
+    onManualEdgeRemoval: (edge: NetworkPanelEdge) => void;
 }
 
 const MachineNodeListElement = ({ selectedNode, machineNodeId, machines, onManualEdgeRemoval }: MachineNodeListElementProps): React.JSX.Element => {
@@ -30,7 +29,7 @@ const MachineNodeListElement = ({ selectedNode, machineNodeId, machines, onManua
                 ml="auto"
                 color="cherry.4"
                 variant="transparent"
-                onClick={() => onManualEdgeRemoval({ source: machineNodeId, target: selectedNode.id } as Edge)}
+                onClick={() => onManualEdgeRemoval({ source: machineNodeId, target: selectedNode.id } as NetworkPanelEdge)}
             >
                 <IconLinkOff size={18} />
             </ActionIcon>

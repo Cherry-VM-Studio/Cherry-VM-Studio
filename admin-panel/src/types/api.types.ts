@@ -136,6 +136,11 @@ export interface MachineDiskForm {
 
 export type MachineConnectionProtocols = "vnc" | "ssh" | "rdp";
 
+export interface MachineStaticInterfaceInfo {
+    mac: string;
+    ip: string | null;
+}
+
 export interface MachinePropertiesPayload {
     uuid: string;
     title: string | null;
@@ -149,6 +154,7 @@ export interface MachinePropertiesPayload {
         vnc?: string;
     };
     disks: MachineDiskStaticData[] | null;
+    interfaces: MachineStaticInterfaceInfo[];
 }
 
 export interface MachineStatePayload {
@@ -261,14 +267,32 @@ export interface MachineTemplate {
 
 // network configuration
 
-export interface InternalNetwork {
+export interface BaseInternalNetworkProperties {
     uuid: string;
+    intnet_name: string;
+
+    // "x.x.x.x/mask" format
+    // "0.0.0.0/32" for ip removal
+    bridge_ip: string | null;
+}
+
+export interface InternalNetwork extends BaseInternalNetworkProperties {
+    // <MACHINE UUID, INTERFACE MAC>
+    machines: Record<string, string>;
+    bridge_mac: string;
+}
+
+export interface InternalNetworkSetForm extends BaseInternalNetworkProperties {
     machines: string[];
-    display_name: string;
 }
 
 export interface NetworkConfiguration {
     internal_networks: Record<string, InternalNetwork>;
+    machines_with_internet_access: string[];
+}
+
+export interface NetworkConfigurationSetForm {
+    internal_networks: Record<string, InternalNetworkSetForm>;
     machines_with_internet_access: string[];
 }
 

@@ -64,8 +64,10 @@ export const generateIntnetNodeObject = (intnet: NodeDataMap["intnet"], position
         deletable: false,
         selectable: true,
         data: {
-            label: intnet.display_name ?? `Intnet ${intnet.uuid}`,
-            intnet: intnet.uuid,
+            uuid: intnet.uuid,
+            label: intnet.intnet_name,
+            bridgeIp: intnet.bridge_ip,
+            mac: "bridge_mac" in intnet ? intnet.bridge_mac : undefined,
         },
     }) as IntnetNode;
 

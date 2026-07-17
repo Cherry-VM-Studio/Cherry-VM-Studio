@@ -1,9 +1,14 @@
 import { Divider, Select, Stack, StackProps } from "@mantine/core";
 import classes from "./NetworkPanelSelectedNodeForm.module.css";
-import { CloudNode, IntnetNode, MachineNode, NetworkPanelNode } from "../../../../pages/administrative/networks/NetworkPanelPage/reactFlow.types";
+import {
+    CloudNode,
+    IntnetNode,
+    MachineNode,
+    NetworkPanelEdge,
+    NetworkPanelNode,
+} from "../../../../pages/administrative/networks/NetworkPanelPage/reactFlow.types";
 import useNamespaceTranslation from "../../../../hooks/useNamespaceTranslation";
 import { Machine } from "../../../../types/api.types";
-import { Edge } from "@xyflow/react";
 import NetworkNodeMachineFieldset from "./fieldsets/NetworkNodeMachineFieldset/NetworkNodeMachineFieldset";
 import NetworkNodeIntnetFieldset from "./fieldsets/NetworkNodeIntnetFieldset/NetworkNodeIntnetFieldset";
 import SelectNodeRenderOption from "./SelectNodeRenderOption";
@@ -13,10 +18,10 @@ export interface NetworkPanelSelectedNodeFormProps extends StackProps {
     nodes: NetworkPanelNode[];
     selectedNode?: NetworkPanelNode;
     machines: Record<string, Machine>;
-    edges: Edge[];
+    edges: NetworkPanelEdge[];
     onManualSelect: (nodeId: string | null) => void;
-    onManualEdgeRemoval: (edge: Edge) => void;
-    onManualEdgeCreation: (edge: Edge) => void;
+    onManualEdgeRemoval: (edge: NetworkPanelEdge) => void;
+    onManualEdgeCreation: (edge: NetworkPanelEdge) => void;
     onManualIntnetCreation: (name: string, selectedMachineNode: MachineNode) => void;
     onIntnetRename: (nodeId: string, name: string) => void;
     onIntnetRemove: (nodeId: string) => void;
