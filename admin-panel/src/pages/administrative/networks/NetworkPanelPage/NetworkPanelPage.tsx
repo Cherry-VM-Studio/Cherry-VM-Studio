@@ -1,4 +1,4 @@
-import { Container, Group, Stack } from "@mantine/core";
+import { ActionIcon, Group } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import {
     Background,
@@ -8,6 +8,7 @@ import {
     EdgeChange,
     MiniMap,
     NodeChange,
+    Panel,
     ReactFlow,
     ReactFlowInstance,
     ReactFlowProvider,
@@ -50,6 +51,8 @@ import PositionAllocator from "../../../../handlers/positionAllocator.ts";
 import "./NetworkPanelPage.module.css";
 import NetworkPanelSelectedNodeForm from "../../../../components/organisms/forms/NetworkPanelSelectedNodeForm/NetworkPanelSelectedNodeForm.tsx";
 import { NetworkPanelEdge, NetworkPanelNode, NodeDataMap, Position } from "./reactFlow.types.ts";
+import { useDisclosure } from "@mantine/hooks";
+import { IconChevronsLeft, IconTool, IconTools } from "@tabler/icons-react";
 
 const NODE_TYPES = {
     machine: MachineNode,
@@ -83,7 +86,7 @@ const Flow = (): JSX.Element => {
     const [edges, setEdges] = useState<NetworkPanelEdge[]>([]);
     const [rfInstance, setRfInstance] = useState<ReactFlowInstance<NetworkPanelNode, NetworkPanelEdge> | null>(null);
 
-    const initCount = useRef(0);
+    const pageLoaded = useRef(false);
     const intnetAllocator = useRef(new NumberAllocator()).current;
     const positionsAllocator = useRef(new PositionAllocator()).current;
 
@@ -101,10 +104,10 @@ const Flow = (): JSX.Element => {
     const [isDirty, setIsDirty] = useState<boolean | null>(null);
 
     const PATHS = {
-        machines: `/machines/account/${selectedAccountUuid ?? ""}`,
-        getWorkspace: `/network/workspace/${selectedAccountUuid ?? ""}`,
-        putPositions: `/network/configuration/positions/${selectedAccountUuid ?? ""}`,
-        putConfiguration: `/network/configuration/networks/${selectedAccountUuid ?? ""}`,
+        machines: selectedAccountUuid ? `/machines/account/${selectedAccountUuid}` : `/machines/account`,
+        getWorkspace: selectedAccountUuid ? `/network/workspace/${selectedAccountUuid}` : `/network/workspace`,
+        putPositions: selectedAccountUuid ? `/network/configuration/positions/${selectedAccountUuid}` : `/network/configuration/positions`,
+        putConfiguration: selectedAccountUuid ? `/network/configuration/networks/${selectedAccountUuid}` : `/network/configuration/networks`,
     } as const;
 
     const { error: machinesError, data: machines, refresh: refreshMachines } = useFetch(PATHS.machines);
@@ -338,13 +341,21 @@ const Flow = (): JSX.Element => {
         if (!machines) return;
         resetFlow()
             .then(() => {
-                initCount.current += 1;
+                pageLoaded.current = true;
                 notifications.hide(`network-panel.flow-init`);
                 sendNotification("network-panel.flow-init", { color: "suse-green", uniqueId: false });
                 setIsDirty(null);
             })
             .catch(() => sendErrorNotification(ERRORS.CVMM_650_INVALID_NETWORK_CONFIGURATION));
     }, [resetFlow]);
+
+    const centerFlow = () => {
+        const center = calcMiddlePosition(...nodes.map((n) => n.position as Position));
+
+        // adding half the node width
+        if (center) setCenter(center.x + 50, center.y + 50);
+        zoomTo(getZoom() - 0.5, { duration: 500 });
+    };
 
     // Sends a PUT request to save the current flow panel state.
     const putNodePositions = () => sendRequest("PUT", PATHS.putPositions, { data: getNodePositions() });
@@ -363,19 +374,9 @@ const Flow = (): JSX.Element => {
         setIsDirty(false);
     };
 
-    const centerFlow = () => {
-        if (!initCount.current) return;
-
-        const center = calcMiddlePosition(...nodes.map((n) => n.position as Position));
-
-        // adding half the node width
-        if (center) setCenter(center.x + 50, center.y + 50);
-        zoomTo(getZoom() - 0.5, { duration: 500 });
-    };
-
     useEffect(initFlow, [machines]);
 
-    useEffect(centerFlow, [initCount.current]);
+    useEffect(centerFlow, [pageLoaded.current]);
 
     if (machinesError) {
         handleAxiosError(machinesError);
@@ -427,7 +428,7 @@ const Flow = (): JSX.Element => {
                 </ReactFlow>
                 <NetworkPanelSelectedNodeForm
                     flex={1}
-                    display={selectedNode ? "flex" : "none"}
+                    display={selectedNode ? undefined : "none"}
                     selectedNode={selectedNode}
                     nodes={nodes}
                     edges={edges}

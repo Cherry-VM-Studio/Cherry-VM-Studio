@@ -16,12 +16,22 @@ const IntnetNode = ({ data }: IntnetNodeProps): React.JSX.Element => {
                 type="target"
                 isConnectableStart={false}
             />
+            <Stack gap='0'>
+
             <Text
                 ta="center"
-                style={{ fontSize: "18px" }}
-            >
+                fz='18'
+                >
                 {data.label}
             </Text>
+            <Text
+                ta="center"
+                fz='10'
+                c='dimmed'
+                >
+                {data.mac}
+            </Text>
+                </Stack>
         </Stack>
     );
 };

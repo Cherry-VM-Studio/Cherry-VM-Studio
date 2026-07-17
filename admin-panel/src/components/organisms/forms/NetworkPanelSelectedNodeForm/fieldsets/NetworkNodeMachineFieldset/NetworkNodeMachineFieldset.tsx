@@ -1,9 +1,9 @@
 import { useDisclosure } from "@mantine/hooks";
 import useNamespaceTranslation from "../../../../../../hooks/useNamespaceTranslation";
 import TextFieldModal from "../../../../../../modals/base/TextFieldModal/TextFieldModal";
-import { IntnetNode, MachineNode, NetworkPanelNode } from "../../../../../../pages/administrative/networks/NetworkPanelPage/reactFlow.types";
-import { ActionIcon, Checkbox, Divider, Group, ScrollArea, Select, SelectProps, Stack, Text } from "@mantine/core";
-import { IconDeviceDesktop, IconLinkOff, IconPlus, IconTopologyStar3 } from "@tabler/icons-react";
+import { IntnetNode, MachineNode, NetworkPanelEdge, NetworkPanelNode } from "../../../../../../pages/administrative/networks/NetworkPanelPage/reactFlow.types";
+import { Checkbox, Divider, Group, ScrollArea, Select, Stack, Text } from "@mantine/core";
+import { IconDeviceDesktop } from "@tabler/icons-react";
 import { Machine } from "../../../../../../types/api.types";
 import { CLOUD_ID, getResourceUuidFromNode } from "../../../../../../pages/administrative/networks/NetworkPanelPage/reactFlow";
 import BadgeGroup from "../../../../../atoms/display/BadgeGroup/BadgeGroup";
@@ -23,8 +23,8 @@ export interface NetworkNodeMachineFieldsetProps {
     selectedNode: MachineNode;
     machines: Record<string, Machine>;
     onManualIntnetCreation: (name: string, selectedMachineNode: MachineNode) => void;
-    onManualEdgeRemoval: (edge: Edge) => void;
-    onManualEdgeCreation: (edge: Edge) => void;
+    onManualEdgeRemoval: (edge: NetworkPanelEdge) => void;
+    onManualEdgeCreation: (edge: NetworkPanelEdge) => void;
 }
 
 const NetworkNodeMachineFieldset = ({
@@ -73,7 +73,7 @@ const NetworkNodeMachineFieldset = ({
     };
 
     const onInternetCheckboxToggle = (event: ChangeEvent<HTMLInputElement>) => {
-        const edge = { source: selectedNode.id, target: CLOUD_ID } as Edge;
+        const edge = { source: selectedNode.id, target: CLOUD_ID } as NetworkPanelEdge;
         event.currentTarget.checked ? onManualEdgeCreation(edge) : onManualEdgeRemoval(edge);
     };
 
@@ -164,7 +164,7 @@ const NetworkNodeMachineFieldset = ({
                         data={connectionSelectData}
                         onChange={(val) => {
                             if (val === "add-intnet") openModal();
-                            else if (val) onManualEdgeCreation({ source: selectedNode.id, target: val } as Edge);
+                            else if (val) onManualEdgeCreation({ source: selectedNode.id, target: val } as NetworkPanelEdge);
                         }}
                         renderOption={SelectNodeRenderOption}
                         value={null}

@@ -42,45 +42,45 @@ const NetworkPanelSelectedNodeForm = ({
 }: NetworkPanelSelectedNodeFormProps): React.JSX.Element => {
     const { tns } = useNamespaceTranslation("pages", "network-panel.selection-form");
 
-    if (!selectedNode) return <></>;
-
     const getSelectDataFromNode = (node: NetworkPanelNode) => ({ label: node?.data?.label ?? "Unnamed", value: node.id });
 
-    const formBody = {
-        machine: (
-            <NetworkNodeMachineFieldset
-                edges={edges}
-                nodes={nodes}
-                selectedNode={selectedNode as MachineNode}
-                machines={machines}
-                onManualEdgeCreation={onManualEdgeCreation}
-                onManualEdgeRemoval={onManualEdgeRemoval}
-                onManualIntnetCreation={onManualIntnetCreation}
-            />
-        ),
-        intnet: (
-            <NetworkNodeIntnetFieldset
-                edges={edges}
-                nodes={nodes}
-                selectedNode={selectedNode as IntnetNode}
-                machines={machines}
-                onManualEdgeCreation={onManualEdgeCreation}
-                onManualEdgeRemoval={onManualEdgeRemoval}
-                onIntnetRename={onIntnetRename}
-                onIntnetRemove={onIntnetRemove}
-            />
-        ),
-        cloud: (
-            <NetworkNodeInternetFieldset
-                edges={edges}
-                nodes={nodes}
-                selectedNode={selectedNode as CloudNode}
-                machines={machines}
-                onManualEdgeCreation={onManualEdgeCreation}
-                onManualEdgeRemoval={onManualEdgeRemoval}
-            />
-        ),
-    }[selectedNode.type];
+    const formBody = selectedNode
+        ? {
+              machine: (
+                  <NetworkNodeMachineFieldset
+                      edges={edges}
+                      nodes={nodes}
+                      selectedNode={selectedNode as MachineNode}
+                      machines={machines}
+                      onManualEdgeCreation={onManualEdgeCreation}
+                      onManualEdgeRemoval={onManualEdgeRemoval}
+                      onManualIntnetCreation={onManualIntnetCreation}
+                  />
+              ),
+              intnet: (
+                  <NetworkNodeIntnetFieldset
+                      edges={edges}
+                      nodes={nodes}
+                      selectedNode={selectedNode as IntnetNode}
+                      machines={machines}
+                      onManualEdgeCreation={onManualEdgeCreation}
+                      onManualEdgeRemoval={onManualEdgeRemoval}
+                      onIntnetRename={onIntnetRename}
+                      onIntnetRemove={onIntnetRemove}
+                  />
+              ),
+              cloud: (
+                  <NetworkNodeInternetFieldset
+                      edges={edges}
+                      nodes={nodes}
+                      selectedNode={selectedNode as CloudNode}
+                      machines={machines}
+                      onManualEdgeCreation={onManualEdgeCreation}
+                      onManualEdgeRemoval={onManualEdgeRemoval}
+                  />
+              ),
+          }[selectedNode.type]
+        : undefined;
 
     return (
         <Stack
@@ -94,9 +94,9 @@ const NetworkPanelSelectedNodeForm = ({
             />
             <Select
                 data={nodes.sort((a, b) => a.type.localeCompare(b.type)).map(getSelectDataFromNode)}
-                value={selectedNode.id}
-                allowDeselect={false}
+                value={selectedNode?.id}
                 onChange={onManualSelect}
+                allowDeselect={false}
                 renderOption={SelectNodeRenderOption}
             />
             {formBody}
