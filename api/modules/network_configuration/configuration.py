@@ -28,6 +28,7 @@ def get_current_network_configuration(owner_uuid: UUID) -> NetworkConfigurationG
             machines_list = [{machine["machine_uuid"]: machine["interface_mac"]} for machine in machines]
             
             internal_networks[intnet_uuid] = {
+                "uuid": intnet_uuid,
                 "intnet_name": intnet_name,
                 "bridge_mac": bridge_mac,
                 "bridge_ip": bridge_ip,
@@ -36,7 +37,7 @@ def get_current_network_configuration(owner_uuid: UUID) -> NetworkConfigurationG
         
     # Get a list of machines with internet access belonging to the owner
     select_machines_with_internet_access = """
-    SELECT machine_uuid FROM deployed_machines_owners
+    SELECT * FROM deployed_machines_owners
     INNER JOIN internet_connections ON deployed_machines_owners.machine_uuid = internet_connections.machine_uuid
     WHERE deployed_machines_owners.owner_uuid = %s
     """
@@ -53,10 +54,10 @@ def set_network_configuration(owner_uuid: UUID, configuration: NetworkConfigurat
 
     from modules.machine_lifecycle.networks import create_internal_network, delete_internal_network, modify_internal_network, attach_internet_interface, detach_internet_interface
 
-    internal_networks_db = set(select_single_field("uuid", "SELECT uuid FROM intnets WHERE owner_uuid = %s", (owner_uuid,)))
+    internal_networks_db = set(select_single_field("uuid", "SELECT * FROM intnets WHERE owner_uuid = %s", (owner_uuid,)))
     internal_networks_incoming = set(configuration.internal_networks.keys())
     
-    internet_connections_db = set(select_single_field("machine_uuid", "SELECT machine_uuid FROM deployed_machines_owners INNER JOIN internet_connections ON deployed_machines_owners.machine_uuid = internet_connections.machine_uuid WHERE deployed_machines_owners.owner_uuid = %s", (owner_uuid,)))
+    internet_connections_db = set(select_single_field("machine_uuid", "SELECT * FROM deployed_machines_owners INNER JOIN internet_connections ON deployed_machines_owners.machine_uuid = internet_connections.machine_uuid WHERE deployed_machines_owners.owner_uuid = %s", (owner_uuid,)))
     internet_connections_incoming = set(configuration.machines_with_internet_access)
     
     # This approach uses sets to determine changes in the networks configuration.

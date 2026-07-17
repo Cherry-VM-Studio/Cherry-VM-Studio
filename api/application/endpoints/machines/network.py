@@ -21,8 +21,9 @@ router = APIRouter(
     dependencies=[Depends(get_authenticated_administrator)]
 )
 
-debug = APIRouter(
+debug_router = APIRouter(
     prefix='/debug/network',
+    tags=['Network Debug'],
     dependencies=[Depends(get_authenticated_administrator)]
 )
 
@@ -85,7 +86,7 @@ def __save_flow_state_for_user__(uuid: UUID, positions: Positions, current_user:
 ################################
 #           DEBUG
 ################################
-@debug.put("/interface/attach", tags=['Network Debug'])
+@debug_router.put("/interface/attach", tags=['Network Debug'])
 def __attach_network_interface__(machine_uuid: UUID, network_interface: MachineNetworkInterface, current_user: DependsOnAdministrativeAuthentication) -> None:
     if not check_machine_existence(machine_uuid):
         raise HTTPException(404, f"Virtual machine with UUID={machine_uuid} could not be found.")
@@ -94,7 +95,7 @@ def __attach_network_interface__(machine_uuid: UUID, network_interface: MachineN
     
     attach_network_interface(machine_uuid, network_interface)
     
-@debug.put("/interface/detach", tags=['Network Debug'])
+@debug_router.put("/interface/detach", tags=['Network Debug'])
 def __detach_network_interface__(machine_uuid: UUID, mac_address: str, current_user: DependsOnAdministrativeAuthentication) -> None:
     if not check_machine_existence(machine_uuid):
         raise HTTPException(404, f"Virtual machine with UUID={machine_uuid} could not be found.")
@@ -103,24 +104,18 @@ def __detach_network_interface__(machine_uuid: UUID, mac_address: str, current_u
     
     detach_network_interface(machine_uuid, mac_address)
     
-@debug.post("/internal_network/create", tags=['Network Debug'])
+@debug_router.post("/internal_network/create", tags=['Network Debug'])
 def __create_internal_network__(owner_uuid: UUID, internal_network_set_form: InternalNetworkSetForm, current_user: DependsOnAdministrativeAuthentication) -> None:
-    if not check_machine_access(owner_uuid, current_user):
-        raise HTTPException(403, f"You do not have the necessary permissions to manage machines for user with UUID={owner_uuid}.")
     
     create_internal_network(owner_uuid, internal_network_set_form)
     
-@debug.delete("/internal_network/delete/{uuid}", tags=['Network Debug'])
-def __delete_internal_network__(intnet_uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> None:
-    if not check_machine_access(intnet_uuid, current_user):
-        raise HTTPException(403, f"You do not have the necessary permissions to manage machines for user with UUID={intnet_uuid}.")
+@debug_router.delete("/internal_network/delete/{uuid}", tags=['Network Debug'])
+def __delete_internal_network__(uuid: UUID, current_user: DependsOnAdministrativeAuthentication) -> None:
     
-    delete_internal_network(intnet_uuid)
+    delete_internal_network(uuid)
 
-@debug.put("/internal_network/modify", tags=['Network Debug'])
+@debug_router.put("/internal_network/modify", tags=['Network Debug'])
 def __modify_internal_network__(intnet_uuid: UUID, internal_network_set_form: InternalNetworkSetForm, current_user: DependsOnAdministrativeAuthentication) -> None:
-    if not check_machine_access(intnet_uuid, current_user):
-        raise HTTPException(403, f"You do not have the necessary permissions to manage machines for user with UUID={intnet_uuid}.")
     
     modify_internal_network(intnet_uuid, internal_network_set_form)
     

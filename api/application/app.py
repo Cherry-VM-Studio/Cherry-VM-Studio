@@ -44,6 +44,7 @@ app.include_router(network.router)
 app.include_router(users.router)
 app.include_router(groups.router)
 app.include_router(roles.router)
+app.include_router(network.debug_router)
 
 @app.exception_handler(Exception)
 async def internal_exception_handler(request: Request, exc: Exception):

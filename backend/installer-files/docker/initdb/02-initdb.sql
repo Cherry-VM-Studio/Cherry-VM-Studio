@@ -124,7 +124,6 @@ CREATE TABLE intnets (
     uuid UUID PRIMARY KEY,
     owner_uuid UUID,
     intnet_name VARCHAR(50),
-    bridge_name VARCHAR(50),
     bridge_mac macaddr NOT NULL,
     bridge_ip inet,
     FOREIGN KEY(owner_uuid) REFERENCES administrators(uuid) ON DELETE CASCADE
@@ -135,7 +134,6 @@ CREATE TABLE intnets_connections (
     machine_uuid UUID,
     interface_mac macaddr NOT NULL,
     interface_ip inet,
-    interface_name VARCHAR(50),
     PRIMARY KEY(intnet_uuid, machine_uuid, interface_mac),
     FOREIGN KEY (intnet_uuid) REFERENCES intnets(uuid) ON DELETE CASCADE,
     FOREIGN KEY (machine_uuid) REFERENCES deployed_machines_owners(machine_uuid) ON DELETE CASCADE

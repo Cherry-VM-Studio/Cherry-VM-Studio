@@ -6,6 +6,7 @@ import xml.etree.ElementTree as ET
 
 from typing import Union
 from uuid import UUID, uuid4
+from ipaddress import IPv4Interface
 
 from modules.postgresql.simple_select import select_single_field
 from modules.libvirt_socket import LibvirtConnection
@@ -141,7 +142,6 @@ def detach_internet_interface(machine_uuid: UUID) -> None:
                     
                     cursor.execute("DELETE FROM internet_connections WHERE machine_uuid = %s AND interface_mac = %s", (machine_uuid, internet_interface_mac))
                     
-                    
                 except libvirt.libvirtError as e:
                     raise Exception(f"Failed to detach Internet interface from machine {machine_uuid} because of Libvirt error: {e}")
                     
@@ -164,6 +164,11 @@ def attach_network_interface(machine_uuid: UUID, network_interface: MachineNetwo
                 try:
                     logger.debug(f"Attaching network interface {network_interface.mac} to machine {machine_uuid}")
                     
+                    intnet_uuid = network_interface.source.value
+                    
+                    cursor.execute("INSERT INTO intnets_connections (intnet_uuid, machine_uuid, interface_mac, interface_ip) VALUES (%s, %s, %s, %s)", 
+                                   (intnet_uuid, machine_uuid, network_interface.mac, network_interface.ip))
+                    
                     interface_xml = ET.tostring(create_machine_network_interface_xml(network_interface), encoding="unicode")
                     
                     if is_vm_running(machine_uuid):
@@ -175,16 +180,12 @@ def attach_network_interface(machine_uuid: UUID, network_interface: MachineNetwo
                         machine = libvirt_connection.lookupByUUID(machine_uuid.bytes)
                         
                         machine.attachDeviceFlags(interface_xml, flags)    
-                    
-                    cursor.execute("INSERT INTO intnets_connections (intnet_uuid, machine_uuid, interface_mac, interface_ip, interface_name) VALUES (%s, %s, %s, %s, %s)", 
-                                   (machine_uuid, network_interface.mac, network_interface.ip, network_interface.name)
-                                   )
-                        
+ 
                 except libvirt.libvirtError as e:
-                    raise Exception(f"Failed to attach network interface {network_interface.name} to machine {machine_uuid} because of Libvirt error: {e}")
+                    raise Exception(f"Failed to attach network interface {network_interface.mac} to machine {machine_uuid} because of Libvirt error: {e}")
                     
                 except Exception as e:
-                    raise Exception(f"Failed to attach network interface {network_interface.name} to machine {machine_uuid}: {e}")
+                    raise Exception(f"Failed to attach network interface {network_interface.mac} to machine {machine_uuid}: {e}")
     
 def detach_network_interface(machine_uuid: UUID, mac_address: str) -> None:
     
@@ -238,8 +239,8 @@ def create_internal_network(owner_uuid: UUID, internal_network_set_form: Interna
                 try:
                     logger.debug("Creating a new internal network")
                     
-                    if internal_network_set_form.intnet_name is None or internal_network_set_form.machines is None:
-                        raise ValueError("intnet_name and machines are required to create an internal network.")
+                    if not internal_network_set_form.intnet_name or not internal_network_set_form.machines:
+                        raise Exception("intnet_name and machines are required to create an internal network.")
                     
                     bridge_mac = generate_random_mac()
                     
@@ -262,27 +263,28 @@ def create_internal_network(owner_uuid: UUID, internal_network_set_form: Interna
                         network.setAutostart(True)
                         network.create()
                         
-                    cursor.execute("INSERT INTO intets (uuid, owner_uuid, intnet_name, bridge_name, bridge_mac, bridge_ip) VALUES (%s, %s, %s, %s, %s, %s)", (
+                    cursor.execute("INSERT INTO intnets (uuid, owner_uuid, intnet_name, bridge_mac, bridge_ip) VALUES (%s, %s, %s, %s, %s)", (
                         internal_network_set_form.uuid,
                         owner_uuid,
                         internal_network_set_form.intnet_name,
                         bridge_mac,
                         internal_network_set_form.bridge_ip
                     ))
-                    
-                    for machine in internal_network_set_form.machines:
-                        interface = MachineNetworkInterface(
-                            mac=generate_random_mac(),
-                            source=NetworkInterfaceSource(type="network", value=str(internal_network_set_form.uuid))
-                        )
-                        attach_network_interface(machine, interface)
-                                
+            
                 except libvirt.libvirtError as e:
                     raise Exception(f"Failed to create internal network {internal_network_set_form.intnet_name} because of Libvirt error: {e}")
                     
                 except Exception as e:
                     raise Exception(f"Failed to create internal network {internal_network_set_form.intnet_name}: {e}")
 
+
+    for machine in internal_network_set_form.machines:
+        interface = MachineNetworkInterface(
+            mac=generate_random_mac(),
+            source=NetworkInterfaceSource(type="network", value=str(internal_network_set_form.uuid))
+        )
+        attach_network_interface(machine, interface)
+                        
 def delete_internal_network(intnet_uuid: UUID) -> None:
     """
     Removes an existing internal network.
@@ -292,7 +294,15 @@ def delete_internal_network(intnet_uuid: UUID) -> None:
         with connection.cursor() as cursor:
             with connection.transaction():
                 try:
-                    logger.debug(f"Removing internal network {intnet_uuid}")
+                    logger.debug(f"Removing intnet {intnet_uuid} connections.")
+                    
+                    cursor.execute("SELECT machine_uuid, interface_mac FROM intnets_connections WHERE intnet_uuid = %s", (intnet_uuid,))
+                    
+                    for row in cursor:
+                        detach_network_interface(row["machine_uuid"], row["interface_mac"])
+                    
+                    
+                    logger.debug(f"Removing intnet {intnet_uuid}.")
                     
                     with LibvirtConnection("rw") as libvirt_connection:
                         network = libvirt_connection.networkLookupByUUID(intnet_uuid.bytes)
@@ -322,28 +332,62 @@ def modify_internal_network(intnet_uuid: UUID, internal_network_set_form: Intern
                         cursor.execute("UPDATE intnets SET intnet_name = %s WHERE uuid = %s", (internal_network_set_form.intnet_name, intnet_uuid))
                         
                     if internal_network_set_form.bridge_ip is not None:
-                        cursor.execute("UPDATE intnets SET bridge_ip = %s WHERE uuid = %s", (internal_network_set_form.bridge_ip, intnet_uuid))
-                        with LibvirtConnection("rw") as libvirt_connection:
-                            network = libvirt_connection.networkLookupByUUID(intnet_uuid.bytes)
+                        
+                        if internal_network_set_form.bridge_ip == IPv4Interface("0.0.0.0/32"):
                             
-                            network_xml = network.XMLDesc(0)
+                            cursor.execute("UPDATE intnets SET bridge_ip = NULL WHERE uuid = %s", (intnet_uuid,))
                             
-                            network_root = ET.fromstring(network_xml)
-                            
-                            ip_element = get_required_xml_tag(network_root, "ip")
-                            ip_element.set("address", str(internal_network_set_form.bridge_ip.ip))
-                            ip_element.set("netmask", str(internal_network_set_form.bridge_ip.netmask))
-                            modified_network_xml = ET.tostring(network_root, encoding="unicode")
-                            
-                            if network.isActive():
-                                network.destroy()
-                            network.undefine()
-                            
-                            libvirt_connection.networkDefineXML(modified_network_xml)
-                            
-                            network.setAutostart(True)
+                            with LibvirtConnection("rw") as libvirt_connection:
+                                network = libvirt_connection.networkLookupByUUID(intnet_uuid.bytes)
+                                
+                                network_xml = network.XMLDesc(0)
+                                
+                                network_root = ET.fromstring(network_xml)
+                                ip_element = network_root.find("ip")
+                                
+                                if ip_element is not None:
+                                    
+                                    network_root.remove(ip_element)
+                                    modified_network_xml = ET.tostring(network_root, encoding="unicode")
+                                
+                                    
+                                    if network.isActive():
+                                        network.destroy()
+                                    network.undefine()
+                                    
+                                    libvirt_connection.networkDefineXML(modified_network_xml)
+                                    
+                                    network.setAutostart(True)
 
-                            network.create()
+                                    network.create()
+                        else:
+                            
+                            cursor.execute("UPDATE intnets SET bridge_ip = %s WHERE uuid = %s", (internal_network_set_form.bridge_ip, intnet_uuid))
+                            
+                            with LibvirtConnection("rw") as libvirt_connection:
+                                network = libvirt_connection.networkLookupByUUID(intnet_uuid.bytes)
+                                
+                                network_xml = network.XMLDesc(0)
+                                
+                                network_root = ET.fromstring(network_xml)
+                                ip_element = network_root.find("ip")
+                                
+                                if ip_element is None:
+                                    ip_element = ET.SubElement(network_root, "ip")
+
+                                ip_element.set("address", str(internal_network_set_form.bridge_ip.ip))
+                                ip_element.set("netmask", str(internal_network_set_form.bridge_ip.netmask))
+                                modified_network_xml = ET.tostring(network_root, encoding="unicode")
+                                
+                                if network.isActive():
+                                    network.destroy()
+                                network.undefine()
+                                
+                                libvirt_connection.networkDefineXML(modified_network_xml)
+                                
+                                network.setAutostart(True)
+
+                                network.create()
                        
                     if internal_network_set_form.machines is not None:
                         
@@ -354,7 +398,8 @@ def modify_internal_network(intnet_uuid: UUID, internal_network_set_form: Intern
                         new_connections = connected_machines_incoming - connected_machines_db
                         
                         for machine in deleted_connections:
-                            detach_network_interface(machine, internal_network_set_form.machines[machine])
+                            mac_address = select_single_field("interface_mac", "SELECT interface_mac FROM intnets_connections WHERE intnet_uuid = %s AND machine_uuid = %s", (intnet_uuid, machine))[0]
+                            detach_network_interface(machine, mac_address)
                             
                         for machine in new_connections:
                             interface = MachineNetworkInterface(
@@ -362,8 +407,6 @@ def modify_internal_network(intnet_uuid: UUID, internal_network_set_form: Intern
                                 source=NetworkInterfaceSource(type="network", value=str(intnet_uuid))
                             )
                             attach_network_interface(machine, interface)
-                        
-                        cursor.execute("DELETE FROM intnets_connections WHERE intnet_uuid = %s", (intnet_uuid,))
                                 
                 except libvirt.libvirtError as e:
                     raise Exception(f"Failed to modify internal network {intnet_uuid} because of Libvirt error: {e}")
