@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import Loading from "./components/atoms/feedback/Loading/Loading.tsx";
 
-import { MantineProvider } from "@mantine/core";
+import { MantineProvider, v8CssVariablesResolver } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 
 import "@mantine/core/styles.layer.css";
@@ -22,6 +22,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <MantineProvider
             theme={theme}
             defaultColorScheme="dark"
+            cssVariablesResolver={v8CssVariablesResolver}
         >
             <Notifications />
             <React.Suspense fallback={<Loading />}>
