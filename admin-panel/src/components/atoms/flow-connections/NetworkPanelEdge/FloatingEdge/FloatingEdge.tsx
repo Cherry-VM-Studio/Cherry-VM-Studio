@@ -57,7 +57,7 @@ function FloatingEdge({ id, source, target, markerEnd, style, data }: NetworkPan
                                     fz="xs"
                                     c="dark.8"
                                 >
-                                    {data?.interfaceMac ?? t("unknown")}
+                                    {data?.interfaceMac?.toUpperCase() ?? t("unknown")}
                                 </Text>
                             </Stack>
                             <Stack gap="0">
