@@ -304,13 +304,24 @@ const Flow = (): JSX.Element => {
     };
 
     // Creates edges between machine nodes and the cloud node
-    const createInternetEdges = (machineUuids: string[]) => {
-        if (_.isEmpty(machineUuids)) return;
+    // connectedMachines: <MACHINE UUID, INTERFACE MAC>
+    const createInternetEdges = (connectedMachines: Record<string, string>) => {
+        if (_.isEmpty(connectedMachines)) return;
 
-        machineUuids.forEach((machineUuid) => {
+        _.entries(connectedMachines).forEach(([machineUuid, interfaceMac]) => {
+            const machine = machines?.[machineUuid];
+
+            if (!machine) return;
+
+            const networkInterface = machine.interfaces.find((e) => e.mac === interfaceMac);
+
             addEdgeToFlow({
                 source: getNodeId("machine", machineUuid),
                 target: CLOUD_ID,
+                data: {
+                    interfaceMac: interfaceMac,
+                    interfaceIp: networkInterface?.ip,
+                },
             } as NetworkPanelEdge);
         });
     };
@@ -320,8 +331,7 @@ const Flow = (): JSX.Element => {
         return new Promise<void>(async (resolve, reject) => {
             if (!positions || !configuration) return reject("Either positions or intnets is undefined.");
 
-            const intnetsArray = _.values(configuration.internal_networks).filter((intnet) => _.size(intnet.machines) > 1);
-            const internetArray = configuration.machines_with_internet_access;
+            const intnetsArray = _.values(configuration.internal_networks).filter(_.size);
 
             positionsAllocator.setBounds(_.values(positions));
 
@@ -332,7 +342,7 @@ const Flow = (): JSX.Element => {
             createMachineNodes(positions);
             createFlowNodes("intnet", intnetsArray, positions);
             createIntnetEdges(intnetsArray);
-            createInternetEdges(internetArray);
+            createInternetEdges(configuration.machines_with_internet_access);
 
             const takenIntnetNumbers = intnetsArray.map((intnet) => getIntnetNumber(intnet.intnet_name)).filter((e) => !_.isNull(e));
 

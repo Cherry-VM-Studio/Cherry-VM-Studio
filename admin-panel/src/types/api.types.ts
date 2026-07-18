@@ -288,7 +288,7 @@ export interface InternalNetworkSetForm extends BaseInternalNetworkProperties {
 
 export interface NetworkConfiguration {
     internal_networks: Record<string, InternalNetwork>;
-    machines_with_internet_access: string[];
+    machines_with_internet_access: Record<string, string>;
 }
 
 export interface NetworkConfigurationSetForm {
