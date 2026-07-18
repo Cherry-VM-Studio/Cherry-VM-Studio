@@ -36,7 +36,7 @@ class NetworkConfigurationSet(BaseModel):
     
 class NetworkConfigurationGet(BaseModel):
     internal_networks: dict[UUID, InternalNetworkGetForm]
-    machines_with_internet_access: list[UUID]
+    machines_with_internet_access: dict[UUID, MacAddress]
 
 class NetworkWorkspace(BaseModel):         
     configuration: NetworkConfigurationSet | NetworkConfigurationGet

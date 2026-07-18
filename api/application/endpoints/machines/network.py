@@ -14,7 +14,7 @@ from modules.users.users import UsersManager
 #Included for debug purposes only.
 from modules.machine_lifecycle.networks import attach_network_interface, detach_network_interface, create_internal_network, delete_internal_network, modify_internal_network
 from modules.machine_lifecycle.models import MachineNetworkInterface
-from modules.network_configuration.models import InternalNetworkSetForm, InternalNetworkGetForm
+from modules.network_configuration.models import InternalNetworkSetForm
 
 router = APIRouter(
     prefix='/network',

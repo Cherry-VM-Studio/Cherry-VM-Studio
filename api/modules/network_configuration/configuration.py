@@ -1,17 +1,20 @@
 import logging
+
 from uuid import UUID
 from fastapi.encoders import jsonable_encoder
 from psycopg.types.json import Jsonb
+
 from .models import NetworkConfigurationSet, NetworkConfigurationGet, Positions
 from modules.postgresql import pool, select_one
 from modules.postgresql.simple_select import select_rows, select_single_field
 
 logger = logging.getLogger(__name__)
 
+
 def get_current_network_configuration(owner_uuid: UUID) -> NetworkConfigurationGet:
     
     internal_networks = {}
-    machines_with_internet_access = []
+    machines_with_internet_access = {}
     
     owner_internal_networks = select_rows("SELECT * FROM intnets WHERE owner_uuid = %s", (owner_uuid,))
     
@@ -37,13 +40,14 @@ def get_current_network_configuration(owner_uuid: UUID) -> NetworkConfigurationG
         
     # Get a list of machines with internet access belonging to the owner
     select_machines_with_internet_access = """
-    SELECT * FROM deployed_machines_owners
-    INNER JOIN internet_connections ON deployed_machines_owners.machine_uuid = internet_connections.machine_uuid
-    WHERE deployed_machines_owners.owner_uuid = %s
+        SELECT internet_connections.machine_uuid, internet_connections.interface_mac FROM internet_connections
+        INNER JOIN deployed_machines_owners ON internet_connections.machine_uuid = deployed_machines_owners.machine_uuid
+        WHERE deployed_machines_owners.owner_uuid = %s
     """
-        
-    machines_with_internet_access = select_single_field("machine_uuid", select_machines_with_internet_access, (owner_uuid,))
-        
+      
+    machines = select_rows(select_machines_with_internet_access, (owner_uuid,)) 
+    machines_with_internet_access = {machine["machine_uuid"]: machine["interface_mac"] for machine in machines}
+    
     return NetworkConfigurationGet(
         internal_networks=internal_networks,
         machines_with_internet_access=machines_with_internet_access
@@ -97,11 +101,13 @@ def set_network_configuration(owner_uuid: UUID, configuration: NetworkConfigurat
     for machine_uuid in new_internet_connections:
         attach_internet_interface(machine_uuid)
 
+
 def get_flow_node_positions(owner_uuid: UUID) -> Positions:
     row = select_one("SELECT positions FROM network_panel_states WHERE owner_uuid = %s", [owner_uuid]);
     if not row:
         return {}
     return row["positions"]
+
 
 def save_flow_node_positions(owner_uuid: UUID, positions: Positions):
     with pool.connection() as connection:
