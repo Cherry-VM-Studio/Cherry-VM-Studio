@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import logging
 import libvirt
+import psycopg
 import xml.etree.ElementTree as ET
 
 from typing import Union
-from uuid import UUID, uuid4
+from uuid import UUID
 from ipaddress import IPv4Interface
 
 from modules.postgresql.simple_select import select_single_field
@@ -67,40 +68,39 @@ def attach_internet_interface(machine_uuid: UUID) -> None:
     Attaches an Internet interface to a running machine.
     """
     
-    internet_interface = InternetInterface()
+    from modules.machine_state.state_management import is_vm_running
     
+    internet_interface = InternetInterface()
     internet_interface.mac = generate_random_mac()
     
-    from modules.machine_state.state_management import is_vm_running
+    logger.debug(f"Attaching Internet interface {internet_interface.name} to machine {machine_uuid}.")
+    
+    interface_xml = ET.tostring(create_machine_network_interface_xml(internet_interface), encoding="unicode")
+                    
+    if is_vm_running(machine_uuid):
+        flags = libvirt.VIR_DOMAIN_AFFECT_LIVE | libvirt.VIR_DOMAIN_AFFECT_CONFIG
+    else:
+        flags = libvirt.VIR_DOMAIN_AFFECT_CONFIG
+    
+    
+    with LibvirtConnection("rw") as libvirt_connection:
+        try:
+            machine = libvirt_connection.lookupByUUID(machine_uuid.bytes)
+            
+            machine.attachDeviceFlags(interface_xml, flags)
+            
+        except libvirt.libvirtError as e:
+                raise Exception(f"Failed to attach Internet interface {internet_interface.name} to machine {machine_uuid} because of Libvirt error.") from e
+    
     
     with pool.connection() as connection:
         with connection.cursor() as cursor:
             with connection.transaction():
                 try:
-                    logger.debug(f"Attaching Internet interface {internet_interface.name} to machine {machine_uuid}")
-                    
-                    interface_xml = ET.tostring(create_machine_network_interface_xml(internet_interface), encoding="unicode")
-                    
-                    if is_vm_running(machine_uuid):
-                        flags = libvirt.VIR_DOMAIN_AFFECT_LIVE | libvirt.VIR_DOMAIN_AFFECT_CONFIG
-                    else:
-                        flags = libvirt.VIR_DOMAIN_AFFECT_CONFIG
+                    cursor.execute("INSERT INTO internet_connections (machine_uuid, interface_mac) VALUES (%s, %s)",(machine_uuid, internet_interface.mac))
 
-                    with LibvirtConnection("rw") as libvirt_connection:
-                        machine = libvirt_connection.lookupByUUID(machine_uuid.bytes)
-                        
-                        machine.attachDeviceFlags(interface_xml, flags)    
-                        
-                        cursor.execute(
-                            "INSERT INTO internet_connections (machine_uuid, interface_mac) VALUES (%s, %s)",
-                            (machine_uuid, internet_interface.mac)
-                        )
-                        
-                except libvirt.libvirtError as e:
-                    raise Exception(f"Failed to attach Internet interface {internet_interface.name} to machine {machine_uuid} because of Libvirt error: {e}")
-                    
-                except Exception as e:
-                    raise Exception(f"Failed to attach Internet interface {internet_interface.name} to machine {machine_uuid}: {e}")
+                except psycopg.Error as e:
+                    raise Exception(f"Failed to attach Internet interface {internet_interface.name} to machine {machine_uuid} because of Database error.") from e
     
 def detach_internet_interface(machine_uuid: UUID) -> None:
     """
@@ -109,11 +109,12 @@ def detach_internet_interface(machine_uuid: UUID) -> None:
     
     from modules.machine_state.state_management import is_vm_running
     
+    logger.debug(f"Detaching Internet interface from machine {machine_uuid}.")
+    
     with pool.connection() as connection:
         with connection.cursor() as cursor:
             with connection.transaction():
                 try:
-                    logger.debug(f"Detaching Internet interface from machine {machine_uuid}")
                     
                     cursor.execute("SELECT interface_mac FROM internet_connections WHERE machine_uuid = %s;", (machine_uuid,))
                         
@@ -125,9 +126,9 @@ def detach_internet_interface(machine_uuid: UUID) -> None:
                         raise Exception(f"Failed to find Internet interface for machine {machine_uuid} in the database.")
                     
                     interface_minimal_xml = f"""
-                    <interface>
-                        <mac address="{internet_interface_mac}"/>
-                    </interface>
+                        <interface>
+                            <mac address="{internet_interface_mac}"/>
+                        </interface>
                     """
                     
                     if is_vm_running(machine_uuid):
@@ -143,10 +144,13 @@ def detach_internet_interface(machine_uuid: UUID) -> None:
                     cursor.execute("DELETE FROM internet_connections WHERE machine_uuid = %s AND interface_mac = %s", (machine_uuid, internet_interface_mac))
                     
                 except libvirt.libvirtError as e:
-                    raise Exception(f"Failed to detach Internet interface from machine {machine_uuid} because of Libvirt error: {e}")
+                    raise Exception(f"Failed to detach Internet interface from machine {machine_uuid} because of Libvirt error.") from e
                     
+                except psycopg.Error as e:
+                    raise Exception(f"Failed to detach Internet interface from machine {machine_uuid} because of Database error.") from e
+                
                 except Exception as e:
-                     raise Exception(f"Failed to detach Internet interface from machine {machine_uuid}: {e}")
+                    logger.error(f"Failed to detach Internet interface from machine {machine_uuid}: {repr(e)}.")
 
 ################################
 # Internal networks attachment
