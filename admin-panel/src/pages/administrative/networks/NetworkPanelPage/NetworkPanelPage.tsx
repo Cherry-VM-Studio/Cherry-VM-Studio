@@ -16,7 +16,7 @@ import {
     applyNodeChanges,
     useReactFlow,
 } from "@xyflow/react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { JSX, useCallback, useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import "@xyflow/react/dist/style.css";
 import { ERRORS } from "../../../../config/errors.config.ts";
@@ -51,11 +51,11 @@ import {
     NetworkConfigurationSetForm,
 } from "../../../../types/api.types.ts";
 import PositionAllocator from "../../../../handlers/positionAllocator.ts";
-import "./NetworkPanelPage.module.css";
 import NetworkPanelSelectedNodeForm from "../../../../components/organisms/forms/NetworkPanelSelectedNodeForm/NetworkPanelSelectedNodeForm.tsx";
 import { NetworkPanelEdge, NetworkPanelNode, NodeDataMap, Position } from "./reactFlow.types.ts";
 import FloatingEdge from "../../../../components/atoms/flow-connections/NetworkPanelEdge/FloatingEdge/FloatingEdge.tsx";
 import FloatingConnectionLine from "../../../../components/atoms/flow-connections/NetworkPanelEdge/FloatingConnectionLine/FloatingConnectionLine.jsx";
+import "./NetworkPanelPage.css";
 
 const NODE_TYPES = {
     machine: MachineNode,
