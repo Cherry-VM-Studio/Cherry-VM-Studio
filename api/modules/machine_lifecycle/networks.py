@@ -369,7 +369,6 @@ def modify_internal_network(intnet_uuid: UUID, internal_network_set_form: Intern
         with connection.cursor() as cursor:
             with connection.transaction():
                 try:
-                    
                     if internal_network_set_form.intnet_name is not None:
                         cursor.execute("UPDATE intnets SET intnet_name = %s WHERE uuid = %s", (internal_network_set_form.intnet_name, intnet_uuid))
                         
@@ -379,25 +378,26 @@ def modify_internal_network(intnet_uuid: UUID, internal_network_set_form: Intern
                             cursor.execute("UPDATE intnets SET bridge_ip = NULL WHERE uuid = %s", (intnet_uuid,))
                         else:
                             cursor.execute("UPDATE intnets SET bridge_ip = %s WHERE uuid = %s", (internal_network_set_form.bridge_ip, intnet_uuid))
-
-                    if internal_network_set_form.machines is not None:
-                        
-                        connected_machines_db = set(select_single_field("machine_uuid", "SELECT machine_uuid FROM intnets_connections WHERE intnet_uuid = %s", (intnet_uuid,)))
-                        connected_machines_incoming = set(internal_network_set_form.machines)
-                        
-                        deleted_connections = connected_machines_db - connected_machines_incoming
-                        new_connections = connected_machines_incoming - connected_machines_db
-                        
-                        for machine in deleted_connections:
-                            mac_address = select_single_field("interface_mac", "SELECT interface_mac FROM intnets_connections WHERE intnet_uuid = %s AND machine_uuid = %s", (intnet_uuid, machine))[0]
-                            detach_network_interface(machine, mac_address)
-                            
-                        for machine in new_connections:
-                            interface = MachineNetworkInterface(
-                                mac=generate_random_mac(),
-                                source=NetworkInterfaceSource(type="network", value=str(intnet_uuid))
-                            )
-                            attach_network_interface(machine, interface)
                     
                 except psycopg.Error as e:
                     raise Exception(f"Failed to modify internal network {intnet_uuid} because of Database error.") from e
+    
+    
+    if internal_network_set_form.machines is not None:
+                    
+        connected_machines_db = set(select_single_field("machine_uuid", "SELECT machine_uuid FROM intnets_connections WHERE intnet_uuid = %s", (intnet_uuid,)))
+        connected_machines_incoming = set(internal_network_set_form.machines)
+        
+        deleted_connections = connected_machines_db - connected_machines_incoming
+        new_connections = connected_machines_incoming - connected_machines_db
+        
+        for machine in deleted_connections:
+            mac_address = select_single_field("interface_mac", "SELECT interface_mac FROM intnets_connections WHERE intnet_uuid = %s AND machine_uuid = %s", (intnet_uuid, machine))[0]
+            detach_network_interface(machine, mac_address)
+            
+        for machine in new_connections:
+            interface = MachineNetworkInterface(
+                mac=generate_random_mac(),
+                source=NetworkInterfaceSource(type="network", value=str(intnet_uuid))
+            )
+            attach_network_interface(machine, interface)
