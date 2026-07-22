@@ -2,13 +2,16 @@
     background-color: var(--mantine-color-dark-6);
     padding: 6px var(--mantine-spacing-xs);
     border-radius: var(--mantine-radius-md);
+    align-items: start;
 }
 
 .label {
     font-size: var(--mantine-font-size-sm);
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
 }
 
-.id {
+.infoField {
     font-size: var(--mantine-font-size-xs);
     color: var(--mantine-color-dimmed);
 }

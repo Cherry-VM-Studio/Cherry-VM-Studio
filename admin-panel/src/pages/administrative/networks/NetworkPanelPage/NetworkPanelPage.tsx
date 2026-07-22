@@ -89,11 +89,17 @@ const Flow = (): JSX.Element => {
     const [edges, setEdges] = useState<NetworkPanelEdge[]>([]);
     const [rfInstance, setRfInstance] = useState<ReactFlowInstance<NetworkPanelNode, NetworkPanelEdge> | null>(null);
 
+    const currentlySelectedNode = nodes.find((n) => n.selected);
+    const [selectedNode, setSelectedNode] = useState<NetworkPanelNode | undefined>();
+
+    useEffect(() => {
+        console.log(nodes, currentlySelectedNode);
+        setSelectedNode(currentlySelectedNode);
+    }, [currentlySelectedNode]);
+
     const pageLoaded = useRef(false);
     const intnetAllocator = useRef(new NumberAllocator()).current;
     const positionsAllocator = useRef(new PositionAllocator()).current;
-
-    const selectedNode = nodes.find((n) => n.selected);
 
     // returns the suffix number if the intnet has a default display name, else returns null
     const getIntnetNumber = (displayName: string) => +(/^Intnet\s+(\d+)$/.exec(displayName)?.[1] ?? NaN) || null;
@@ -130,7 +136,12 @@ const Flow = (): JSX.Element => {
      */
     const onNodesChange = useCallback((changes: NodeChange<NetworkPanelNode>[]) => {
         setNodes((nds) => applyNodeChanges(changes, nds));
-        if (changes && !changes.every((e) => e.type === "dimensions")) setIsDirty(true);
+
+        const affectsData = changes.some(
+            (change) => change.type === "position" || change.type === "remove" || change.type === "add" || change.type === "replace",
+        );
+
+        if (affectsData) setIsDirty(true);
     }, []);
 
     /**
@@ -205,6 +216,7 @@ const Flow = (): JSX.Element => {
 
     const onManualEdgeRemoval = ({ source, target }: NetworkPanelEdge) => {
         setEdges((edges) => edges.filter((e) => e.source !== source || e.target !== target));
+        setIsDirty(true);
     };
 
     const onManualIntnetCreation = (name: string, connectedNode: NetworkPanelNode) => {
@@ -212,6 +224,7 @@ const Flow = (): JSX.Element => {
         const intnetNode = generateIntnetNodeObject(intnet, positionsAllocator.getNext());
         addNodes(intnetNode);
         addEdgeToFlow({ source: connectedNode.id, target: intnetNode.id } as NetworkPanelEdge);
+        setIsDirty(true);
     };
 
     const onIntnetRename = (nodeId: string, name: string) => {
@@ -275,16 +288,25 @@ const Flow = (): JSX.Element => {
 
         const getPos = (uuid: string) => positions[getNodeId(nodeType, uuid)] ?? positionsAllocator.getNext();
 
-        addNodes(...data.map((node) => generateNodeObject(nodeType, node, getPos(nodeType === "cloud" ? "" : node!.uuid)) as NetworkPanelNode));
+        console.log(selectedNode?.id, data);
+
+        addNodes(
+            ...data.map(
+                (node) =>
+                    generateNodeObject(
+                        nodeType,
+                        node,
+                        getPos(nodeType === "cloud" ? "" : node!.uuid),
+                        selectedNode?.id === getNodeId(nodeType, node!.uuid),
+                    ) as NetworkPanelNode,
+            ),
+        );
     };
 
     const createCloudNode = (positions: Record<string, Position>) => {
-        const pos = positions["cloud:::"] ?? { x: 150, y: -250 };
-        addNodes(generateCloudNodeObject(pos));
+        const pos = positions[CLOUD_ID] ?? { x: 150, y: -250 };
+        addNodes(generateCloudNodeObject(pos, selectedNode?.id === CLOUD_ID));
     };
-
-    // Creates nodes representing virtual machines.
-    const createMachineNodes = (positions: Record<string, Position>) => createFlowNodes("machine", _.values(machines), positions);
 
     // Creates edges between machine nodes and intnet nodes based on the intnet configuration.
     const createIntnetEdges = (intnets: InternalNetwork[]) => {
@@ -346,7 +368,7 @@ const Flow = (): JSX.Element => {
             setEdges([]);
 
             createCloudNode(positions);
-            createMachineNodes(positions);
+            createFlowNodes("machine", _.values(machines), positions);
             createFlowNodes("intnet", intnetsArray, positions);
             createIntnetEdges(intnetsArray);
             createInternetEdges(configuration.machines_with_internet_access);
@@ -362,7 +384,7 @@ const Flow = (): JSX.Element => {
     // Resets the flow to the current network configuration from the backend.
     const resetFlow = async () => {
         const { configuration, positions } = await sendRequest("GET", PATHS.getWorkspace);
-        return loadFlowWithIntnets(positions, configuration);
+        return loadFlowWithIntnets(positions, configuration).then(() => setIsDirty(null));
     };
 
     // Initializes the flow by resetting it and loading the network configuration.
@@ -372,7 +394,7 @@ const Flow = (): JSX.Element => {
             .then(() => {
                 pageLoaded.current = true;
                 notifications.hide(`network-panel.flow-init`);
-                sendNotification("network-panel.flow-init", { color: "suse-green", uniqueId: false });
+                sendNotification("network-panel.flow-init", { color: "suse-green", uniqueId: false, position: "bottom-left" }, undefined);
                 setIsDirty(null);
             })
             .catch(() => sendErrorNotification(ERRORS.CVMM_650_INVALID_NETWORK_CONFIGURATION));
@@ -397,13 +419,11 @@ const Flow = (): JSX.Element => {
         const stateResponse = await putNodePositions();
         const networkConfigResponse = await putIntnetConfiguration();
 
-        if (!isAxiosError(stateResponse)) sendNotification("network-panel.state-saved");
-        if (!isAxiosError(networkConfigResponse)) sendNotification("network-panel.config-saved");
+        if (!isAxiosError(stateResponse)) sendNotification("network-panel.state-saved", { position: "bottom-left" });
+        if (!isAxiosError(networkConfigResponse)) sendNotification("network-panel.config-saved", { position: "bottom-left" });
 
-        refreshMachines();
         resetFlow();
-
-        setIsDirty(false);
+        refreshMachines();
     };
 
     useEffect(initFlow, [machines]);
@@ -459,7 +479,6 @@ const Flow = (): JSX.Element => {
                     <Background />
                 </ReactFlow>
                 <NetworkPanelSelectedNodeForm
-                    flex={1}
                     display={selectedNode ? undefined : "none"}
                     selectedNode={selectedNode}
                     nodes={nodes}

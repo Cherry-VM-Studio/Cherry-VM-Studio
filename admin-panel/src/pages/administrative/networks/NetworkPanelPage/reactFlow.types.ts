@@ -22,6 +22,7 @@ export type NodeDataMap = {
 };
 
 export type MachineNodeData = {
+    uuid: string;
     icon: typeof IconDeviceDesktop;
     label: string;
 };
@@ -47,3 +48,8 @@ export type NetworkPanelEdgeData = {
 };
 
 export type NetworkPanelEdge = Edge<NetworkPanelEdgeData>;
+
+export type ExpandedNetworkPanelEdge = Omit<NetworkPanelEdge, "source" | "target"> & {
+    source: MachineNode;
+    target: IntnetNode | CloudNode;
+};

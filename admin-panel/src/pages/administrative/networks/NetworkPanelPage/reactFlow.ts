@@ -31,38 +31,41 @@ export const calcMiddlePosition = (...positions: Position[]) => {
 
 export const extractPositionsFromNodes = (nodes: Node[]) => nodes?.reduce((acc, { id, position }) => ({ ...acc, [id]: position }), {}) ?? {};
 
-export const generateNodeObject = <T extends keyof NodeDataMap>(type: T, data: NodeDataMap[T], position: Position) => {
+export const generateNodeObject = <T extends keyof NodeDataMap>(type: T, data: NodeDataMap[T], position: Position, selected?: boolean) => {
     const creators = {
         machine: generateMachineNodeObject,
         intnet: generateIntnetNodeObject,
-        cloud: (_, pos) => generateCloudNodeObject(pos),
+        cloud: (_, pos, selected) => generateCloudNodeObject(pos, selected),
     } as {
-        [K in keyof NodeDataMap]: (data: NodeDataMap[K], position: Position) => any;
+        [K in keyof NodeDataMap]: (data: NodeDataMap[K], position: Position, selected?: boolean) => any;
     };
 
-    return creators[type](data, position);
+    return creators[type](data, position, selected);
 };
 
-export const generateMachineNodeObject = (machine: NodeDataMap["machine"], position: Position) =>
+export const generateMachineNodeObject = (machine: NodeDataMap["machine"], position: Position, selected?: boolean) =>
     ({
         id: getNodeId("machine", machine.uuid),
         type: "machine",
         position: position,
         deletable: false,
         selectable: true,
+        selected,
         data: {
+            uuid: machine.uuid,
             label: machine.title,
             icon: IconDeviceDesktop,
         },
     }) as MachineNode;
 
-export const generateIntnetNodeObject = (intnet: NodeDataMap["intnet"], position: Position) =>
+export const generateIntnetNodeObject = (intnet: NodeDataMap["intnet"], position: Position, selected?: boolean) =>
     ({
         id: getNodeId("intnet", intnet.uuid),
         type: "intnet",
         position: position,
         deletable: false,
         selectable: true,
+        selected,
         data: {
             uuid: intnet.uuid,
             label: intnet.intnet_name,
@@ -71,13 +74,14 @@ export const generateIntnetNodeObject = (intnet: NodeDataMap["intnet"], position
         },
     }) as IntnetNode;
 
-export const generateCloudNodeObject = (position: Position) =>
+export const generateCloudNodeObject = (position: Position, selected?: boolean) =>
     ({
         id: CLOUD_ID,
         type: "cloud",
         position: position,
         deletable: false,
         selectable: true,
+        selected,
         data: {
             label: "Internet Gateway",
         },

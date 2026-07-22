@@ -34,16 +34,20 @@ const NetworkNodeInternetFieldset = ({
     const addConnectionSelectData = nodes.filter((n) => n.type === "machine" && !connectedMachineNodeIdsSet.has(n.id)).map(getSelectDataFromNode);
 
     return (
-        <>
-            <Divider
-                my="xs"
-                label={tns("sections.connected-machines")}
-                labelPosition="center"
-            />
-            <ScrollArea.Autosize
-                offsetScrollbars
-                scrollbarSize="0.675rem"
-            >
+        <ScrollArea.Autosize
+            offsetScrollbars
+            scrollbarSize="0.675rem"
+            mr="-0.675rem"
+            flex="1"
+            mah="100%"
+        >
+            <Stack>
+                <Divider
+                    my="xs"
+                    label={tns("sections.connected-machines")}
+                    labelPosition="center"
+                />
+
                 <Stack>
                     <Select
                         placeholder={tns("add-connection")}
@@ -61,8 +65,8 @@ const NetworkNodeInternetFieldset = ({
                         />
                     ))}
                 </Stack>
-            </ScrollArea.Autosize>
-        </>
+            </Stack>
+        </ScrollArea.Autosize>
     );
 };
 

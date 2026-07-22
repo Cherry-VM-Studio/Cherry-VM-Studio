@@ -1,7 +1,12 @@
 import { ActionIcon, Button, Divider, Group, MaskInput, ScrollArea, Select, Stack, Text, TextInput } from "@mantine/core";
 import classes from "../../NetworkPanelSelectedNodeForm.module.css";
 import useNamespaceTranslation from "../../../../../../hooks/useNamespaceTranslation";
-import { IntnetNode, NetworkPanelEdge, NetworkPanelNode } from "../../../../../../pages/administrative/networks/NetworkPanelPage/reactFlow.types";
+import {
+    ExpandedNetworkPanelEdge,
+    IntnetNode,
+    NetworkPanelEdge,
+    NetworkPanelNode,
+} from "../../../../../../pages/administrative/networks/NetworkPanelPage/reactFlow.types";
 import { getResourceTypeFromNode } from "../../../../../../pages/administrative/networks/NetworkPanelPage/reactFlow";
 import { MachinePropertiesPayload } from "../../../../../../types/api.types";
 import SelectNodeRenderOption from "../../SelectNodeRenderOption";
@@ -41,14 +46,22 @@ const NetworkNodeIntnetFieldset = ({
     // for the removal confirmation modal
     const [opened, { open, close }] = useDisclosure();
 
-    const bridgeIp = selectedNode.data.bridgeIp === "0.0.0.0/32" ? "" : (selectedNode.data.bridgeIp ?? "");
+    const nodesDict = _.keyBy(nodes, "id");
 
-    const connectedMachineNodeIds = edges.filter((e) => e.target === selectedNode.id && getResourceTypeFromNode(e.source) === "machine").map((e) => e.source);
-    const connectedMachineNodeIdsSet = new Set(connectedMachineNodeIds);
+    const selectedNodeEdges = edges.filter((e) => e.target === selectedNode.id);
+    const connectedMachineNodeIdsSet = new Set(selectedNodeEdges.map((e) => e.source));
+    const expandedMachineEdges: ExpandedNetworkPanelEdge[] = [];
+
+    selectedNodeEdges.forEach((edge) => {
+        const source = nodesDict[edge.source];
+        if (source?.type === "machine") expandedMachineEdges.push({ ...edge, source, target: selectedNode });
+    });
 
     const getSelectDataFromNode = (node: NetworkPanelNode) => ({ label: node?.data?.label ?? "Unnamed", value: node.id });
 
     const addConnectionSelectData = nodes.filter((n) => n.type === "machine" && !connectedMachineNodeIdsSet.has(n.id)).map(getSelectDataFromNode);
+
+    const bridgeIp = selectedNode.data.bridgeIp === "0.0.0.0/32" ? "" : (selectedNode.data.bridgeIp ?? "");
 
     const validateName = (val: string) =>
         val.length < 3
@@ -93,80 +106,93 @@ const NetworkNodeIntnetFieldset = ({
 
     return (
         <>
-            <ConfirmationModal
-                opened={opened}
-                onClose={close}
-                onConfirm={() => onIntnetRemove(selectedNode.id)}
-                title={tns("intnet-removal.title")}
-                message={tns("intnet-removal.description")}
-            />
-            <Divider
-                my="xs"
-                label={tns("sections.properties")}
-                labelPosition="center"
-            />
-            <Text className={classes.fieldText}>{tns("mac-address")}</Text>
-            <TextInput
-                readOnly
-                value={selectedNode.data.mac}
-                rightSection={<IconLock size={16} />}
-            />
-            <Text className={classes.fieldText}>{tns("bridge-ip-address")}</Text>
-            <Group
-                wrap="nowrap"
-                gap="0"
-                align="start"
-            >
-                <DebouncedTextInput
-                    initialValue={bridgeIp}
-                    onChange={(val) => onIntnetIpChange(selectedNode.id, val)}
-                    validate={validateIpAddress}
-                    resetTrigger={bridgeIp}
-                    placeholder="XXX.XXX.XXX.XXX/XX"
-                    styles={{ input: { borderRadius: "var(--mantine-radius-md) 0 0 var(--mantine-radius-md)" } }}
-                    flex="1"
-                />
-                <ActionIcon
-                    onClick={(_) => onIntnetIpChange(selectedNode.id, "0.0.0.0/32")}
-                    size="input-sm"
-                    variant="default"
-                    style={{ borderRadius: "0 var(--mantine-radius-md) var(--mantine-radius-md) 0", borderLeft: "none" }}
-                >
-                    <IconTrash size={18} />
-                </ActionIcon>
-            </Group>
-            <Text className={classes.fieldText}>{tns("display-name")}</Text>
-            <DebouncedTextInput
-                initialValue={selectedNode.data.label}
-                onChange={(val) => onIntnetRename(selectedNode.id, val)}
-                validate={validateName}
-                resetTrigger={selectedNode.id}
-            />
-            <Divider
-                my="xs"
-                label={tns("sections.connected-machines")}
-                labelPosition="center"
-            />
             <ScrollArea.Autosize
                 offsetScrollbars
                 scrollbarSize="0.675rem"
+                mr="-0.675rem"
+                flex="1"
+                mah="100%"
             >
                 <Stack>
-                    <Select
-                        placeholder={tns("add-connection")}
-                        data={addConnectionSelectData}
-                        onChange={(val) => onManualEdgeCreation({ source: val, target: selectedNode.id } as NetworkPanelEdge)}
-                        renderOption={SelectNodeRenderOption}
-                        value={null}
+                    <ConfirmationModal
+                        opened={opened}
+                        onClose={close}
+                        onConfirm={() => onIntnetRemove(selectedNode.id)}
+                        title={tns("intnet-removal.title")}
+                        message={tns("intnet-removal.description")}
                     />
-                    {connectedMachineNodeIds.map((id) => (
-                        <MachineNodeListElement
-                            machineNodeId={id}
-                            machines={machines}
-                            onManualEdgeRemoval={onManualEdgeRemoval}
-                            selectedNode={selectedNode}
+                    <Divider
+                        my="xs"
+                        label={tns("sections.properties")}
+                        labelPosition="center"
+                    />
+                    <Text className={classes.fieldText}>UUID</Text>
+                    <TextInput
+                        readOnly
+                        value={selectedNode.data.uuid}
+                        placeholder={"uuid"}
+                        rightSection={<IconLock size={16} />}
+                    />
+                    <Text className={classes.fieldText}>{tns("mac-address")}</Text>
+                    <TextInput
+                        readOnly
+                        value={selectedNode.data.mac}
+                        placeholder={t("uninitialized")}
+                        rightSection={<IconLock size={16} />}
+                    />
+                    <Text className={classes.fieldText}>{tns("bridge-ip-address")}</Text>
+                    <Group
+                        wrap="nowrap"
+                        gap="0"
+                        align="start"
+                    >
+                        <DebouncedTextInput
+                            initialValue={bridgeIp}
+                            onChange={(val) => onIntnetIpChange(selectedNode.id, val)}
+                            validate={validateIpAddress}
+                            resetTrigger={bridgeIp}
+                            placeholder="XXX.XXX.XXX.XXX/XX"
+                            styles={{ input: { borderRadius: "var(--mantine-radius-md) 0 0 var(--mantine-radius-md)" } }}
+                            flex="1"
                         />
-                    ))}
+                        <ActionIcon
+                            onClick={(_) => onIntnetIpChange(selectedNode.id, "0.0.0.0/32")}
+                            size="input-sm"
+                            variant="default"
+                            style={{ borderRadius: "0 var(--mantine-radius-md) var(--mantine-radius-md) 0", borderLeft: "none" }}
+                        >
+                            <IconTrash size={18} />
+                        </ActionIcon>
+                    </Group>
+                    <Text className={classes.fieldText}>{tns("display-name")}</Text>
+                    <DebouncedTextInput
+                        initialValue={selectedNode.data.label}
+                        onChange={(val) => onIntnetRename(selectedNode.id, val)}
+                        validate={validateName}
+                        resetTrigger={selectedNode.id}
+                    />
+                    <Divider
+                        my="xs"
+                        label={tns("sections.connected-machines")}
+                        labelPosition="center"
+                    />
+
+                    <Stack>
+                        <Select
+                            placeholder={tns("add-connection")}
+                            data={addConnectionSelectData}
+                            onChange={(val) => onManualEdgeCreation({ source: val, target: selectedNode.id } as NetworkPanelEdge)}
+                            renderOption={SelectNodeRenderOption}
+                            value={null}
+                        />
+                        {expandedMachineEdges.map((expandedEdge) => (
+                            <MachineNodeListElement
+                                expandedEdge={expandedEdge}
+                                onManualEdgeRemoval={onManualEdgeRemoval}
+                                selectedNode={selectedNode}
+                            />
+                        ))}
+                    </Stack>
                 </Stack>
             </ScrollArea.Autosize>
             <Button

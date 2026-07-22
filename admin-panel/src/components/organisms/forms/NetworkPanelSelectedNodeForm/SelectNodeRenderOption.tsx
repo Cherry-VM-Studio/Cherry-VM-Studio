@@ -1,5 +1,5 @@
 import { ComboboxItem, ComboboxLikeRenderOptionInput, Group, Stack, Text } from "@mantine/core";
-import { IconCloud, IconDeviceDesktop, IconTopologyStar3 } from "@tabler/icons-react";
+import { IconCloud, IconDeviceDesktop, IconPlus, IconTopologyStar3 } from "@tabler/icons-react";
 import { getResourceTypeFromNode, getResourceUuidFromNode } from "../../../../pages/administrative/networks/NetworkPanelPage/reactFlow";
 
 const SelectNodeRenderOption = ({ option, checked }: ComboboxLikeRenderOptionInput<ComboboxItem>): React.JSX.Element => {
@@ -10,6 +10,7 @@ const SelectNodeRenderOption = ({ option, checked }: ComboboxLikeRenderOptionInp
                     cloud: <IconCloud size={26} />,
                     intnet: <IconTopologyStar3 size={26} />,
                     machine: <IconDeviceDesktop size={26} />,
+                    "add-intnet": <IconPlus size={26} />,
                 }[getResourceTypeFromNode(option.value) ?? ""]
             }
             <Stack gap="0">

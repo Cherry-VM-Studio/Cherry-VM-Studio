@@ -1,11 +1,17 @@
 import { useDisclosure } from "@mantine/hooks";
 import useNamespaceTranslation from "../../../../../../hooks/useNamespaceTranslation";
 import TextFieldModal from "../../../../../../modals/base/TextFieldModal/TextFieldModal";
-import { IntnetNode, MachineNode, NetworkPanelEdge, NetworkPanelNode } from "../../../../../../pages/administrative/networks/NetworkPanelPage/reactFlow.types";
+import {
+    ExpandedNetworkPanelEdge,
+    IntnetNode,
+    MachineNode,
+    NetworkPanelEdge,
+    NetworkPanelNode,
+} from "../../../../../../pages/administrative/networks/NetworkPanelPage/reactFlow.types";
 import { Checkbox, Divider, Group, ScrollArea, Select, Stack, Text } from "@mantine/core";
 import { IconDeviceDesktop } from "@tabler/icons-react";
 import { Machine, MachinePropertiesPayload } from "../../../../../../types/api.types";
-import { CLOUD_ID, getResourceUuidFromNode } from "../../../../../../pages/administrative/networks/NetworkPanelPage/reactFlow";
+import { CLOUD_ID, getResourceTypeFromNode, getResourceUuidFromNode } from "../../../../../../pages/administrative/networks/NetworkPanelPage/reactFlow";
 import BadgeGroup from "../../../../../atoms/display/BadgeGroup/BadgeGroup";
 import _ from "lodash";
 import AccountAvatarGroup from "../../../../../atoms/display/AccountAvatarGroup/AccountAvatarGroup";
@@ -19,7 +25,7 @@ import IntnetNodeListElement from "../../node-list-elements/IntnetNodeListElemen
 
 export interface NetworkNodeMachineFieldsetProps {
     nodes: NetworkPanelNode[];
-    edges: Edge[];
+    edges: NetworkPanelEdge[];
     selectedNode: MachineNode;
     machines: Record<string, MachinePropertiesPayload>;
     onManualIntnetCreation: (name: string, selectedMachineNode: MachineNode) => void;
@@ -39,22 +45,29 @@ const NetworkNodeMachineFieldset = ({
     const { t, tns } = useNamespaceTranslation("pages", "network-panel.selection-form");
     const [modalOpened, { open: openModal, close: closeModal }] = useDisclosure();
 
-    const outgoingTargets = new Set(edges.filter((e) => e.source === selectedNode.id).map((e) => e.target));
+    const nodesDict = _.keyBy(nodes, "id");
 
-    const isConnectedToInternet = outgoingTargets.has(CLOUD_ID);
-    const connectedIntnetNodes: IntnetNode[] = [];
+    const selectedNodeEdges = edges.filter((e) => e.source === selectedNode.id);
+    const outgoingTargets = new Set(selectedNodeEdges.map((e) => e.target));
+
+    const expandedIntnetEdges: ExpandedNetworkPanelEdge[] = [];
     const notConnectedIntnetNodes: IntnetNode[] = [];
 
     nodes.forEach((node) => {
         if (node.type !== "intnet") return;
 
-        if (outgoingTargets.has(node.id)) connectedIntnetNodes.push(node);
-        else notConnectedIntnetNodes.push(node);
+        if (!outgoingTargets.has(node.id)) notConnectedIntnetNodes.push(node);
+    });
+
+    selectedNodeEdges.forEach((edge) => {
+        const target = nodesDict[edge.target];
+        if (target?.type === "intnet") expandedIntnetEdges.push({ ...edge, source: selectedNode, target });
     });
 
     const uuid = getResourceUuidFromNode(selectedNode.id);
     const machine = uuid ? machines[uuid] : undefined;
     const assignedClients = _.values(machine?.assigned_clients);
+    const isConnectedToInternet = outgoingTargets.has(CLOUD_ID);
 
     const onCreationValidate = (val: string) =>
         !/^[\w\s.-]+$/.test(val)
@@ -82,82 +95,90 @@ const NetworkNodeMachineFieldset = ({
     const connectionSelectData = [...notConnectedIntnetNodes.map(getSelectDataFromNode), { value: "add-intnet", label: tns("create-new-intnet") }];
 
     return (
-        <>
-            <TextFieldModal
-                opened={modalOpened}
-                onCancel={closeModal}
-                onConfirm={onCreationConfirm}
-                onValidate={onCreationValidate}
-                title={tns("creating-new-intnet")}
-                initialValue="New Intnet"
-                inputProps={{
-                    description: tns("display-name"),
-                    required: true,
-                }}
-            />
-            <Divider
-                my="xs"
-                label={tns("sections.selected-machine-data")}
-                labelPosition="center"
-            />
-            <Text className={classes.fieldText}>{t("machine-details")}</Text>
-            <Group className={classes.machineDetails}>
-                <IconDeviceDesktop size={32} />
-                <Stack className={classes.machineTitleStack}>
-                    <Text className={classes.machineTitle}>{machine?.title ?? "Unnamed Machine"}</Text>
-                    <Text className={classes.machineSubtitle}>{machine?.uuid}</Text>
-                </Stack>
-                <Stack>
-                    {machine?.tags ? (
-                        <BadgeGroup
-                            className={classes.machineTagsContainer}
-                            badgeGroupProps={{ className: classes.badgeGroup }}
-                            size="md"
-                            items={machine?.tags?.sort?.((a, b) => b.length - a.length) ?? []}
-                        />
-                    ) : (
-                        <></>
-                    )}
-                    <ScrollArea.Autosize mah="50px">
-                        <Text className={classes.machineSubtitle}>{machine?.description}</Text>
-                    </ScrollArea.Autosize>
-                </Stack>
-            </Group>
-            {assignedClients!?.length ? (
-                <>
-                    <Text className={classes.fieldText}>{t("assigned-clients")}</Text>
-                    {assignedClients.length > 1 ? (
-                        <AccountAvatarGroup
-                            users={assignedClients}
-                            max={10}
-                        />
-                    ) : (
-                        <BusinessCard
-                            name={getFullUserName(assignedClients[0])}
-                            comment={`@${assignedClients[0].username}`}
-                            size="sm"
-                        />
-                    )}
-                </>
-            ) : (
-                <></>
-            )}
-            <Divider
-                my="xs"
-                label={tns("sections.properties")}
-                labelPosition="center"
-            />
-            <Text className={classes.fieldText}>{tns("internet-access")}</Text>
-            <Checkbox
-                label={tns("internet-access-description")}
-                checked={isConnectedToInternet}
-                onChange={onInternetCheckboxToggle}
-            />
-            <Text className={classes.fieldText}>{tns("internal-network-connections")}</Text>
-            <ScrollArea.Autosize
-                offsetScrollbars
-                scrollbarSize="0.675rem"
-            >
+        <ScrollArea.Autosize
+            offsetScrollbars
+            scrollbarSize="0.675rem"
+            mr="-0.675rem"
+            flex="1"
+            mah="100%"
+        >
+            <Stack>
+                <TextFieldModal
+                    opened={modalOpened}
+                    onCancel={closeModal}
+                    onConfirm={onCreationConfirm}
+                    onValidate={onCreationValidate}
+                    title={tns("creating-new-intnet")}
+                    initialValue="New Intnet"
+                    inputProps={{
+                        description: tns("display-name"),
+                        required: true,
+                    }}
+                />
+                <Divider
+                    my="xs"
+                    label={tns("sections.selected-machine-data")}
+                    labelPosition="center"
+                />
+                <Text className={classes.fieldText}>{t("machine-details")}</Text>
+                <Group className={classes.machineDetails}>
+                    <IconDeviceDesktop size={32} />
+                    <Stack className={classes.machineTitleStack}>
+                        <Text className={classes.machineTitle}>{machine?.title ?? "Unnamed Machine"}</Text>
+                        <Text className={classes.machineSubtitle}>{machine?.uuid}</Text>
+                    </Stack>
+                    <Stack>
+                        {machine?.tags ? (
+                            <BadgeGroup
+                                className={classes.machineTagsContainer}
+                                badgeGroupProps={{ className: classes.badgeGroup }}
+                                size="md"
+                                items={machine?.tags?.sort?.((a, b) => b.length - a.length) ?? []}
+                            />
+                        ) : (
+                            <></>
+                        )}
+                        <ScrollArea.Autosize mah="50px">
+                            <Text className={classes.machineSubtitle}>{machine?.description}</Text>
+                        </ScrollArea.Autosize>
+                    </Stack>
+                </Group>
+                {assignedClients!?.length ? (
+                    <>
+                        <Text className={classes.fieldText}>{t("assigned-clients")}</Text>
+                        {assignedClients.length > 1 ? (
+                            <AccountAvatarGroup
+                                users={assignedClients}
+                                max={10}
+                            />
+                        ) : (
+                            <BusinessCard
+                                name={getFullUserName(assignedClients[0])}
+                                comment={`@${assignedClients[0].username}`}
+                                size="sm"
+                            />
+                        )}
+                    </>
+                ) : (
+                    <></>
+                )}
+                <Divider
+                    my="xs"
+                    label={tns("sections.properties")}
+                    labelPosition="center"
+                />
+                <Text className={classes.fieldText}>{tns("internet-access")}</Text>
+                <Checkbox
+                    label={tns("internet-access-description")}
+                    checked={isConnectedToInternet}
+                    onChange={onInternetCheckboxToggle}
+                />
+                <Divider
+                    my="xs"
+                    label={tns("sections.connected-intnets")}
+                    labelPosition="center"
+                />
+
                 <Stack>
                     <Select
                         placeholder={tns("add-connection")}
@@ -169,16 +190,16 @@ const NetworkNodeMachineFieldset = ({
                         renderOption={SelectNodeRenderOption}
                         value={null}
                     />
-                    {connectedIntnetNodes.map((node) => (
+                    {expandedIntnetEdges.map((expandedEdge) => (
                         <IntnetNodeListElement
-                            intnetNode={node}
+                            expandedEdge={expandedEdge}
                             onManualEdgeRemoval={onManualEdgeRemoval}
                             selectedNode={selectedNode}
                         />
                     ))}
                 </Stack>
-            </ScrollArea.Autosize>
-        </>
+            </Stack>
+        </ScrollArea.Autosize>
     );
 };
 open;

@@ -1,8 +1,12 @@
 .container {
     position: relative;
     justify-content: start;
+    /* max-height: 100%; */
     height: 100%;
     padding: var(--mantine-spacing-md);
+    flex: 1;
+
+    transition: flex-basis 200ms;
 }
 
 .machineDetails {
@@ -29,4 +33,5 @@
 .fieldText {
     font-weight: 700;
     font-size: var(--mantine-font-size-xs) !important;
+    margin-bottom: -0.5rem !important;
 }

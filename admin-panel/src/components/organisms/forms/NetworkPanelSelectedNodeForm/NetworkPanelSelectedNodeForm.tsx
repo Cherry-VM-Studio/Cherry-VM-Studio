@@ -1,4 +1,4 @@
-import { Divider, Select, Stack, StackProps } from "@mantine/core";
+import { Divider, ScrollArea, Select, Stack, StackProps } from "@mantine/core";
 import classes from "./NetworkPanelSelectedNodeForm.module.css";
 import {
     CloudNode,
@@ -102,6 +102,7 @@ const NetworkPanelSelectedNodeForm = ({
                 allowDeselect={false}
                 renderOption={SelectNodeRenderOption}
             />
+
             {formBody}
         </Stack>
     );

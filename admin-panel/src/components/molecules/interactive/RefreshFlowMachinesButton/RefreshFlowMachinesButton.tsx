@@ -21,7 +21,7 @@ export default function RefreshFlowMachinesButton({ isDirty, refreshMachines }: 
     const onConfirm = () => {
         close();
         refreshMachines();
-        sendNotification("network-panel.flow-resetting", { color: "yellow.7" });
+        sendNotification("network-panel.flow-resetting", { color: "yellow.7", position: "bottom-left" });
     };
 
     return (

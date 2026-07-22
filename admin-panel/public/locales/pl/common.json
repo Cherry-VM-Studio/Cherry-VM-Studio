@@ -116,5 +116,7 @@
   "unknown": "Brak danych",
   "not-set": "Brak danych",
   "mac-address": "Adres MAC",
-  "ip-address": "Adres IP"
+  "ip-address": "Adres IP",
+  "interface": "Interfejs",
+  "uninitialized": "Niezainicjalizowany"
 }

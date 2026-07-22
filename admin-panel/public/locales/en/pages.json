@@ -142,7 +142,8 @@
                 "selected-node": "Selected node",
                 "selected-machine-data": "Selected machine data",
                 "properties": "Properties",
-                "connected-machines": "Connected machines"
+                "connected-machines": "Connected machines",
+                "connected-intnets": "Connected intnets"
             },
             "not-selected": "Select a node to manage",
             "internal-network-connections": "Internal network connections",
