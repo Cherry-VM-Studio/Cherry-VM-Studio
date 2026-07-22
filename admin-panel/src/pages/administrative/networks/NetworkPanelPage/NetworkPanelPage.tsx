@@ -230,11 +230,13 @@ const Flow = (): JSX.Element => {
     const onIntnetRename = (nodeId: string, name: string) => {
         if (getResourceTypeFromNode(nodeId) !== "intnet") return;
         setNodes((prev) => prev.map((node) => (node.id === nodeId ? _.merge({}, node, { data: { label: name } }) : node)));
+        setIsDirty(true);
     };
 
     const onIntnetRemove = (nodeId: string) => {
         if (getResourceTypeFromNode(nodeId) !== "intnet") return;
         setNodes((prev) => prev.filter((n) => n.id !== nodeId));
+        setIsDirty(true);
     };
 
     // ipAddress must be a valid Ipv4 address XXX.XXX.XXX.XXX/XX
@@ -242,6 +244,7 @@ const Flow = (): JSX.Element => {
     const onIntnetIpChange = (nodeId: string, ipAddress: string) => {
         if (getResourceTypeFromNode(nodeId) !== "intnet") return;
         setNodes((prev) => prev.map((node) => (node.id === nodeId ? _.merge({}, node, { data: { bridgeIp: ipAddress } }) : node)));
+        setIsDirty(true);
     };
 
     const getNodePositions = useCallback(() => rfInstance?.getNodes().reduce((acc, node) => ({ ...acc, [node.id]: node.position }), {}) ?? {}, [rfInstance]);
