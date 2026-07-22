@@ -26,7 +26,7 @@
     color: var(--mantine-color-dimmed);
 }
 
-.sectionText {
+.fieldText {
     font-weight: 700;
     font-size: var(--mantine-font-size-xs) !important;
 }

@@ -52,7 +52,7 @@ import {
 } from "../../../../types/api.types.ts";
 import PositionAllocator from "../../../../handlers/positionAllocator.ts";
 import NetworkPanelSelectedNodeForm from "../../../../components/organisms/forms/NetworkPanelSelectedNodeForm/NetworkPanelSelectedNodeForm.tsx";
-import { NetworkPanelEdge, NetworkPanelNode, NodeDataMap, Position } from "./reactFlow.types.ts";
+import { IntnetNode as IntnetNodeType, NetworkPanelEdge, NetworkPanelNode, NodeDataMap, Position } from "./reactFlow.types.ts";
 import FloatingEdge from "../../../../components/atoms/flow-connections/NetworkPanelEdge/FloatingEdge/FloatingEdge.tsx";
 import FloatingConnectionLine from "../../../../components/atoms/flow-connections/NetworkPanelEdge/FloatingConnectionLine/FloatingConnectionLine.jsx";
 import "./NetworkPanelPage.css";
@@ -224,6 +224,13 @@ const Flow = (): JSX.Element => {
         setNodes((prev) => prev.filter((n) => n.id !== nodeId));
     };
 
+    // ipAddress must be a valid Ipv4 address XXX.XXX.XXX.XXX/XX
+    // when removing, ipAddress should be set to 0.0.0.0/32
+    const onIntnetIpChange = (nodeId: string, ipAddress: string) => {
+        if (getResourceTypeFromNode(nodeId) !== "intnet") return;
+        setNodes((prev) => prev.map((node) => (node.id === nodeId ? _.merge({}, node, { data: { bridgeIp: ipAddress } }) : node)));
+    };
+
     const getNodePositions = useCallback(() => rfInstance?.getNodes().reduce((acc, node) => ({ ...acc, [node.id]: node.position }), {}) ?? {}, [rfInstance]);
 
     const getNetworksConfig = (): NetworkConfigurationSetForm => {
@@ -240,7 +247,7 @@ const Flow = (): JSX.Element => {
             if (!target.startsWith("intnet")) return;
 
             const intnetUuid = getResourceUuidFromNode(target);
-            const intnetNode = nodes.find((n) => n.id === target);
+            const intnetNode = nodes.find((n) => n.id === target) as IntnetNodeType;
 
             if (_.isNull(intnetUuid) || !intnetNode) return;
 
@@ -249,7 +256,7 @@ const Flow = (): JSX.Element => {
                     uuid: intnetUuid,
                     machines: [],
                     intnet_name: intnetNode.data.label,
-                    bridge_ip: null,
+                    bridge_ip: intnetNode.data.bridgeIp,
                 };
             }
 
@@ -393,6 +400,9 @@ const Flow = (): JSX.Element => {
         if (!isAxiosError(stateResponse)) sendNotification("network-panel.state-saved");
         if (!isAxiosError(networkConfigResponse)) sendNotification("network-panel.config-saved");
 
+        refreshMachines();
+        resetFlow();
+
         setIsDirty(false);
     };
 
@@ -461,6 +471,7 @@ const Flow = (): JSX.Element => {
                     onManualIntnetCreation={onManualIntnetCreation}
                     onIntnetRename={onIntnetRename}
                     onIntnetRemove={onIntnetRemove}
+                    onIntnetIpChange={onIntnetIpChange}
                 />
             </Group>
         </>

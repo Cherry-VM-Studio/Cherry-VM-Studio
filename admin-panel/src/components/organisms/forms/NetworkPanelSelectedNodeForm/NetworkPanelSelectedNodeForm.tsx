@@ -25,6 +25,7 @@ export interface NetworkPanelSelectedNodeFormProps extends StackProps {
     onManualIntnetCreation: (name: string, selectedMachineNode: MachineNode) => void;
     onIntnetRename: (nodeId: string, name: string) => void;
     onIntnetRemove: (nodeId: string) => void;
+    onIntnetIpChange: (nodeId: string, newIp: string) => void;
 }
 
 const NetworkPanelSelectedNodeForm = ({
@@ -34,6 +35,7 @@ const NetworkPanelSelectedNodeForm = ({
     onManualIntnetCreation,
     onIntnetRename,
     onIntnetRemove,
+    onIntnetIpChange,
     machines,
     nodes,
     edges,
@@ -67,6 +69,7 @@ const NetworkPanelSelectedNodeForm = ({
                       onManualEdgeRemoval={onManualEdgeRemoval}
                       onIntnetRename={onIntnetRename}
                       onIntnetRemove={onIntnetRemove}
+                      onIntnetIpChange={onIntnetIpChange}
                   />
               ),
               cloud: (

@@ -141,22 +141,28 @@
             "sections": {
                 "selected-node": "Selected node",
                 "selected-machine-data": "Selected machine data",
-                "properties": "Properties"
+                "properties": "Properties",
+                "connected-machines": "Connected machines"
             },
             "not-selected": "Select a node to manage",
             "internal-network-connections": "Internal network connections",
-            "connected-machines": "Connected machines",
             "internet-access": "Internet access",
             "internet-access-description": "Machine can access the internet",
             "add-connection": "Add connection",
             "create-new-intnet": "Create new intnet",
             "creating-new-intnet": "Creating new intnet",
             "display-name": "Display name",
+            "bridge-ip-address": "Bridge IP address",
+            "mac-address": "MAC address",
             "intnet-validation": {
                 "name-too-long": "Name length cannot exceed 50 characters.",
                 "name-too-short": "Name must be at least 3 characters long.",
                 "name-invalid-first": "Name must start with a letter.",
-                "name-invalid-characters": "Name may only contain alphanumeric characters, spaces, underscores, hyphens and periods."
+                "name-invalid-characters": "Name may only contain alphanumeric characters, spaces, underscores, hyphens and periods.",
+                "invalid-ip-address": "IP address must be in IPv4 CIDR format (e.g. 192.168.1.1/24).",
+                "invalid-ip-address-mask": "IPv4 subnet mask must be a number between 8 and 30.",
+                "ip-reserved-range-0": "Addresses in the range 0.0.0.0 - 0.255.255.255 are reserved and cannot be used.",
+                "ip-reserved-range-127": "Addresses in the range 127.0.0.0 - 127.255.255.255 are reserved for loopback and cannot be used."
             },
             "delete-intnet": "Delete intnet",
             "intnet-removal": {

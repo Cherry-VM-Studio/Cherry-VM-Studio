@@ -1,18 +1,18 @@
-import { Loader, TextInput } from "@mantine/core";
+import { Loader, TextInput, TextInputProps } from "@mantine/core";
 import { useField } from "@mantine/form";
 import { useDebouncedCallback } from "@mantine/hooks";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { ReactNode, useEffect, useState } from "react";
 
-export interface DebouncedTextInputProps {
+export type DebouncedTextInputProps = Omit<TextInputProps, "onChange"> & {
     initialValue: string;
     validate: (val: string) => ReactNode | Promise<ReactNode> | undefined;
     onChange: (val: string) => void;
     resetTrigger: string | number | null;
     delay?: number;
-}
+};
 
-const DebouncedTextInput = ({ initialValue, validate, onChange, resetTrigger, delay = 1000 }: DebouncedTextInputProps): React.JSX.Element => {
+const DebouncedTextInput = ({ initialValue, validate, onChange, resetTrigger, delay = 1000, ...props }: DebouncedTextInputProps): React.JSX.Element => {
     const [loading, setLoading] = useState(false);
     const [changed, setChanged] = useState(false);
 
@@ -74,6 +74,7 @@ const DebouncedTextInput = ({ initialValue, validate, onChange, resetTrigger, de
                     <></>
                 )
             }
+            {...props}
         />
     );
 };

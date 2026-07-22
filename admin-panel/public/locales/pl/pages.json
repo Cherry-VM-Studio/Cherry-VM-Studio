@@ -144,7 +144,8 @@
             "sections": {
                 "selected-node": "Wybrany obiekt",
                 "selected-machine-data": "Informacje o wybranym obiekcie",
-                "properties": "Właściwości"
+                "properties": "Właściwości",
+                "connected-machines": "Podłączone maszyny"
             },
             "not-selected": "Wybierz obiekt z listy",
             "internal-network-connections": "Połączenia sieci wewnętrznych",
@@ -155,11 +156,17 @@
             "create-new-intnet": "Stwórz nową sieć wewnętrzną",
             "creating-new-intnet": "Tworzenie nowej sieci wewnętrznej",
             "display-name": "Wyświetlana nazwa",
+            "bridge-ip-address": "Adres IP mostu",
+            "mac-address": "Adres MAC",
             "intnet-validation": {
                 "name-too-long": "Nazwa sieci nie może przekraczać 50 znaków.",
                 "name-too-short": "Nazwa sieci musi mieć co najmniej 3 znaki długości.",
                 "name-invalid-first": "Nazwa sieci musi zaczynać się literą.",
-                "name-invalid-characters": "Nazwa sieci może zawierać tylko znaki alfanumeryczne, podkreślenia, myślniki i kropki."
+                "name-invalid-characters": "Nazwa sieci może zawierać tylko znaki alfanumeryczne, podkreślenia, myślniki i kropki.",
+                "invalid-ip-address": "Adres IP musi być w formacie IPv4 CIDR (np. 192.168.1.1/24).",
+                "invalid-ip-address-mask": "Maska podsieci IPv4 musi być liczbą z zakresu od 8 do 30.",
+                "ip-reserved-range-0": "Adresy z zakresu 0.0.0.0 - 0.255.255.255 są zarezerwowane i nie mogą być używane.",
+                "ip-reserved-range-127": "Adresy z zakresu 127.0.0.0 - 127.255.255.255 są zarezerwowane dla pętli zwrotnej (loopback) i nie mogą być używane."
             },
             "delete-intnet": "Usuń sieć",
             "intnet-removal": {

@@ -100,7 +100,7 @@ const NetworkNodeMachineFieldset = ({
                 label={tns("sections.selected-machine-data")}
                 labelPosition="center"
             />
-            <Text className={classes.sectionText}>{t("machine-details")}</Text>
+            <Text className={classes.fieldText}>{t("machine-details")}</Text>
             <Group className={classes.machineDetails}>
                 <IconDeviceDesktop size={32} />
                 <Stack className={classes.machineTitleStack}>
@@ -125,7 +125,7 @@ const NetworkNodeMachineFieldset = ({
             </Group>
             {assignedClients!?.length ? (
                 <>
-                    <Text className={classes.sectionText}>{t("assigned-clients")}</Text>
+                    <Text className={classes.fieldText}>{t("assigned-clients")}</Text>
                     {assignedClients.length > 1 ? (
                         <AccountAvatarGroup
                             users={assignedClients}
@@ -147,13 +147,13 @@ const NetworkNodeMachineFieldset = ({
                 label={tns("sections.properties")}
                 labelPosition="center"
             />
-            <Text className={classes.sectionText}>{tns("internet-access")}</Text>
+            <Text className={classes.fieldText}>{tns("internet-access")}</Text>
             <Checkbox
                 label={tns("internet-access-description")}
                 checked={isConnectedToInternet}
                 onChange={onInternetCheckboxToggle}
             />
-            <Text className={classes.sectionText}>{tns("internal-network-connections")}</Text>
+            <Text className={classes.fieldText}>{tns("internal-network-connections")}</Text>
             <ScrollArea.Autosize
                 offsetScrollbars
                 scrollbarSize="0.675rem"

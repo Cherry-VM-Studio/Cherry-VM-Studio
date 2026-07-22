@@ -37,10 +37,9 @@ const NetworkNodeInternetFieldset = ({
         <>
             <Divider
                 my="xs"
-                label={tns("connected-machines")}
+                label={tns("sections.connected-machines")}
                 labelPosition="center"
             />
-            <Text className={classes.sectionText}>{tns("connected-machines")}</Text>
             <ScrollArea.Autosize
                 offsetScrollbars
                 scrollbarSize="0.675rem"
