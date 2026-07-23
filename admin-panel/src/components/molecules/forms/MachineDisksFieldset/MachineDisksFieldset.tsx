@@ -119,6 +119,7 @@ const MachineDisksFieldset = <T extends Record<string, any> = {}>({
                                     error={form.errors[`disks.${i}.name`]}
                                     {...form.getInputProps(`disks.${i}.name`)}
                                     readOnly={disabled || (i === form.values.os_disk && osDiskReadonly)}
+                                    maxLength={50}
                                 />
                                 <Group
                                     gap="4"

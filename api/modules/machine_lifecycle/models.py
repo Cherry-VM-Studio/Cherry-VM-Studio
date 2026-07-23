@@ -4,6 +4,9 @@ from typing import Optional, Literal
 from pydantic_extra_types.mac_address import MacAddress
 from ipaddress import IPv4Interface
 
+from modules.validation.string import description_validator, name_validator, short_name_validator
+from modules.validation.int import int_validator
+
 ################################
 #   Machine creation models
 ################################
@@ -100,10 +103,42 @@ class CreateMachineFormDisk(BaseModel):
     size_bytes: int
     type: DiskType
     
+    @field_validator("name", mode="before")
+    @classmethod
+    def validate_name(cls, value):
+        return name_validator(value)
+    
+    @field_validator("size_bytes", mode="before")
+    @classmethod
+    def validate_size(cls, value):
+        return int_validator(
+            value=value,
+            min_value=1048576 # 1 MiB
+        )
+    
       
 class CreateMachineFormConfig(BaseModel):
-    ram: int
-    vcpu: int
+    ram: int    # in MiB
+    vcpu: int   # vcpu count
+    
+    
+    @field_validator("ram", mode="before")
+    @classmethod
+    def validate_ram(cls, value):
+        return int_validator(
+            value=value, 
+            min_value=1024, # 1 GiB
+            field_name="RAM"
+        )
+    
+    @field_validator("ram", mode="before")
+    @classmethod
+    def validate_vcpu(cls, value):
+        return int_validator(
+            value=value, 
+            min_value=1,
+            field_name="VCPU"
+        )
       
       
 class CreateMachineFormConnectionProtocols(BaseModel):
@@ -126,25 +161,34 @@ class CreateMachineForm(BaseModel):
     disks: list[CreateMachineFormDisk]
     os_disk: int = 0
     
-    internet_connectivity: bool = False
-    
-    @field_validator("title", "description", mode="before")
+    internet_connectivity: bool = False      
+        
+    @field_validator("title", mode="before")
     @classmethod
-    def strip_strings(cls, value):
-        if isinstance(value, str):
-            return value.strip()
-        return value
+    def validate_title(cls, value):
+        return name_validator(value)
+    
+    @field_validator("description", mode="before")
+    @classmethod
+    def validate_description(cls, value):
+        return description_validator(value)   
     
     @field_validator("tags", mode="before")
     @classmethod
-    def strip_set(cls, value):
+    def validate_tags(cls, value):
         if value is None:
             return value
-        return {s.strip() for s in value}
+        return {short_name_validator(tag) for tag in value}
+        
     
 class MachineBulkSpec(BaseModel):
     machine_config: CreateMachineForm
     machine_count: int
+    
+    @field_validator("size_bytes", mode="before")
+    @classmethod
+    def validate_machine_count(cls, value):
+        return int_validator(value=value, min_value=1, field_name="machine_count")
     
     
 class ModifyMachineForm(BaseModel):
@@ -159,16 +203,19 @@ class ModifyMachineForm(BaseModel):
     
     internet_connectivity: bool | None = None
     
-    @field_validator("title", "description", mode="before")
+    @field_validator("title", mode="before")
     @classmethod
-    def strip_strings(cls, value):
-        if isinstance(value, str):
-            return value.strip()
-        return value
+    def validate_title(cls, value):
+        return name_validator(value)
+        
+    @field_validator("description", mode="before")
+    @classmethod
+    def validate_description(cls, value):
+        return description_validator(value)   
     
     @field_validator("tags", mode="before")
     @classmethod
-    def strip_set(cls, value):
+    def validate_tags(cls, value):
         if value is None:
             return value
-        return {s.strip() for s in value}
+        return {short_name_validator(tag) for tag in value}

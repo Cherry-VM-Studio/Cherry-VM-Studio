@@ -5,15 +5,10 @@ from pydantic import BaseModel, field_validator, model_validator
 from pydantic import BaseModel, field_validator
 from uuid import UUID, uuid4
 
-class StrippedModel(BaseModel):
-    @field_validator("*", mode="before")
-    @classmethod
-    def strip_strings(cls, value):
-        if isinstance(value, str):
-            return value.strip()
-        return value
-    
-class UUIDModel(StrippedModel):
+from modules.validation.string import name_validator, username_validator
+
+
+class UUIDModel(BaseModel):
     uuid: UUID = uuid4()
 
     @model_validator(mode="after")
@@ -129,7 +124,30 @@ class GetUsersFilters(BaseModel):
     role: UUID | None = None
     group: UUID | None = None
 
-class CreateAdministratorForm(StrippedModel):
+
+class CreateUserFormBasicModel(BaseModel):
+    username: str
+    name: str | None = None
+    surname: str | None = None
+    
+    @field_validator("username", mode="before")
+    @classmethod
+    def validate_username(cls, value):
+        return username_validator(value)
+    
+    @field_validator("name", "surname", mode="before")
+    @classmethod
+    def validate_name(cls, value):
+        return name_validator(value)
+    
+    @field_validator("email", mode="before")
+    @classmethod
+    def fix_email(cls, value):
+        if value is not None and len(value):
+            return value.lower()
+        return None
+
+class CreateAdministratorForm(CreateUserFormBasicModel):
     password: str
     username: str
     email: str | None = None
@@ -139,14 +157,7 @@ class CreateAdministratorForm(StrippedModel):
     account_type: Literal["administrative"] = "administrative"
     roles: list[UUID] = []
     
-    @field_validator("email", mode="before")
-    @classmethod
-    def fix_email(cls, value):
-        if value is not None and len(value):
-            return value.lower()
-        return None
-    
-class CreateClientForm(StrippedModel):
+class CreateClientForm(CreateUserFormBasicModel):
     password: str
     username: str
     email: str | None = None
@@ -156,18 +167,16 @@ class CreateClientForm(StrippedModel):
     account_type: Literal["client"] = "client"
     groups: list[UUID] = []
     
-    @field_validator("email", mode="before")
-    @classmethod
-    def fix_email(cls, value):
-        if value is not None and len(value):
-            return value.lower()
-        return None
-    
-class CreateGroupForm(StrippedModel):
+class CreateGroupForm(BaseModel):
     name: str
     users: list[UUID]
+    
+    @field_validator("name", mode="before")
+    @classmethod
+    def validate_name(cls, value):
+        return name_validator(value)
 
-class ModifyUserForm(StrippedModel):
+class ModifyUserForm(CreateUserFormBasicModel):
     username: str | None = None
     email: str | None = None
     name: str | None = None
@@ -195,8 +204,13 @@ class CreateGroupArgs(CreateGroupForm, UUIDModel):
 class ChangePasswordBody(BaseModel):
     password: str
     
-class RenameGroupBody (StrippedModel):
+class RenameGroupBody (BaseModel):
     name: str
+    
+    @field_validator("name", mode="before")
+    @classmethod
+    def validate_name(cls, value):
+        return name_validator(value)
 
 # 
 #   UNIONS
