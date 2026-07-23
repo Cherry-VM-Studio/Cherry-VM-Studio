@@ -1,7 +1,8 @@
 import datetime as dt
 from uuid import UUID
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
+from modules.validation.string import name_validator
 from modules.users.models import Administrator
 
 
@@ -36,6 +37,11 @@ class IsoRecord(BaseModel):
 class CreateIsoRecordForm(BaseModel):
     uuid: UUID
     name: str
+    
+    @field_validator("name", mode="before")
+    @classmethod
+    def validate_title(cls, value):
+        return name_validator(value)
     
     
 class CreateIsoRecordArgs(CreateIsoRecordForm):

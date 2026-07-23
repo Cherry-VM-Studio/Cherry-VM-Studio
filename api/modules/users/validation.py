@@ -13,18 +13,6 @@ def validate_user_creation(user_data: CreateAnyUserForm):
     if user_data.email is not None and UsersManager.get_user_by_email(user_data.email) is not None:
         raise HTTPException(status_code=409, detail=f"User with email \"{user_data.email}\" already exists.")
     
-    if not re.match(REGEX_CONFIG.username, user_data.username):
-        raise HTTPException(status_code=400, detail="Invalid username. Username must be between 3 and 24 characters in length, start with a letter and only contain alphanumeric characters, underscores, hyphens and periods. All letters must be lowercase.")
-    
-    if not re.match(REGEX_CONFIG.password, user_data.password):
-        raise HTTPException(status_code=400, detail="Invalid password. Password must be at least 12 characters long and contain at least one digit, lowercase letter, upercase letter and one of the special characters.")
-    
-    if len(user_data.name or "") > 50:
-        raise HTTPException(status_code=400, detail="Name field cannot contain more than 50 characters.")
-    
-    if len(user_data.surname or "") > 50:
-        raise HTTPException(status_code=400, detail="Surname field cannot contain more than 50 characters.")
-    
     
 def validate_group_creation(group_data: CreateGroupForm):
     from .sublibraries.group_library import GroupLibrary
