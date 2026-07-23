@@ -101,7 +101,7 @@ def username_validator(value: str):
         min_length=3,
         max_length=24,
         allowed_characters_regex=r"^[a-z][a-z0-9_.-]*$",
-        field_name="Username",
+        field_name="username",
         allowed_characters_regex_error_detail=(
             "Username must start with a letter and only contain "
             "alphanumeric characters, underscores, hyphens and periods. "
@@ -109,7 +109,7 @@ def username_validator(value: str):
         )
     )
     
-def name_validator(value: str, max_length: int = 50):
+def name_validator(value: str, max_length: int = 50, field_name: str = "name"):
     """
     Validates human-readable resource names.
     Requirements:
@@ -125,15 +125,12 @@ def name_validator(value: str, max_length: int = 50):
         max_length=max_length,
         allowed_characters_regex=r"^\p{L}[\p{L}\p{N}_ .-]*$",
         trim_whitespace=True,
-        field_name="Name",
-        allowed_characters_regex_error_detail=(
-            "Name must start with a letter and only contain "
-            "alphanumeric characters, spaces, underscores, hyphens and periods."
-        )
+        field_name=field_name,
+        allowed_characters_regex_error_detail=f"{field_name} must start with a letter and only contain alphanumeric characters, spaces, underscores, hyphens and periods."        
     )
 
 
-def short_name_validator(value: str):
+def short_name_validator(value: str, field_name: str = "name"):
     """
     Validates short resource names.
     Requirements:
@@ -143,10 +140,10 @@ def short_name_validator(value: str):
     underscores (_), hyphens (-), and periods (.).
     - Raises an HTTP 400 exception if validation fails.
     """
-    return name_validator(value, max_length=24)
+    return name_validator(value=value, max_length=24, field_name=field_name)
 
 
-def long_name_validator(value: str):
+def long_name_validator(value: str, field_name: str = "name"):
     """
     Validates long resource names.
     Requirements:
@@ -156,9 +153,9 @@ def long_name_validator(value: str):
     underscores (_), hyphens (-), and periods (.).
     - Raises an HTTP 400 exception if validation fails.
     """
-    return name_validator(value, max_length=100)
+    return name_validator(value=value, max_length=100, field_name=field_name)
 
-def description_validator(value: str, max_length: int = 500):
+def description_validator(value: str, max_length: int = 500, field_name: str = "description"):
     """
     Validates resource descriptions.
     Requirements:
@@ -171,7 +168,7 @@ def description_validator(value: str, max_length: int = 500):
         value,
         max_length=max_length,
         trim_whitespace=True,
-        field_name="Description",
+        field_name=field_name,
         max_length_error_detail=(
             f"Description length cannot exceed {max_length} characters."
         )

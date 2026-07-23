@@ -28,7 +28,7 @@ class InternalNetworkSetForm(BaseModel):
     @field_validator("intnet_name", mode="before")
     @classmethod
     def validate_username(cls, value):
-        return name_validator(value)
+        return name_validator(value, field_name="intnet_name")
     
 class InternalNetworkGetForm(BaseModel):
     uuid: UUID
