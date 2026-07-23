@@ -87,6 +87,7 @@ def string_validator(
 def username_validator(value: str):
     """
     Validates username.
+    
     Requirements:
     - 3 to 24 characters.
     - All lowercase
@@ -109,11 +110,12 @@ def username_validator(value: str):
         )
     )
     
-def name_validator(value: str, max_length: int = 50, field_name: str = "name"):
+def name_validator(value: str, min_length: int = 3, max_length: int = 50, field_name: str = "name"):
     """
     Validates human-readable resource names.
+    
     Requirements:
-    - 3 to `max_length` characters long (default: 50).
+    - `min_length` to `max_length` characters long (default: 3 to 50).
     - Begins with a Unicode letter.
     - Remaining characters may include Unicode letters, digits, spaces,
     underscores (_), hyphens (-), and periods (.).
@@ -121,7 +123,7 @@ def name_validator(value: str, max_length: int = 50, field_name: str = "name"):
     s"""
     return string_validator(
         value,
-        min_length=3,
+        min_length=min_length,
         max_length=max_length,
         allowed_characters_regex=r"^\p{L}[\p{L}\p{N}_ .-]*$",
         trim_whitespace=True,
@@ -133,6 +135,7 @@ def name_validator(value: str, max_length: int = 50, field_name: str = "name"):
 def short_name_validator(value: str, field_name: str = "name"):
     """
     Validates short resource names.
+    
     Requirements:
     - 3 to 24 characters long.
     - Begins with a Unicode letter.
@@ -143,21 +146,30 @@ def short_name_validator(value: str, field_name: str = "name"):
     return name_validator(value=value, max_length=24, field_name=field_name)
 
 
-def long_name_validator(value: str, field_name: str = "name"):
+def lenient_name_validator(value: str,  field_name: str = "name"):
     """
-    Validates long resource names.
+    Created for validating names and surnames of users. 
+    Unlike name_validator, it does not require the first character to be a letter nor does it enforce minimum character length.
+    
     Requirements:
-    - 3 to 100 characters long.
-    - Begins with a Unicode letter.
-    - Remaining characters may include Unicode letters, digits, spaces,
+    - Up to 50 characters.
+    - Characters may include Unicode letters, digits, spaces,
     underscores (_), hyphens (-), and periods (.).
     - Raises an HTTP 400 exception if validation fails.
     """
-    return name_validator(value=value, max_length=100, field_name=field_name)
+    return string_validator(
+        value,
+        max_length=50,
+        allowed_characters_regex=r"^[\p{L}\p{N}_ .-]*$",
+        trim_whitespace=True,
+        field_name=field_name,
+        allowed_characters_regex_error_detail=f"{field_name} must only contain alphanumeric characters, spaces, underscores, hyphens and periods."        
+    )
 
 def description_validator(value: str, max_length: int = 500, field_name: str = "description"):
     """
     Validates resource descriptions.
+    
     Requirements:
     - Up to `max_length` characters (default: 500).
     - Leading and trailing whitespace is removed.

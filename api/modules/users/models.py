@@ -5,7 +5,7 @@ from pydantic import BaseModel, field_validator, model_validator
 from pydantic import BaseModel, field_validator
 from uuid import UUID, uuid4
 
-from modules.validation.string import name_validator, username_validator
+from modules.validation.string import lenient_name_validator, name_validator, username_validator
 
 
 class UUIDModel(BaseModel):
@@ -141,14 +141,14 @@ class UserFormBasicModel(BaseModel):
     @classmethod
     def validate_name(cls, value):
         if value is not None and len(value):
-            return name_validator(value)
+            return lenient_name_validator(value)
         return None
     
     @field_validator("surname", mode="before")
     @classmethod
     def validate_surname(cls, value):
         if value is not None and len(value):
-            return name_validator(value, field_name="surname")
+            return lenient_name_validator(value, field_name="surname")
         return None
     
     @field_validator("email", mode="before")
