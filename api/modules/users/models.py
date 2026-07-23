@@ -137,10 +137,19 @@ class UserFormBasicModel(BaseModel):
     def validate_username(cls, value):
         return username_validator(value)
     
-    @field_validator("name", "surname", mode="before")
+    @field_validator("name", mode="before")
     @classmethod
     def validate_name(cls, value):
-        return name_validator(value)
+        if value is not None and len(value):
+            return name_validator(value)
+        return None
+    
+    @field_validator("surname", mode="before")
+    @classmethod
+    def validate_surname(cls, value):
+        if value is not None and len(value):
+            return name_validator(value, field_name="surname")
+        return None
     
     @field_validator("email", mode="before")
     @classmethod

@@ -206,16 +206,20 @@ class ModifyMachineForm(BaseModel):
     @field_validator("title", mode="before")
     @classmethod
     def validate_title(cls, value):
+        if value is None:
+            return None
         return name_validator(value=value, field_name="title")
         
     @field_validator("description", mode="before")
     @classmethod
     def validate_description(cls, value):
+        if value is None:
+            return None
         return description_validator(value)   
     
     @field_validator("tags", mode="before")
     @classmethod
     def validate_tags(cls, value):
         if value is None:
-            return value
+            return None
         return {short_name_validator(tag, field_name="tag") for tag in value}

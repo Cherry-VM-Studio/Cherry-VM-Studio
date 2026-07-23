@@ -21,7 +21,7 @@ type Positions = dict[str, Coordinates]
 ################################
 class InternalNetworkSetForm(BaseModel):
     uuid: UUID
-    intnet_name: str | None = None
+    intnet_name: str
     bridge_ip: IPv4Interface | None = None
     machines: list[UUID] | None = None
     
