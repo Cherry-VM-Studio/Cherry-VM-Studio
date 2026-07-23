@@ -125,10 +125,12 @@ class GetUsersFilters(BaseModel):
     group: UUID | None = None
 
 
-class CreateUserFormBasicModel(BaseModel):
+class UserFormBasicModel(BaseModel):
     username: str
     name: str | None = None
     surname: str | None = None
+    email: str | None = None
+
     
     @field_validator("username", mode="before")
     @classmethod
@@ -147,7 +149,7 @@ class CreateUserFormBasicModel(BaseModel):
             return value.lower()
         return None
 
-class CreateAdministratorForm(CreateUserFormBasicModel):
+class CreateAdministratorForm(UserFormBasicModel):
     password: str
     username: str
     email: str | None = None
@@ -157,7 +159,7 @@ class CreateAdministratorForm(CreateUserFormBasicModel):
     account_type: Literal["administrative"] = "administrative"
     roles: list[UUID] = []
     
-class CreateClientForm(CreateUserFormBasicModel):
+class CreateClientForm(UserFormBasicModel):
     password: str
     username: str
     email: str | None = None
@@ -176,7 +178,7 @@ class CreateGroupForm(BaseModel):
     def validate_name(cls, value):
         return name_validator(value)
 
-class ModifyUserForm(CreateUserFormBasicModel):
+class ModifyUserForm(UserFormBasicModel):
     username: str | None = None
     email: str | None = None
     name: str | None = None
