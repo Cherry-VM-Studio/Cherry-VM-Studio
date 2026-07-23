@@ -1,7 +1,9 @@
 from uuid import UUID
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from ipaddress import IPv4Interface
 from pydantic_extra_types.mac_address import MacAddress
+
+from api.modules.validation.string import name_validator
 
 
 ################################
@@ -22,6 +24,11 @@ class InternalNetworkSetForm(BaseModel):
     intnet_name: str | None = None
     bridge_ip: IPv4Interface | None = None
     machines: list[UUID] | None = None
+    
+    @field_validator("intnet_name", mode="before")
+    @classmethod
+    def validate_username(cls, value):
+        return name_validator(value)
     
 class InternalNetworkGetForm(BaseModel):
     uuid: UUID
