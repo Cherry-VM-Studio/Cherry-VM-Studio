@@ -1,5 +1,8 @@
 {
     "typeCheckingMode": "standard",
     "reportIncompatibleMethodOverride": "none",
-    "reportIncompatibleVariableOverride": "none"
+    "reportIncompatibleVariableOverride": "none",
+    "extraPaths": [
+        "./api"
+    ]
 }

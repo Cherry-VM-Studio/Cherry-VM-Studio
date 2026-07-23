@@ -3,7 +3,7 @@ from pydantic import BaseModel, field_validator
 from ipaddress import IPv4Interface
 from pydantic_extra_types.mac_address import MacAddress
 
-from api.modules.validation.string import name_validator
+from modules.validation.string import name_validator
 
 
 ################################
