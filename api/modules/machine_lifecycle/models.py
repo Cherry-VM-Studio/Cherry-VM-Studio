@@ -127,11 +127,11 @@ class CreateMachineFormConfig(BaseModel):
     def validate_ram(cls, value):
         return int_validator(
             value=value, 
-            min_value=1024, # 1 GiB
+            min_value=512, 
             field_name="RAM"
         )
     
-    @field_validator("ram", mode="before")
+    @field_validator("vcpu", mode="before")
     @classmethod
     def validate_vcpu(cls, value):
         return int_validator(
